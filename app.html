@@ -47,6 +47,7 @@ border:none;
 border-radius:14px;
 font-weight:700;
 cursor:pointer;
+transition:all .2s ease;
 }
 
 .primary{
@@ -68,6 +69,10 @@ color:#fff;
 display:flex;
 gap:10px;
 margin-top:12px;
+}
+
+.row > button{
+flex:1;
 }
 
 .subText{
@@ -106,29 +111,32 @@ font-weight:800;
 
 /* ONLINE RING */
 
-.profileRing{
+.avatarWrapper{
+position:relative;
 display:inline-block;
-padding:4px;
+}
+
+.onlineRing{
+position:absolute;
+top:-4px;
+left:-4px;
+right:-4px;
+bottom:-4px;
 border-radius:50%;
-}
-
-.profileRing.online{
 border:3px solid #22c55e;
-animation:pulseRing 2s infinite;
 }
 
-@keyframes pulseRing{
-0%{box-shadow:0 0 0 0 rgba(34,197,94,.6);}
-70%{box-shadow:0 0 0 10px rgba(34,197,94,0);}
-100%{box-shadow:0 0 0 0 rgba(34,197,94,0);}
+#profilePhoto{
+width:120px;
+height:120px;
+border-radius:50%;
+object-fit:cover;
 }
 
 </style>
 </head>
 
 <body>
-
-<!-- PROFILE -->
 
 <div id="profilePage" class="page" style="display:block;">
 
@@ -139,11 +147,11 @@ animation:pulseRing 2s infinite;
 
 <div class="card" style="text-align:center">
 
-<div id="profileRing" class="profileRing">
+<div class="avatarWrapper">
+<div class="onlineRing"></div>
 
 <img id="profilePhoto"
-src="https://i.ibb.co/2kRZ7Z6/avatar.png"
-style="width:120px;height:120px;border-radius:50%;object-fit:cover;border:4px solid #e5e7eb;">
+src="https://i.ibb.co/2kRZ7Z6/avatar.png">
 
 </div>
 
@@ -201,11 +209,7 @@ Show
 </div>
 </div>
 
-<div id="documentsList"></div>
-
-</div>
-
-<!-- NAV -->
+<!-- NAVIGATION -->
 
 <div class="bottomnav">
 
@@ -229,24 +233,25 @@ Show
 
 <script type="module">
 
-import { initializeApp }
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { initializeApp } from
+"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 
 import {
 getAuth,
 onAuthStateChanged,
 signOut
 }
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+from
+"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 import {
 getFirestore,
 doc,
 getDoc,
-setDoc,
-updateDoc
+setDoc
 }
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+from
+"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig={
 apiKey:"AIzaSyCNlodsmEHrSXxgH0gTOcx4cAXwG8qmG9w",
@@ -259,6 +264,21 @@ const auth=getAuth(app);
 const db=getFirestore(app);
 
 let currentUID=null;
+let currentEmail=null;
+
+const IMGBB_KEY="5b417e8de4a883f7425eeda12dc38f06";
+
+window.toggleInfo=function(){
+
+const sec=document.getElementById("infoSection");
+const btn=document.getElementById("infoBtn");
+
+const show=sec.style.display==="none";
+
+sec.style.display=show?"block":"none";
+btn.innerText=show?"Hide":"Show";
+
+};
 
 onAuthStateChanged(auth,async(user)=>{
 
@@ -268,28 +288,9 @@ return;
 }
 
 currentUID=user.uid;
-
-await updateDoc(doc(db,"users",currentUID),{
-online:true,
-lastActive:Date.now()
-});
+currentEmail=user.email.toLowerCase();
 
 loadProfile();
-
-});
-
-/* SET OFFLINE WHEN LEAVE PAGE */
-
-window.addEventListener("beforeunload",async()=>{
-
-if(currentUID){
-
-await updateDoc(doc(db,"users",currentUID),{
-online:false,
-lastActive:Date.now()
-});
-
-}
 
 });
 
@@ -298,14 +299,6 @@ async function loadProfile(){
 const snap=await getDoc(doc(db,"users",currentUID));
 
 const d=snap.data()||{};
-
-const ring=document.getElementById("profileRing");
-
-if(d.online){
-ring.classList.add("online");
-}else{
-ring.classList.remove("online");
-}
 
 if(d.photo){
 profilePhoto.src=d.photo;
@@ -323,15 +316,51 @@ profileAddress.innerText=d.address||"-";
 
 }
 
-window.logout=async function(){
+document.getElementById("photoInput")
+.addEventListener("change",async function(){
 
-await updateDoc(doc(db,"users",currentUID),{
-online:false,
-lastActive:Date.now()
+const file=this.files[0];
+if(!file) return;
+
+const reader=new FileReader();
+
+reader.onload=function(e){
+profilePhoto.src=e.target.result;
+};
+
+reader.readAsDataURL(file);
+
+const formData=new FormData();
+formData.append("image",file);
+
+try{
+
+const res=await fetch(
+"https://api.imgbb.com/1/upload?key="+IMGBB_KEY,
+{method:"POST",body:formData}
+);
+
+const data=await res.json();
+
+const imageUrl=data.data.url;
+
+await setDoc(doc(db,"users",currentUID),{
+photo:imageUrl
+},{merge:true});
+
+alert("Photo uploaded successfully");
+
+}catch(e){
+
+alert("Upload failed");
+
+}
+
 });
 
-await signOut(auth);
+window.logout=async function(){
 
+await signOut(auth);
 location.href="index.html";
 
 };

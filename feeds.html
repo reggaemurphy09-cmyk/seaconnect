@@ -58,16 +58,6 @@ background:linear-gradient(135deg,#3b82f6,#2563eb);
 color:#fff;
 }
 
-.light{
-background:rgba(255,255,255,0.1);
-color:#fff;
-}
-
-.danger{
-background:linear-gradient(135deg,#ef4444,#dc2626);
-color:#fff;
-}
-
 .row{
 display:flex;
 gap:10px;
@@ -116,8 +106,6 @@ font-size:13px;
 color:#94a3b8;
 }
 
-/* NAV */
-
 .bottomnav{
 position:fixed;
 bottom:15px;
@@ -158,14 +146,7 @@ font-weight:800;
 <div id="feedsPage" class="page">
 
 <div class="topbar">
-
-<div>
 <div class="title">📰 Crew Feeds</div>
-<div class="subText">Logged in as: <span id="who"></span></div>
-</div>
-
-<button class="danger" onclick="logout()">Logout</button>
-
 </div>
 
 <div class="card">
@@ -191,7 +172,6 @@ style="width:100%;margin-top:10px;border-radius:16px;display:none;">
 
 </div>
 
-
 <!-- FRIENDS -->
 
 <div id="friendsPage" class="page">
@@ -199,14 +179,12 @@ style="width:100%;margin-top:10px;border-radius:16px;display:none;">
 <div class="card subText">Friends feature coming soon</div>
 </div>
 
-
 <!-- MESSAGES -->
 
 <div id="messagesPage" class="page">
 <h2>💬 Messages</h2>
 <div class="card subText">Messenger coming soon</div>
 </div>
-
 
 <!-- NAV -->
 
@@ -230,16 +208,14 @@ style="width:100%;margin-top:10px;border-radius:16px;display:none;">
 
 </div>
 
-
 <script type="module">
 
-import { initializeApp } 
+import { initializeApp }
 from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 
 import {
 getAuth,
-onAuthStateChanged,
-signOut
+onAuthStateChanged
 }
 from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
@@ -258,7 +234,6 @@ where
 }
 from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-
 const firebaseConfig={
 apiKey:"AIzaSyCNlodsmEHrSXxgH0gTOcx4cAXwG8qmG9w",
 authDomain:"seaconnect-d2baa.firebaseapp.com",
@@ -276,10 +251,8 @@ let currentEmail="";
 let isPosting=false;
 
 const feedsList=document.getElementById("feedsList");
-const who=document.getElementById("who");
 
-
-/* NAVIGATION */
+/* NAV */
 
 window.showPage=function(id,btn){
 
@@ -295,7 +268,6 @@ if(btn) btn.classList.add("active");
 
 };
 
-
 /* AUTH */
 
 onAuthStateChanged(auth,(user)=>{
@@ -308,22 +280,11 @@ return;
 currentUID=user.uid;
 currentEmail=user.email;
 
-who.innerText=currentEmail;
-
 showPage("feedsPage");
 
 loadFeeds();
 
 });
-
-
-/* LOGOUT */
-
-window.logout=async function(){
-await signOut(auth);
-location.href="index.html";
-};
-
 
 /* CREATE POST */
 
@@ -365,11 +326,17 @@ photoURL=data.data.url;
 
 }
 
+/* GET USER PROFILE */
+
+const userSnap=await getDoc(doc(db,"users",currentUID));
+const userData=userSnap.data()||{};
+
 await addDoc(collection(db,"feeds"),{
 
 uid:currentUID,
-email:currentEmail,
-name:currentEmail.split("@")[0],
+name:userData.name || currentEmail.split("@")[0],
+rank:userData.rank || "",
+photoProfile:userData.photo || "",
 text:text,
 photo:photoURL,
 likes:[],
@@ -403,7 +370,6 @@ isPosting=false;
 
 };
 
-
 /* LOAD FEEDS */
 
 function loadFeeds(){
@@ -428,12 +394,12 @@ feedsList.innerHTML+=`
 
 <div style="display:flex;gap:10px;align-items:center;">
 
-<img src="https://i.ibb.co/2kRZ7Z6/avatar.png"
-style="width:40px;height:40px;border-radius:50%;">
+<img src="${d.photoProfile || 'https://i.ibb.co/2kRZ7Z6/avatar.png'}"
+style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
 
 <div>
 <div style="font-weight:900">${d.name}</div>
-<div class="subText">${d.email}</div>
+<div class="subText">${d.rank || ""}</div>
 </div>
 
 </div>
@@ -481,7 +447,6 @@ loadComments(id);
 
 }
 
-
 /* LIKE */
 
 window.toggleLike=async function(id){
@@ -501,7 +466,6 @@ await updateDoc(ref,{likes});
 
 };
 
-
 /* DELETE POST */
 
 window.deletePost=async function(id){
@@ -511,7 +475,6 @@ await deleteDoc(doc(db,"feeds",id));
 }
 
 };
-
 
 /* COMMENTS */
 
@@ -526,7 +489,7 @@ await addDoc(collection(db,"comments"),{
 
 feedId:feedId,
 uid:currentUID,
-name:currentEmail.split("@")[0],
+name:"User",
 text:text,
 createdAt:Date.now()
 
@@ -535,7 +498,6 @@ createdAt:Date.now()
 input.value="";
 
 };
-
 
 function loadComments(feedId){
 
@@ -578,7 +540,6 @@ Delete
 
 }
 
-
 window.deleteComment=async function(id){
 
 if(confirm("Delete comment?")){
@@ -586,7 +547,6 @@ await deleteDoc(doc(db,"comments",id));
 }
 
 };
-
 
 /* IMAGE PREVIEW */
 

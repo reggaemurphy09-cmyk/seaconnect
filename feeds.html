@@ -89,18 +89,24 @@
     </div>
 
     <!-- CREATE POST -->
-    <div class="card">
-      <div style="font-weight:900;margin-bottom:8px;">Create Post</div>
+<!-- CREATE POST -->
+<div class="card">
 
-      <textarea id="feedInput" placeholder="What’s happening on board?"></textarea>
+<div style="font-weight:900;margin-bottom:8px;">Create Post</div>
 
-      <div class="row">
-        <input type="file" id="feedPhoto" accept="image/*" />
-        <button class="primary" onclick="createFeed()">Post</button>
-      </div>
+<textarea id="feedInput" placeholder="What’s happening on board?"></textarea>
 
-      <div id="postMsg" class="subText" style="margin-top:10px;"></div>
-    </div>
+<input type="file" id="feedPhoto" accept="image/*">
+
+<img id="previewPhoto"
+style="width:100%;margin-top:10px;border-radius:16px;border:1px solid rgba(255,255,255,0.15);display:none;">
+<div class="row">
+<button class="primary" onclick="createFeed()">Post</button>
+</div>
+
+<div id="postMsg" class="subText" style="margin-top:10px;"></div>
+
+</div>
 
     <!-- FEEDS LIST -->
     <div id="feedsList"></div>
@@ -198,15 +204,15 @@
         const formData=new FormData();
         formData.append("image",file);
 
-        const res=await fetch(
-          "https://api.imgbb.com/1/upload?key="+IMGBB_KEY,
-          {method:"POST", body: formData}
-        );
-        const data=await res.json();
-        if(!data || !data.data || !data.data.url){
-          throw new Error("ImgBB upload failed");
-        }
-        photoURL=data.data.url;
+   const data=await res.json();
+
+if(data && data.data && data.data.url){
+photoURL=data.data.url;
+}else{
+console.log(data);
+alert("Photo upload failed");
+return;
+}
       }
 
       await addDoc(collection(db,"feeds"),{
@@ -219,8 +225,9 @@
         createdAt: Date.now()
       });
 
-      document.getElementById("feedInput").value="";
-      document.getElementById("feedPhoto").value="";
+     document.getElementById("feedInput").value="";
+document.getElementById("feedPhoto").value="";
+document.getElementById("previewPhoto").style.display="none";
       setPostMsg("✅ Posted!");
       setTimeout(()=>setPostMsg(""),1200);
 
@@ -377,7 +384,21 @@
     await signOut(auth);
     location.reload();
   };
+document.getElementById("feedPhoto").addEventListener("change",function(){
 
+const file=this.files[0];
+if(!file) return;
+
+const reader=new FileReader();
+
+reader.onload=function(e){
+document.getElementById("previewPhoto").src=e.target.result;
+document.getElementById("previewPhoto").style.display="block";
+};
+
+reader.readAsDataURL(file);
+
+});
   // small helper to avoid HTML breaking
   function escapeHtml(str){
     return String(str||"")

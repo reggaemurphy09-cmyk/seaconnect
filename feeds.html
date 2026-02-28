@@ -231,11 +231,11 @@ document.getElementById("previewPhoto").style.display="none";
       setPostMsg("✅ Posted!");
       setTimeout(()=>setPostMsg(""),1200);
 
-    }catch(e){
-      console.error(e);
-      setPostMsg("");
-      alert("❌ Post failed");
     }
+    catch(e){
+console.error("POST ERROR:",e);
+alert("Post failed: " + e.message);
+}
   };
 
   // LOAD FEEDS

@@ -6,7 +6,6 @@
 <title>SeaConnect</title>
 
 <style>
-
 body{
 margin:0;
 font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
@@ -14,14 +13,12 @@ background:linear-gradient(180deg,#0f172a,#1e293b);
 color:#f1f5f9;
 }
 
-/* Pages */
 .page{
 display:none;
 padding:20px;
 padding-bottom:95px;
 }
 
-/* Card */
 .card{
 background:rgba(255,255,255,0.06);
 backdrop-filter:blur(12px);
@@ -32,7 +29,6 @@ margin-bottom:16px;
 box-shadow:0 10px 30px rgba(0,0,0,.35);
 }
 
-/* Inputs */
 input{
 width:100%;
 padding:12px;
@@ -44,7 +40,6 @@ background:rgba(255,255,255,0.05);
 color:#fff;
 }
 
-/* Buttons */
 button{
 padding:11px 16px;
 border:none;
@@ -85,12 +80,10 @@ margin-top:12px;
 flex:1;
 }
 
-/* Profile Photo */
 #profilePhoto{
 box-shadow:0 0 30px rgba(59,130,246,.5);
 }
 
-/* Bottom Navigation */
 .bottomnav{
 position:fixed;
 bottom:15px;
@@ -124,7 +117,6 @@ font-weight:800;
 font-size:13px;
 color:#94a3b8;
 }
-
 </style>
 
 </head>
@@ -158,6 +150,7 @@ color:#94a3b8;
 
 <div class="card" style="text-align:center;">
 
+<!-- FIXED PHOTO URL -->
 <img id="profilePhoto"
 src="https://i.ibb.co/2kRZ7Z6/avatar.png"
 style="width:120px;height:120px;border-radius:50%;object-fit:cover;border:4px solid #e5e7eb;">
@@ -177,16 +170,13 @@ Upload Photo
 
 </div>
 
-<!-- Professional Info -->
 <div class="card">
-
 <div style="display:flex;justify-content:space-between;align-items:center;">
 <div style="font-weight:900;">Professional Information</div>
 <button class="light" onclick="toggleInfo()" id="infoBtn">Show</button>
 </div>
 
 <div id="infoSection" style="display:none; margin-top:12px;">
-
 <div class="subText">Email</div>
 <div id="profileEmail"></div>
 
@@ -204,17 +194,13 @@ Upload Photo
 
 <div class="subText" style="margin-top:10px;">Address</div>
 <div id="profileAddress"></div>
-
 </div>
 </div>
 
-<!-- EDIT PROFILE -->
 <div class="card">
-
 <button class="primary" onclick="toggleEdit()">Edit Profile</button>
 
 <div id="editSection" style="display:none;margin-top:20px;">
-
 <label>Full Name</label>
 <input id="nameInput">
 
@@ -240,12 +226,9 @@ Upload Photo
 <button class="primary" onclick="saveProfile()">Save</button>
 <button class="light" onclick="toggleEdit()">Cancel</button>
 </div>
-
+</div>
 </div>
 
-</div>
-
-<!-- DOCUMENTS -->
 <div class="card">
 
 <div style="display:flex;justify-content:space-between;align-items:center;">
@@ -254,7 +237,6 @@ Upload Photo
 </div>
 
 <div id="docFormSection" style="display:none;margin-top:20px;">
-
 <label>Document Type</label>
 <input id="docTypeInput">
 
@@ -271,7 +253,6 @@ Upload Photo
 <button class="primary" onclick="addDocument()">Save</button>
 <button class="light" onclick="toggleDocForm()">Cancel</button>
 </div>
-
 </div>
 
 </div>
@@ -325,7 +306,6 @@ btn.innerText=isHidden?"Hide":"Show";
 };
 
 onAuthStateChanged(auth,async(user)=>{
-
 if(!user){
 location.href="index.html";
 return;
@@ -341,24 +321,16 @@ if(!snap.exists()){
 await setDoc(ref,{
 email:currentEmail,
 name:user.email.split("@")[0],
-rank:"",
-company:"",
-vessel:"",
-experience:"",
-phone:"",
-address:"",
-photo:"",
 createdAt:Date.now()
 });
 }
 
 loadProfile();
 loadDocuments();
-
 });
 
+/* PROFILE */
 async function loadProfile(){
-
 const snap=await getDoc(doc(db,"users",currentUID));
 const d=snap.data()||{};
 
@@ -374,7 +346,6 @@ profileVessel.innerText=d.vessel||"-";
 profileExperience.innerText=d.experience||"-";
 profilePhone.innerText=d.phone||"-";
 profileAddress.innerText=d.address||"-";
-
 }
 
 window.toggleEdit=function(){
@@ -383,7 +354,6 @@ section.style.display=(section.style.display==="none")?"block":"none";
 };
 
 window.saveProfile=async function(){
-
 await setDoc(doc(db,"users",currentUID),{
 email:currentEmail,
 name:nameInput.value,
@@ -399,7 +369,6 @@ updatedAt:Date.now()
 await loadProfile();
 toggleEdit();
 alert("✅ Profile saved!");
-
 };
 
 window.toggleDocForm=function(){
@@ -430,51 +399,31 @@ docNumberInput.value="";
 docIssueInput.value="";
 docExpiryInput.value="";
 
+/* FIXED */
 toggleDocForm();
 
 alert("✅ Document saved!");
-
 };
 
 function loadDocuments(){
-
 const list=document.getElementById("documentsList");
-
-const q=query(
-collection(db,"documents"),
-where("uid","==",currentUID)
-);
+const q=query(collection(db,"documents"),where("uid","==",currentUID));
 
 onSnapshot(q,(snap)=>{
-
 list.innerHTML="";
-
-if(snap.empty){
-list.innerHTML=`<div class="subText">No documents yet.</div>`;
-return;
-}
-
 snap.forEach(docSnap=>{
-
 const d=docSnap.data();
 const id=docSnap.id;
 
 list.innerHTML+=`
 <div class="card">
-<div style="display:flex;justify-content:space-between;">
-<div>
-<div style="font-weight:900;">${d.type}</div>
-<div class="subText">${d.number || "-"}</div>
-</div>
-<button class="danger" onclick="deleteDocument('${id}')">Delete</button>
-</div>
+<b>${d.type}</b><br>
+${d.number || ""}
+<button onclick="deleteDocument('${id}')">Delete</button>
 </div>
 `;
-
 });
-
 });
-
 }
 
 window.deleteDocument=async function(id){

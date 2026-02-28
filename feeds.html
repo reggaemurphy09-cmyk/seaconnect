@@ -1,0 +1,308 @@
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+
+import { getAuth,onAuthStateChanged,signOut }
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+import {
+getFirestore,
+collection,
+addDoc,
+query,
+orderBy,
+onSnapshot,
+doc,
+getDoc,
+deleteDoc,
+updateDoc,
+where
+}
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig={
+apiKey:"AIzaSyCNlodsmEHrSXxgH0gTOcx4cAXwG8qmG9w",
+authDomain:"seaconnect-d2baa.firebaseapp.com",
+projectId:"seaconnect-d2baa"
+};
+
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+
+let currentUID=null;
+let currentName="Crew";
+let currentEmail="";
+
+const IMGBB_KEY="5b417e8de4a883f7425eeda12dc38f06";
+
+
+/* PAGE NAV */
+
+window.showPage=function(id,btn){
+
+document.querySelectorAll(".page")
+.forEach(p=>p.style.display="none");
+
+document.querySelectorAll(".bottomnav button")
+.forEach(b=>b.classList.remove("active"));
+
+document.getElementById(id).style.display="block";
+
+if(btn) btn.classList.add("active");
+
+};
+
+
+/* AUTH */
+
+onAuthStateChanged(auth,async(user)=>{
+
+if(!user){
+alert("Login first");
+return;
+}
+
+currentUID=user.uid;
+currentEmail=user.email;
+
+profileEmail.innerText=currentEmail;
+
+const ref=doc(db,"users",currentUID);
+const snap=await getDoc(ref);
+
+if(snap.exists()){
+currentName=snap.data().name || currentEmail.split("@")[0];
+}
+
+profileName.innerText=currentName;
+
+loadFeeds();
+
+});
+
+
+/* CREATE POST */
+
+window.createFeed=async function(){
+
+const text=feedInput.value.trim();
+let photoURL="";
+
+const file=photoInput.files[0];
+
+if(file){
+
+const formData=new FormData();
+formData.append("image",file);
+
+const res=await fetch(
+"https://api.imgbb.com/1/upload?key="+IMGBB_KEY,
+{method:"POST",body:formData}
+);
+
+const data=await res.json();
+
+photoURL=data.data.url;
+
+}
+
+await addDoc(collection(db,"feeds"),{
+
+uid:currentUID,
+name:currentName,
+email:currentEmail,
+text:text,
+photo:photoURL,
+likes:[],
+createdAt:Date.now()
+
+});
+
+feedInput.value="";
+photoInput.value="";
+
+};
+
+
+/* LOAD FEEDS */
+
+function loadFeeds(){
+
+const q=query(
+collection(db,"feeds"),
+orderBy("createdAt","desc")
+);
+
+onSnapshot(q,(snap)=>{
+
+feedsList.innerHTML="";
+
+snap.forEach(docSnap=>{
+
+const d=docSnap.data();
+const id=docSnap.id;
+
+const date=new Date(d.createdAt).toLocaleString();
+
+const likeCount=d.likes ? d.likes.length : 0;
+
+feedsList.innerHTML+=`
+
+<div class="card">
+
+<div style="font-weight:900">
+${d.name}
+</div>
+
+<div style="margin-top:6px">
+${d.text || ""}
+</div>
+
+${d.photo ? `<img src="${d.photo}" class="feedPhoto">` : ""}
+
+<div class="subText">
+${date}
+</div>
+
+<div style="margin-top:10px">
+
+<button onclick="toggleLike('${id}')">
+👍 Like
+</button>
+
+<span class="subText">
+${likeCount} likes
+</span>
+
+</div>
+
+<div style="margin-top:10px">
+
+<input id="commentInput-${id}"
+placeholder="Write comment">
+
+<button onclick="sendComment('${id}')">
+Send
+</button>
+
+</div>
+
+<div id="comments-${id}"></div>
+
+${d.uid===currentUID ? `
+<button class="danger"
+onclick="deletePost('${id}')"
+style="margin-top:10px">
+Delete
+</button>
+` : ``}
+
+</div>
+
+`;
+
+loadComments(id);
+
+});
+
+});
+
+}
+
+
+/* LIKE SYSTEM */
+
+window.toggleLike=async function(feedId){
+
+const ref=doc(db,"feeds",feedId);
+const snap=await getDoc(ref);
+
+let likes=snap.data().likes || [];
+
+if(likes.includes(currentUID)){
+likes=likes.filter(x=>x!==currentUID);
+}else{
+likes.push(currentUID);
+}
+
+await updateDoc(ref,{likes:likes});
+
+};
+
+
+/* DELETE POST */
+
+window.deletePost=async function(id){
+
+if(confirm("Delete post?")){
+await deleteDoc(doc(db,"feeds",id));
+}
+
+};
+
+
+/* COMMENT */
+
+window.sendComment=async function(feedId){
+
+const input=document.getElementById("commentInput-"+feedId);
+const text=input.value.trim();
+
+if(!text) return;
+
+await addDoc(collection(db,"comments"),{
+
+feedId:feedId,
+name:currentName,
+text:text,
+createdAt:Date.now()
+
+});
+
+input.value="";
+
+};
+
+
+/* LOAD COMMENTS */
+
+function loadComments(feedId){
+
+const q=query(
+collection(db,"comments"),
+where("feedId","==",feedId),
+orderBy("createdAt","asc")
+);
+
+onSnapshot(q,(snap)=>{
+
+const list=document.getElementById("comments-"+feedId);
+if(!list) return;
+
+list.innerHTML="";
+
+snap.forEach(docSnap=>{
+
+const d=docSnap.data();
+
+list.innerHTML+=`
+<div class="subText">
+<b>${d.name}</b>: ${d.text}
+</div>
+`;
+
+});
+
+});
+
+}
+
+
+/* LOGOUT */
+
+window.logout=async function(){
+
+await signOut(auth);
+location.reload();
+
+};

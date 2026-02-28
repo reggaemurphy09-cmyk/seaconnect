@@ -196,19 +196,17 @@ style="width:100%;margin-top:10px;border-radius:16px;border:1px solid rgba(255,2
       }
 
       setPostMsg("Posting...");
+rules_version = '2';
+service cloud.firestore {
+match /databases/{database}/documents {
 
-      let photoURL="";
+match /{document=**} {
+allow read, write: if true;
+}
 
-      // upload photo (optional)
-      if(file){
-        const formData=new FormData();
-        formData.append("image",file);
-
-   const data=await res.json();
-
-if(data && data.data && data.data.url){
-photoURL=data.data.url;
-}else{
+}
+}
+     else{
 console.log(data);
 alert("Photo upload failed");
 return;

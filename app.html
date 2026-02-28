@@ -1,325 +1,28 @@
-<!DOCTYPE html>  <html>    <head>    
-<meta charset="UTF-8" />    
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />    
-<title>SeaConnect</title>  <style>    
-body{
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
-  background:linear-gradient(180deg,#0f172a,#1e293b);
-  color:#f1f5f9;
-}
-/* Pages */
-.page{
-  display:none;
-  padding:20px;
-  padding-bottom:95px;
-}
-/* Modern Glass Card */
-.card{
-  background:rgba(255,255,255,0.06);
-  backdrop-filter:blur(12px);
-  border:1px solid rgba(255,255,255,0.08);
-  padding:18px;
-  border-radius:22px;
-  margin-bottom:16px;
-  box-shadow:0 10px 30px rgba(0,0,0,.35);
-}
-/* Inputs */
-input{
-  width:100%;
-  padding:12px;
-  border-radius:14px;
-  border:1px solid rgba(255,255,255,0.15);
-  margin-top:6px;
-  box-sizing:border-box;
-  background:rgba(255,255,255,0.05);
-  color:#fff;
-}
-/* Buttons */
-button{
-  padding:11px 16px;
-  border:none;
-  border-radius:14px;
-  font-weight:700;
-  cursor:pointer;
-  transition:all .2s ease;
-}
-button:hover{
-  transform:translateY(-2px);
-  opacity:.9;
-}
-.primary{
-  background:linear-gradient(135deg,#3b82f6,#2563eb);
-  color:#fff;
-  box-shadow:0 6px 20px rgba(37,99,235,.4);
-}
-.danger{
-  background:linear-gradient(135deg,#ef4444,#dc2626);
-  color:#fff;
-}
-.light{
-  background:rgba(255,255,255,0.1);
-  color:#fff;
-}
-.row{
-  display:flex;
-  gap:10px;
-  margin-top:12px;
-}
-.row > button{
-  flex:1;
-}
-/* Profile Photo Glow */
-#profilePhoto{
-  box-shadow:0 0 30px rgba(59,130,246,.5);
-}
-/* Bottom Navigation Modern */
-.bottomnav{
-  position:fixed;
-  bottom:15px;
-  left:50%;
-  transform:translateX(-50%);
-  width:90%;
-  height:65px;
-  background:rgba(15,23,42,0.9);
-  backdrop-filter:blur(10px);
-  border-radius:22px;
-  display:flex;
-  justify-content:space-around;
-  align-items:center;
-  box-shadow:0 10px 40px rgba(0,0,0,.6);
-}
-.bottomnav button{
-  background:none;
-  border:none;
-  font-size:12px;
-  font-weight:600;
-  color:#94a3b8;
-}
-.bottomnav button.active{
-  color:#3b82f6;
-  font-weight:800;
-}
-.subText{
-  font-size:13px;
-  color:#94a3b8;
-}body{
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
-  background:linear-gradient(180deg,#0f172a,#1e293b);
-  color:#f1f5f9;
-}
+📰 Crew Feeds
+Post
 
-/* Pages */
-.page{
-  display:none;
-  padding:20px;
-  padding-bottom:95px;
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+
+import { getAuth,onAuthStateChanged }
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+import {
+getFirestore,
+collection,
+addDoc,
+query,
+orderBy,
+onSnapshot,
+doc,
+deleteDoc,
+getDoc,
+updateDoc
 }
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-/* Modern Glass Card */
-.card{
-  background:rgba(255,255,255,0.06);
-  backdrop-filter:blur(12px);
-  border:1px solid rgba(255,255,255,0.08);
-  padding:18px;
-  border-radius:22px;
-  margin-bottom:16px;
-  box-shadow:0 10px 30px rgba(0,0,0,.35);
-}
 
-/* Inputs */
-input{
-  width:100%;
-  padding:12px;
-  border-radius:14px;
-  border:1px solid rgba(255,255,255,0.15);
-  margin-top:6px;
-  box-sizing:border-box;
-  background:rgba(255,255,255,0.05);
-  color:#fff;
-}
-
-/* Buttons */
-button{
-  padding:11px 16px;
-  border:none;
-  border-radius:14px;
-  font-weight:700;
-  cursor:pointer;
-  transition:all .2s ease;
-}
-
-button:hover{
-  transform:translateY(-2px);
-  opacity:.9;
-}
-
-.primary{
-  background:linear-gradient(135deg,#3b82f6,#2563eb);
-  color:#fff;
-  box-shadow:0 6px 20px rgba(37,99,235,.4);
-}
-
-.danger{
-  background:linear-gradient(135deg,#ef4444,#dc2626);
-  color:#fff;
-}
-
-.light{
-  background:rgba(255,255,255,0.1);
-  color:#fff;
-}
-
-.row{
-  display:flex;
-  gap:10px;
-  margin-top:12px;
-}
-
-.row > button{
-  flex:1;
-}
-
-/* Profile Photo Glow */
-#profilePhoto{
-  box-shadow:0 0 30px rgba(59,130,246,.5);
-}
-
-/* Bottom Navigation Modern */
-.bottomnav{
-  position:fixed;
-  bottom:15px;
-  left:50%;
-  transform:translateX(-50%);
-  width:90%;
-  height:65px;
-  background:rgba(15,23,42,0.9);
-  backdrop-filter:blur(10px);
-  border-radius:22px;
-  display:flex;
-  justify-content:space-around;
-  align-items:center;
-  box-shadow:0 10px 40px rgba(0,0,0,.6);
-}
-
-.bottomnav button{
-  background:none;
-  border:none;
-  font-size:12px;
-  font-weight:600;
-  color:#94a3b8;
-}
-
-.bottomnav button.active{
-  color:#3b82f6;
-  font-weight:800;
-}
-
-.subText{
-  font-size:13px;
-  color:#94a3b8;
-}
-
-/* ✅ Better document item styling (looks like inside same card) */
-.docItem{
-border:1px solid #e5e7eb;
-padding:12px;
-border-radius:14px;
-margin-bottom:10px;
-background:#fafafa;
-}
-.docTop{
-display:flex;
-justify-content:space-between;
-align-items:center;
-gap:10px;
-}
-</style>  </head>  <body>  <!-- FEEDS -->  <div id="feedsPage" class="page" style="display:block;">
-
-  <h2>📰 Feeds</h2>    
-  <div class="card subText">Feeds will be here.</div>    
-</div>  <!-- FRIENDS -->  <div id="friendsPage" class="page">    
-  <h2>👥 Friends</h2>    
-  <div class="card subText">Friends will be here.</div>    
-</div>  <!-- MESSAGES -->  <div id="messagesPage" class="page">    
-  <h2>💬 Messages</h2>    
-  <div class="card subText">Messages will be here.</div>    
-</div>  <!-- PROFILE -->  <div id="profilePage" class="page">    <div style="display:flex;justify-content:space-between;align-items:center;">    
-    <h2 style="margin:0;">👤 My Profile</h2>    
-    <button class="danger" onclick="logout()">Logout</button>    
-  </div>    <div class="card" style="text-align:center;">  <img id="profilePhoto"    
-     src="https://i.ibb.co/2kRZ7Z6/avatar.png"    
-     style="width:120px;height:120px;border-radius:50%;object-fit:cover;border:4px solid #e5e7eb;">    <br><br>
-
-<input type="file" id="photoInput" accept="image/*" style="display:none">    <button class="primary" onclick="document.getElementById('photoInput').click()">    
-  Upload Photo    
-</button>    <br><br>
-
-<div style="font-size:24px;font-weight:900;margin-top:10px;" id="profileName"></div>    
-<div style="font-size:16px;color:#6b7280;margin-top:4px;" id="profileRank"></div>    </div>    <!-- ✅ Professional Information with Show/Hide toggle -->    <div class="card">    
-    <div style="display:flex;justify-content:space-between;align-items:center;">    
-      <div style="font-weight:900;">Professional Information</div>    
-      <button class="light" onclick="toggleInfo()" id="infoBtn">Show</button>    
-    </div>  <!-- ✅ hidden by default -->    
-<div id="infoSection" style="display:none; margin-top:12px;">      <div class="subText">Email</div>    
-  <div id="profileEmail"></div>      <div class="subText" style="margin-top:10px;">Company</div>    
-  <div id="profileCompany"></div>      <div class="subText" style="margin-top:10px;">Vessel</div>    
-  <div id="profileVessel"></div>      <div class="subText" style="margin-top:10px;">Experience</div>    
-  <div id="profileExperience"></div>      <div class="subText" style="margin-top:10px;">Phone</div>    
-  <div id="profilePhone"></div>      <div class="subText" style="margin-top:10px;">Address</div>    
-  <div id="profileAddress"></div>    </div>    </div>    <!-- EDIT PROFILE -->    <div class="card">    
-    <button class="primary" onclick="toggleEdit()">Edit Profile</button>  <div id="editSection" style="display:none;margin-top:20px;">    
-  <label>Full Name</label>    
-  <input id="nameInput">    <label>Rank</label>
-<input id="rankInput">
-
-<label>Company</label>
-<input id="companyInput">
-
-<label>Vessel</label>
-<input id="vesselInput">
-
-<label>Experience</label>
-<input id="experienceInput">
-
-<label>Phone</label>
-<input id="phoneInput">
-
-<label>Address</label>
-<input id="addressInput">
-
-  <div class="row">    
-    <button class="primary" onclick="saveProfile()">Save</button>    
-    <button class="light" onclick="toggleEdit()">Cancel</button>    
-  </div>    
-</div>    </div>   <!-- DOCUMENTS (FORM CARD ONLY) -->  <div class="card">    
-  <div style="display:flex;justify-content:space-between;align-items:center;">    
-    <div style="font-weight:900;">📄 My Documents</div>    
-    <button class="primary" onclick="toggleDocForm()">Add</button>  
-  </div>    <div id="docFormSection" style="display:none;margin-top:20px;">    
-    <label>Document Type</label>    
-    <input id="docTypeInput">  <label>Document Number</label>    
-<input id="docNumberInput">    <label>Issue Date</label>
-<input type="date" id="docIssueInput">
-
-<label>Expiry Date</label>
-<input type="date" id="docExpiryInput">
-
-<div class="row">    
-  <button class="primary" onclick="addDocument()">Save</button>    
-  <button class="light" onclick="toggleDocForm()">Cancel</button>   
-</div>    </div>    
-</div>  <!-- ✅ SAVED DOCUMENTS WILL APPEAR AS NEW CARDS BELOW --><div id="documentsList"></div>  </div>  <!-- NAV -->  <div class="bottomnav">    
-  <button class="active" onclick="showPage('feedsPage',this)">📰 Feeds</button>    
-  <button onclick="showPage('friendsPage',this)">👥 Friends</button>    
-  <button onclick="showPage('messagesPage',this)">💬 Messages</button>    
-  <button onclick="showPage('profilePage',this)">👤 Profile</button>    
-</div>  <script type="module">    
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";    
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";    
-import { getFirestore, doc, getDoc, setDoc, collection, addDoc, query, where, onSnapshot, deleteDoc }    
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";    const firebaseConfig={
+const firebaseConfig={
 apiKey:"AIzaSyCNlodsmEHrSXxgH0gTOcx4cAXwG8qmG9w",
 authDomain:"seaconnect-d2baa.firebaseapp.com",
 projectId:"seaconnect-d2baa"
@@ -330,234 +33,138 @@ const auth=getAuth(app);
 const db=getFirestore(app);
 
 let currentUID=null;
-let currentEmail=null;
+let currentName="Crew";
 
-const IMGBB_KEY="5b417e8de4a883f7425eeda12dc38f06";
-
-window.showPage=function(id,btn){
-document.querySelectorAll(".page").forEach(p=>p.style.display="none");
-document.querySelectorAll(".bottomnav button").forEach(b=>b.classList.remove("active"));
-const page=document.getElementById(id);
-if(page) page.style.display="block";
-if(btn) btn.classList.add("active");
-};
-
-/* ✅ Toggle for Professional Information */
-window.toggleInfo=function(){
-const sec=document.getElementById("infoSection");
-const btn=document.getElementById("infoBtn");
-const isHidden = (sec.style.display==="none" || sec.style.display==="");
-sec.style.display = isHidden ? "block" : "none";
-btn.innerText = isHidden ? "Hide" : "Show";
-};
 
 onAuthStateChanged(auth,async(user)=>{
-if(!user){ location.href="index.html"; return; }
+
+if(!user){
+alert("Login first");
+return;
+}
 
 currentUID=user.uid;
-currentEmail=user.email.toLowerCase();
 
 const ref=doc(db,"users",currentUID);
 const snap=await getDoc(ref);
 
-if(!snap.exists()){
-await setDoc(ref,{
-email:currentEmail,
-name:user.email.split("@")[0],
-rank:"",
-company:"",
-vessel:"",
-experience:"",
-phone:"",
-address:"",
-photo:"",
+if(snap.exists()){
+currentName=snap.data().name || "Crew";
+}
+
+loadFeeds();
+
+});
+
+
+/* CREATE POST */
+
+window.createFeed=async function(){
+
+const text=document.getElementById("feedInput").value.trim();
+const photo=document.getElementById("feedPhoto").files[0];
+
+let photoURL="";
+
+if(photo){
+const formData=new FormData();
+formData.append("image",photo);
+
+const res=await fetch(
+"https://api.imgbb.com/1/upload?key=5b417e8de4a883f7425eeda12dc38f06",
+{method:"POST",body:formData});
+
+const data=await res.json();
+photoURL=data.data.url;
+}
+
+await addDoc(collection(db,"feeds"),{
+
+uid:currentUID,
+name:currentName,
+text:text,
+photo:photoURL,
+likes:[],
 createdAt:Date.now()
-});
-}
 
-loadProfile();
-loadDocuments();
 });
 
-/* PROFILE */
-async function loadProfile(){
-const snap=await getDoc(doc(db,"users",currentUID));
-const d=snap.data()||{};
-
-if(d.photo){
-document.getElementById("profilePhoto").src=d.photo;
-}
-
-profileName.innerText=d.name||"";
-profileRank.innerText=d.rank||"";
-
-profileEmail.innerText=d.email||currentEmail;
-profileCompany.innerText=d.company||"-";
-profileVessel.innerText=d.vessel||"-";
-profileExperience.innerText=d.experience||"-";
-profilePhone.innerText=d.phone||"-";
-profileAddress.innerText=d.address||"-";
-
-nameInput.value=d.name||"";
-rankInput.value=d.rank||"";
-companyInput.value=d.company||"";
-vesselInput.value=d.vessel||"";
-experienceInput.value=d.experience||"";
-phoneInput.value=d.phone||"";
-addressInput.value=d.address||"";
-}
-
-window.toggleEdit=function(){
-const section=document.getElementById("editSection");
-section.style.display = (section.style.display==="none") ? "block" : "none";
-};
-
-/* ✅ Profile save with alerts */
-window.saveProfile=async function(){
-try{
-await setDoc(doc(db,"users",currentUID),{
-email:currentEmail,
-name:nameInput.value,
-rank:rankInput.value,
-company:companyInput.value,
-vessel:vesselInput.value,
-experience:experienceInput.value,
-phone:phoneInput.value,
-address:addressInput.value,
-updatedAt:Date.now()
-},{merge:true});
-
-await loadProfile();    
-toggleEdit();    
-alert("✅ Profile saved!");
-
-}catch(e){
-console.error("saveProfile error:", e);
-alert("❌ Profile save failed");
-}
-};
-
-/* DOCUMENTS */
-window.toggleDocForm=function(){
-
-const form = document.getElementById("docFormSection");
-
-if(form.style.display==="none" || form.style.display===""){
-form.style.display="block";
-}else{
-form.style.display="none";
-}
+document.getElementById("feedInput").value="";
+document.getElementById("feedPhoto").value="";
 
 };
-/* ✅ Document save with alerts */
 
-window.addDocument=async function(){
-try{
 
-if(!currentUID) return alert("Please wait... logging in");    
+/* LOAD FEEDS */
 
-const type=docTypeInput.value.trim();    
-if(!type) return alert("Enter document type");    
-await addDoc(collection(db,"documents"),{    
-  uid:currentUID,    
-  type,    
-  number:docNumberInput.value,    
-  issue:docIssueInput.value,    
-  expiry:docExpiryInput.value,    
-  createdAt:Date.now()    
-});    
+function loadFeeds(){
 
-docTypeInput.value="";    
-docNumberInput.value="";    
-docIssueInput.value="";    
-docExpiryInput.value="";    
-hideDocForm();    
-alert("✅ Document saved!");
-
-}catch(e){
-console.error("addDocument error:", e);
-alert("❌ Document save failed");
-}
-};
-
-function loadDocuments(){
-
-if(!currentUID) return;
-
-const list = document.getElementById("documentsList");
-
-const q = query(
-collection(db,"documents"),
-where("uid","==",currentUID)
+const q=query(
+collection(db,"feeds"),
+orderBy("createdAt","desc")
 );
 
 onSnapshot(q,(snap)=>{
 
-list.innerHTML="";    
+const list=document.getElementById("feedsList");
+list.innerHTML="";
 
-if(snap.empty){    
-  list.innerHTML=`<div class="subText">No documents yet.</div>`;    
-  return;    
-}    
+snap.forEach(docSnap=>{
 
-snap.forEach(docSnap=>{    
+const d=docSnap.data();
+const id=docSnap.id;
 
-  const d = docSnap.data();    
-  const id = docSnap.id;    
+const liked=d.likes?.includes(currentUID);
 
-  let status="";    
-  let color="#111";    
+list.innerHTML+=`
 
-  if(d.expiry){    
-    const diff=Math.ceil((new Date(d.expiry)-new Date())/(1000*60*60*24));    
+<div class="card">
 
-    if(diff<0){    
-      status="❌ Expired";    
-      color="#ef4444";    
-    }    
-    else if(diff<=30){    
-      status=`⚠️ ${diff} days left`;    
-      color="#f59e0b";    
-    }    
-    else{    
-      status=`✅ ${diff} days left`;    
-      color="#16a34a";    
-    }    
-  }    
+<b>${d.name}</b>
 
-  list.innerHTML += `    
+<div style="margin-top:6px">
+${d.text || ""}
+</div>
 
-  <div class="card">    
+${d.photo ? `<img src="${d.photo}" class="feedPhoto">` : ""}
 
-    <div style="display:flex;justify-content:space-between;align-items:center;">    
+<div style="margin-top:10px">
 
-      <div>    
-        <div style="font-weight:900;font-size:18px;">${d.type}</div>    
+<button onclick="toggleLike('${id}')">
+${liked ? "💙 Liked" : "👍 Like"}
+</button>
 
-        <div class="subText">Document Number</div>    
-        <div>${d.number || "-"}</div>    
+<span style="font-size:13px">
+${d.likes?.length || 0} likes
+</span>
 
-        <div class="subText" style="margin-top:8px;">Issue Date</div>    
-        <div>${d.issue || "-"}</div>    
+${d.uid===currentUID ? `
+<button class="danger"
+onclick="deletePost('${id}')">
+Delete
+</button>
+` : ""}
 
-        <div class="subText" style="margin-top:8px;">Expiry Date</div>    
-        <div>    
-          ${d.expiry || "-"}    
-          <span style="color:${color};font-weight:800;">    
-            ${status}    
-          </span>    
-        </div>    
-      </div>    
+</div>
 
-      <button class="danger" onclick="deleteDocument('${id}')">    
-        Delete    
-      </button>    
+<div style="margin-top:10px">
 
-    </div>    
+<input id="comment-${id}"
+placeholder="Write comment">
 
-  </div>    
+<button onclick="sendComment('${id}')">
+Send
+</button>
 
-  `;    
+</div>
+
+<div id="comments-${id}"></div>
+
+</div>
+
+`;
+
+loadComments(id);
 
 });
 
@@ -565,49 +172,95 @@ snap.forEach(docSnap=>{
 
 }
 
-window.deleteDocument=async function(id){
-await deleteDoc(doc(db,"documents",id));
+
+/* LIKE SYSTEM */
+
+window.toggleLike=async function(feedId){
+
+const ref=doc(db,"feeds",feedId);
+const snap=await getDoc(ref);
+
+let likes=snap.data().likes || [];
+
+if(likes.includes(currentUID)){
+likes=likes.filter(x=>x!==currentUID);
+}else{
+likes.push(currentUID);
+}
+
+await updateDoc(ref,{likes:likes});
+
 };
 
-/* ✅ Photo upload with alerts */
-document.getElementById("photoInput").addEventListener("change",async function(){
-try{
-const file=this.files[0];
-if(!file) return;
 
-const formData=new FormData();    
-formData.append("image",file);    
+/* DELETE POST */
 
-const res=await fetch("https://api.imgbb.com/1/upload?key="+IMGBB_KEY,{    
-  method:"POST",    
-  body:formData    
-});    
+window.deletePost=async function(id){
 
-const data=await res.json();    
-if(!data || !data.data || !data.data.url) throw new Error("ImgBB upload failed");    
-
-const imageUrl=data.data.url;    
-document.getElementById("profilePhoto").src=imageUrl;    
-
-await setDoc(doc(db,"users",currentUID),{    
-  photo:imageUrl,    
-  updatedAt:Date.now()    
-},{merge:true});    
-
-alert("✅ Photo saved!");    
-this.value="";
-
-}catch(e){
-console.error("photo upload error:", e);
-alert("❌ Photo upload failed");
+if(confirm("Delete this post?")){
+await deleteDoc(doc(db,"feeds",id));
 }
+
+};
+
+
+/* SEND COMMENT */
+
+window.sendComment=async function(feedId){
+
+const input=document.getElementById("comment-"+feedId);
+const text=input.value.trim();
+
+if(!text)return;
+
+await addDoc(collection(db,"comments"),{
+
+feedId:feedId,
+uid:currentUID,
+name:currentName,
+text:text,
+createdAt:Date.now()
+
 });
 
-window.logout=async function(){
-if(!confirm("Logout?")) return;
-await signOut(auth);
-location.href="index.html";
-};
-</script>  </body>
+input.value="";
 
-</html>   
+};
+
+
+/* LOAD COMMENTS */
+
+function loadComments(feedId){
+
+const q=query(
+collection(db,"comments"),
+orderBy("createdAt","asc")
+);
+
+onSnapshot(q,(snap)=>{
+
+const box=document.getElementById("comments-"+feedId);
+if(!box)return;
+
+box.innerHTML="";
+
+snap.forEach(docSnap=>{
+
+const d=docSnap.data();
+
+if(d.feedId===feedId){
+
+box.innerHTML+=`
+<div class="comment">
+<b>${d.name}</b> ${d.text}
+</div>
+`;
+
+}
+
+});
+
+});
+
+}
+

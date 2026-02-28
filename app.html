@@ -119,25 +119,31 @@ box-shadow:0 0 30px rgba(59,130,246,.5);
 
 <body>
 
-<!-- FEEDS -->
+<!-- FEEDS PLACEHOLDER -->
+
 <div id="feedsPage" class="page" style="display:block;">
 <h2>📰 Feeds</h2>
-<div class="card subText">Feeds will be here.</div>
+<div class="card subText">
+Feeds are in the main feed page.
+</div>
 </div>
 
 <!-- FRIENDS -->
+
 <div id="friendsPage" class="page">
 <h2>👥 Friends</h2>
 <div class="card subText">Friends will be here.</div>
 </div>
 
 <!-- MESSAGES -->
+
 <div id="messagesPage" class="page">
 <h2>💬 Messages</h2>
 <div class="card subText">Messages will be here.</div>
 </div>
 
 <!-- PROFILE -->
+
 <div id="profilePage" class="page">
 
 <div style="display:flex;justify-content:space-between;">
@@ -280,13 +286,26 @@ Edit Profile
 
 </div>
 
-<!-- NAV -->
+<!-- NAVIGATION -->
 
 <div class="bottomnav">
-<button class="active" onclick="showPage('feedsPage',this)">📰 Feeds</button>
-<button onclick="showPage('friendsPage',this)">👥 Friends</button>
-<button onclick="showPage('messagesPage',this)">💬 Messages</button>
-<button onclick="showPage('profilePage',this)">👤 Profile</button>
+
+<button onclick="location.href='feeds.html'">
+📰 Feeds
+</button>
+
+<button onclick="showPage('friendsPage',this)">
+👥 Friends
+</button>
+
+<button onclick="showPage('messagesPage',this)">
+💬 Messages
+</button>
+
+<button class="active" onclick="showPage('profilePage',this)">
+👤 Profile
+</button>
+
 </div>
 
 <script type="module">
@@ -566,8 +585,6 @@ document.getElementById("photoInput")
 const file=this.files[0];
 if(!file) return;
 
-/* show photo instantly */
-
 const reader=new FileReader();
 
 reader.onload=function(e){
@@ -575,8 +592,6 @@ profilePhoto.src=e.target.result;
 };
 
 reader.readAsDataURL(file);
-
-/* upload to imgbb */
 
 const formData=new FormData();
 formData.append("image",file);
@@ -591,8 +606,6 @@ const res=await fetch(
 const data=await res.json();
 
 const imageUrl=data.data.url;
-
-/* save real url to firebase */
 
 await setDoc(doc(db,"users",currentUID),{
 photo:imageUrl

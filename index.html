@@ -1,0 +1,99 @@
+SeaConnect
+Login / Sign Up
+LoginSign Up
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCNlodsmEHrSXxgH0gTOcx4cAXwG8qmG9w",
+  authDomain: "seaconnect-d2baa.firebaseapp.com",
+  projectId: "seaconnect-d2baa",
+  storageBucket: "seaconnect-d2baa.appspot.com",
+  messagingSenderId: "402383997556",
+  appId: "1:402383997556:web:d4b5894b25545ecaef9f21"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+function setMsg(t){ document.getElementById("msg").innerText = t || ""; }
+function safeNameFromEmail(e){
+  const s = (e || "").toLowerCase();
+  return s.includes("@") ? s.split("@")[0] : "User";
+}
+
+// ✅ Make sure users/{uid} exists (if you deleted it before)
+async function ensureUserDoc(user){
+  const ref = doc(db,"users",user.uid);
+  const snap = await getDoc(ref);
+
+  if(!snap.exists()){
+    await setDoc(ref,{
+      name: safeNameFromEmail(user.email),
+      email: (user.email||"").toLowerCase(),
+      avatar: "😀",
+      createdAt: Date.now()
+    });
+  }else{
+    // patch missing fields
+    const data = snap.data() || {};
+    const patch = {};
+    if(!data.name) patch.name = safeNameFromEmail(user.email);
+    if(!data.email) patch.email = (user.email||"").toLowerCase();
+    if(!data.avatar) patch.avatar = "😀";
+    if(Object.keys(patch).length){
+      await setDoc(ref, patch, {merge:true});
+    }
+  }
+}
+
+/* ✅ AUTO LOGIN → GO TO app.html (NOT home.html) */
+onAuthStateChanged(auth, async (user)=>{
+  if(user){
+    try{ await ensureUserDoc(user); }catch(e){ console.log(e); }
+    location.replace("app.html#home");
+  }
+});
+
+window.login = async ()=>{
+  try{
+    setMsg("Logging in...");
+    await signInWithEmailAndPassword(auth,email.value,password.value);
+    // redirect handled by onAuthStateChanged
+  }catch(e){
+    setMsg("");
+    alert(e.message);
+  }
+};
+
+window.signup = async ()=>{
+  try{
+    setMsg("Creating account...");
+    const cred = await createUserWithEmailAndPassword(auth,email.value,password.value);
+
+    await setDoc(doc(db,"users",cred.user.uid),{
+      name: safeNameFromEmail(cred.user.email),
+      email: (cred.user.email||"").toLowerCase(),
+      avatar:"😀",
+      createdAt: Date.now()
+    });
+
+    setMsg("Account created ✅");
+    // redirect handled by onAuthStateChanged
+  }catch(e){
+    setMsg("");
+    alert(e.message);
+  }
+};

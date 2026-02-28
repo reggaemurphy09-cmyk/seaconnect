@@ -263,6 +263,8 @@ createdAt:Date.now()
 
 document.getElementById("feedInput").value="";
 document.getElementById("feedPhoto").value="";
+  document.getElementById("previewPhoto").style.display="none";
+document.getElementById("previewPhoto").src="";
 document.getElementById("previewPhoto").style.display="none";
 
 setPostMsg("✅ Posted!");
@@ -294,14 +296,20 @@ const id=docSnap.id;
 const likesArr=d.likes||[];
 const liked=likesArr.includes(currentUID);
 
-feedsList.innerHTML+=`
+<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
 
-<div class="card">
+<div style="display:flex;gap:10px;align-items:center;">
+<img src="${d.photoProfile || 'https://i.ibb.co/2kRZ7Z6/avatar.png'}"
+style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
 
+<div>
 <div style="font-weight:900">${d.name}</div>
-
 <div class="subText">${d.email}</div>
+</div>
 
+</div>
+
+</div>
 <div style="margin-top:10px">${d.text||""}</div>
 
 ${d.photo?`<img src="${d.photo}" class="feedPhoto">`:""}

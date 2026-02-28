@@ -48,7 +48,6 @@ border:none;
 border-radius:14px;
 font-weight:700;
 cursor:pointer;
-transition:all .2s ease;
 }
 
 .primary{
@@ -72,14 +71,24 @@ gap:10px;
 margin-top:12px;
 }
 
-.row > button{
-flex:1;
-}
-
 .subText{
 font-size:13px;
 color:#94a3b8;
 }
+
+/* ONLINE RING */
+
+.profileRing{
+display:inline-block;
+padding:3px;
+border-radius:50%;
+}
+
+.profileRing.online{
+box-shadow:0 0 0 3px #22c55e;
+}
+
+/* NAV */
 
 .bottomnav{
 position:fixed;
@@ -111,7 +120,11 @@ font-weight:800;
 }
 
 #profilePhoto{
-box-shadow:0 0 30px rgba(59,130,246,.5);
+width:120px;
+height:120px;
+border-radius:50%;
+object-fit:cover;
+border:4px solid #e5e7eb;
 }
 
 </style>
@@ -119,30 +132,7 @@ box-shadow:0 0 30px rgba(59,130,246,.5);
 
 <body>
 
-<!-- FEEDS PLACEHOLDER -->
-
-<div id="feedsPage" class="page">
-<h2>📰 Feeds</h2>
-<div class="card subText">
-Feeds are in the main feed page.
-</div>
-</div>
-
-<!-- FRIENDS -->
-
-<div id="friendsPage" class="page">
-<h2>👥 Friends</h2>
-<div class="card subText">Friends will be here.</div>
-</div>
-
-<!-- MESSAGES -->
-
-<div id="messagesPage" class="page">
-<h2>💬 Messages</h2>
-<div class="card subText">Messages will be here.</div>
-</div>
-
-<!-- PROFILE -->
+<!-- PROFILE PAGE -->
 
 <div id="profilePage" class="page" style="display:block;">
 
@@ -153,9 +143,12 @@ Feeds are in the main feed page.
 
 <div class="card" style="text-align:center">
 
+<div id="profileRing" class="profileRing">
+
 <img id="profilePhoto"
-src="https://i.ibb.co/2kRZ7Z6/avatar.png"
-style="width:120px;height:120px;border-radius:50%;object-fit:cover;border:4px solid #e5e7eb;">
+src="https://i.ibb.co/2kRZ7Z6/avatar.png">
+
+</div>
 
 <br><br>
 
@@ -176,114 +169,6 @@ style="color:#6b7280"></div>
 
 </div>
 
-<!-- PROFESSIONAL INFO -->
-
-<div class="card">
-
-<div style="display:flex;justify-content:space-between;">
-<div style="font-weight:900">Professional Information</div>
-
-<button class="light" onclick="toggleInfo()" id="infoBtn">
-Show
-</button>
-</div>
-
-<div id="infoSection" style="display:none;margin-top:12px">
-
-<div class="subText">Email</div>
-<div id="profileEmail"></div>
-
-<div class="subText">Company</div>
-<div id="profileCompany"></div>
-
-<div class="subText">Vessel</div>
-<div id="profileVessel"></div>
-
-<div class="subText">Experience</div>
-<div id="profileExperience"></div>
-
-<div class="subText">Phone</div>
-<div id="profilePhone"></div>
-
-<div class="subText">Address</div>
-<div id="profileAddress"></div>
-
-</div>
-</div>
-
-<!-- EDIT PROFILE -->
-
-<div class="card">
-
-<button class="primary" onclick="toggleEdit()">
-Edit Profile
-</button>
-
-<div id="editSection" style="display:none;margin-top:20px">
-
-<label>Full Name</label>
-<input id="nameInput">
-
-<label>Rank</label>
-<input id="rankInput">
-
-<label>Company</label>
-<input id="companyInput">
-
-<label>Vessel</label>
-<input id="vesselInput">
-
-<label>Experience</label>
-<input id="experienceInput">
-
-<label>Phone</label>
-<input id="phoneInput">
-
-<label>Address</label>
-<input id="addressInput">
-
-<div class="row">
-<button class="primary" onclick="saveProfile()">Save</button>
-<button class="light" onclick="toggleEdit()">Cancel</button>
-</div>
-
-</div>
-</div>
-
-<!-- DOCUMENTS -->
-
-<div class="card">
-
-<div style="display:flex;justify-content:space-between;">
-<div style="font-weight:900">📄 My Documents</div>
-<button class="primary" onclick="toggleDocForm()">Add</button>
-</div>
-
-<div id="docFormSection" style="display:none;margin-top:20px">
-
-<label>Document Type</label>
-<input id="docTypeInput">
-
-<label>Document Number</label>
-<input id="docNumberInput">
-
-<label>Issue Date</label>
-<input type="date" id="docIssueInput">
-
-<label>Expiry Date</label>
-<input type="date" id="docExpiryInput">
-
-<div class="row">
-<button class="primary" onclick="addDocument()">Save</button>
-<button class="light" onclick="toggleDocForm()">Cancel</button>
-</div>
-
-</div>
-
-</div>
-
-<div id="documentsList"></div>
-
 </div>
 
 <!-- NAVIGATION -->
@@ -294,15 +179,15 @@ Edit Profile
 📰 Feeds
 </button>
 
-<button onclick="showPage('friendsPage',this)">
+<button>
 👥 Friends
 </button>
 
-<button onclick="showPage('messagesPage',this)">
+<button>
 💬 Messages
 </button>
 
-<button class="active" onclick="showPage('profilePage',this)">
+<button class="active">
 👤 Profile
 </button>
 
@@ -326,12 +211,7 @@ getFirestore,
 doc,
 getDoc,
 setDoc,
-collection,
-addDoc,
-query,
-where,
-onSnapshot,
-deleteDoc
+updateDoc
 }
 from
 "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -347,55 +227,8 @@ const auth=getAuth(app);
 const db=getFirestore(app);
 
 let currentUID=null;
-let currentEmail=null;
 
 const IMGBB_KEY="5b417e8de4a883f7425eeda12dc38f06";
-
-window.showPage=function(id,btn){
-
-document.querySelectorAll(".page")
-.forEach(p=>p.style.display="none");
-
-document.querySelectorAll(".bottomnav button")
-.forEach(b=>b.classList.remove("active"));
-
-document.getElementById(id).style.display="block";
-
-btn.classList.add("active");
-
-};
-
-window.toggleInfo=function(){
-
-const sec=document.getElementById("infoSection");
-const btn=document.getElementById("infoBtn");
-
-const show=sec.style.display==="none";
-
-sec.style.display=show?"block":"none";
-btn.innerText=show?"Hide":"Show";
-
-};
-
-window.toggleEdit=function(){
-
-const s=document.getElementById("editSection");
-
-s.style.display=
-(s.style.display==="none"||s.style.display==="")?
-"block":"none";
-
-};
-
-window.toggleDocForm=function(){
-
-const s=document.getElementById("docFormSection");
-
-s.style.display=
-(s.style.display==="none"||s.style.display==="")?
-"block":"none";
-
-};
 
 onAuthStateChanged(auth,async(user)=>{
 
@@ -405,11 +238,24 @@ return;
 }
 
 currentUID=user.uid;
-currentEmail=user.email.toLowerCase();
+
+setOnline(true);
 
 loadProfile();
-loadDocuments();
 
+});
+
+async function setOnline(state){
+
+await updateDoc(doc(db,"users",currentUID),{
+online:state,
+lastActive:Date.now()
+});
+
+}
+
+window.addEventListener("beforeunload",()=>{
+setOnline(false);
 });
 
 async function loadProfile(){
@@ -425,159 +271,17 @@ profilePhoto.src=d.photo;
 profileName.innerText=d.name||"";
 profileRank.innerText=d.rank||"";
 
-profileEmail.innerText=d.email||"";
-profileCompany.innerText=d.company||"-";
-profileVessel.innerText=d.vessel||"-";
-profileExperience.innerText=d.experience||"-";
-profilePhone.innerText=d.phone||"-";
-profileAddress.innerText=d.address||"-";
+/* ONLINE RING */
 
-nameInput.value=d.name||"";
-rankInput.value=d.rank||"";
-companyInput.value=d.company||"";
-vesselInput.value=d.vessel||"";
-experienceInput.value=d.experience||"";
-phoneInput.value=d.phone||"";
-addressInput.value=d.address||"";
+const ring=document.getElementById("profileRing");
 
-}
-
-window.saveProfile=async function(){
-
-await setDoc(doc(db,"users",currentUID),{
-
-email:currentEmail,
-name:nameInput.value,
-rank:rankInput.value,
-company:companyInput.value,
-vessel:vesselInput.value,
-experience:experienceInput.value,
-phone:phoneInput.value,
-address:addressInput.value
-
-},{merge:true});
-
-alert("Profile saved");
-
-toggleEdit();
-
-loadProfile();
-
-};
-
-window.addDocument=async function(){
-
-const type=docTypeInput.value.trim();
-
-if(!type)return alert("Enter document type");
-
-await addDoc(collection(db,"documents"),{
-
-uid:currentUID,
-type:type,
-number:docNumberInput.value,
-issue:docIssueInput.value,
-expiry:docExpiryInput.value,
-createdAt:Date.now()
-
-});
-
-docTypeInput.value="";
-docNumberInput.value="";
-docIssueInput.value="";
-docExpiryInput.value="";
-
-toggleDocForm();
-
-};
-
-function loadDocuments(){
-
-const q=query(
-collection(db,"documents"),
-where("uid","==",currentUID)
-);
-
-onSnapshot(q,(snap)=>{
-
-documentsList.innerHTML="";
-
-snap.forEach(docSnap=>{
-
-const d=docSnap.data();
-const id=docSnap.id;
-
-let status="";
-let color="#111";
-
-if(d.expiry){
-
-const diff=Math.ceil(
-(new Date(d.expiry)-new Date())
-/(1000*60*60*24)
-);
-
-if(diff<0){
-
-status="❌ Expired";
-color="#ef4444";
-
-}
-else if(diff<=30){
-
-status="⚠️ "+diff+" days left";
-color="#f59e0b";
-
-}
-else{
-
-status="✅ "+diff+" days left";
-color="#16a34a";
-
+if(d.online){
+ring.classList.add("online");
+}else{
+ring.classList.remove("online");
 }
 
 }
-
-documentsList.innerHTML+=`
-
-<div class="card">
-
-<div style="font-weight:900">
-${d.type}
-</div>
-
-<div class="subText">Number</div>
-${d.number||"-"}
-
-<div class="subText">Expiry</div>
-${d.expiry||"-"}
-
-<span style="color:${color}">
-${status}
-</span>
-
-<br><br>
-
-<button class="danger"
-onclick="deleteDocument('${id}')">
-Delete
-</button>
-
-</div>
-
-`;
-
-});
-
-});
-
-}
-
-window.deleteDocument=async function(id){
-
-await deleteDoc(doc(db,"documents",id));
-
-};
 
 document.getElementById("photoInput")
 .addEventListener("change",async function(){
@@ -596,8 +300,6 @@ reader.readAsDataURL(file);
 const formData=new FormData();
 formData.append("image",file);
 
-try{
-
 const res=await fetch(
 "https://api.imgbb.com/1/upload?key="+IMGBB_KEY,
 {method:"POST",body:formData}
@@ -613,17 +315,12 @@ photo:imageUrl
 
 alert("Photo uploaded successfully");
 
-}catch(e){
-
-alert("Upload failed");
-
-}
-
 });
 
 window.logout=async function(){
 
 await signOut(auth);
+
 location.href="index.html";
 
 };

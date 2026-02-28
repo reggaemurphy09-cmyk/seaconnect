@@ -86,6 +86,8 @@ margin-top:6px;
 background:rgba(255,255,255,0.06);
 border-radius:12px;
 font-size:13px;
+display:flex;
+justify-content:space-between;
 }
 
 .topbar{
@@ -153,8 +155,6 @@ color:#94a3b8;
 <button class="danger" onclick="logout()">Logout</button>
 </div>
 
-<!-- CREATE POST -->
-
 <div class="card">
 
 <div style="font-weight:900;margin-bottom:8px;">Create Post</div>
@@ -167,7 +167,7 @@ color:#94a3b8;
 style="width:100%;margin-top:10px;border-radius:16px;display:none;">
 
 <div class="row">
-<button class="primary" onclick="createFeed()">Post</button>
+<button id="postBtn" class="primary" onclick="createFeed()">Post</button>
 </div>
 
 <div id="postMsg" class="subText"></div>
@@ -221,7 +221,7 @@ const IMGBB_KEY="5b417e8de4a883f7425eeda12dc38f06";
 
 let currentUID=null;
 let currentEmail="";
-let currentName="Crew";
+let isPosting=false;
 
 const feedsList=document.getElementById("feedsList");
 const who=document.getElementById("who");
@@ -229,11 +229,9 @@ const who=document.getElementById("who");
 onAuthStateChanged(auth,(user)=>{
 
 if(!user){
-
 document.getElementById("loginPage").style.display="block";
 document.getElementById("feedsPage").style.display="none";
 return;
-
 }
 
 document.getElementById("loginPage").style.display="none";
@@ -254,13 +252,9 @@ const email=document.getElementById("loginEmail").value;
 const password=document.getElementById("loginPassword").value;
 
 try{
-
 await signInWithEmailAndPassword(auth,email,password);
-
 }catch(e){
-
 alert(e.message);
-
 }
 
 }
@@ -271,41 +265,42 @@ const email=document.getElementById("loginEmail").value;
 const password=document.getElementById("loginPassword").value;
 
 try{
-
 await createUserWithEmailAndPassword(auth,email,password);
-
 alert("Account created. Now login.");
-
 }catch(e){
-
 alert(e.message);
-
 }
 
 }
 
 window.logout=async function(){
-
 await signOut(auth);
 location.reload();
-
 }
 
 window.createFeed = async function(){
 
-const btn = document.querySelector("button.primary");
-btn.disabled = true;
-btn.innerText = "Posting...";
+if(isPosting) return;
+
+const btn=document.getElementById("postBtn");
+const msg=document.getElementById("postMsg");
+
+isPosting=true;
+
+btn.disabled=true;
+btn.innerText="Posting...";
+msg.innerText="Uploading...";
 
 try{
 
-const text = document.getElementById("feedInput").value.trim();
-const file = document.getElementById("feedPhoto").files[0];
+const text=document.getElementById("feedInput").value.trim();
+const file=document.getElementById("feedPhoto").files[0];
 
 if(!text && !file){
 alert("Write something or choose a photo");
-btn.disabled = false;
-btn.innerText = "Post";
+btn.disabled=false;
+btn.innerText="Post";
+isPosting=false;
 return;
 }
 
@@ -313,22 +308,23 @@ let photoURL="";
 
 if(file){
 
-const formData = new FormData();
+const formData=new FormData();
 formData.append("image",file);
 
-const res = await fetch(
+const res=await fetch(
 "https://api.imgbb.com/1/upload?key="+IMGBB_KEY,
 {method:"POST",body:formData}
 );
 
-const data = await res.json();
+const data=await res.json();
 
 if(data.success){
-photoURL = data.data.url;
+photoURL=data.data.url;
 }else{
 alert("Photo upload failed");
-btn.disabled = false;
-btn.innerText = "Post";
+btn.disabled=false;
+btn.innerText="Post";
+isPosting=false;
 return;
 }
 
@@ -350,20 +346,27 @@ document.getElementById("feedInput").value="";
 document.getElementById("feedPhoto").value="";
 document.getElementById("previewPhoto").style.display="none";
 
-btn.disabled = false;
-btn.innerText = "Post";
+msg.innerText="✅ Posted";
+
+btn.disabled=false;
+btn.innerText="Post";
+isPosting=false;
+
+setTimeout(()=>msg.innerText="",2000);
 
 }catch(e){
 
 console.log(e);
 alert("Post failed");
 
-btn.disabled = false;
-btn.innerText = "Post";
+btn.disabled=false;
+btn.innerText="Post";
+isPosting=false;
 
 }
 
 };
+
 function loadFeeds(){
 
 const q=query(collection(db,"feeds"),orderBy("createdAt","desc"));
@@ -501,14 +504,35 @@ snap.forEach(docSnap=>{
 const d=docSnap.data();
 
 box.innerHTML+=`
+
 <div class="comment">
+
+<div>
 <b>${d.name}</b>: ${d.text}
 </div>
+
+${d.uid===currentUID?`
+<button class="danger"
+onclick="deleteComment('${docSnap.id}')">
+Delete
+</button>
+`:""}
+
+</div>
+
 `;
 
 });
 
 });
+
+}
+
+window.deleteComment=async function(id){
+
+if(confirm("Delete comment?")){
+await deleteDoc(doc(db,"comments",id));
+}
 
 }
 

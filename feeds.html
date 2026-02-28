@@ -116,6 +116,38 @@ font-size:13px;
 color:#94a3b8;
 }
 
+/* BOTTOM NAV */
+
+.bottomnav{
+position:fixed;
+bottom:15px;
+left:50%;
+transform:translateX(-50%);
+width:90%;
+height:65px;
+background:rgba(15,23,42,0.9);
+backdrop-filter:blur(10px);
+border-radius:22px;
+display:flex;
+justify-content:space-around;
+align-items:center;
+box-shadow:0 10px 40px rgba(0,0,0,.6);
+}
+
+.bottomnav button{
+background:none;
+border:none;
+font-size:12px;
+font-weight:600;
+color:#94a3b8;
+cursor:pointer;
+}
+
+.bottomnav button.active{
+color:#3b82f6;
+font-weight:800;
+}
+
 </style>
 </head>
 
@@ -130,7 +162,6 @@ color:#94a3b8;
 <h2>SeaConnect Login</h2>
 
 <input id="loginEmail" placeholder="Email">
-
 <input id="loginPassword" type="password" placeholder="Password">
 
 <div class="row">
@@ -175,6 +206,43 @@ style="width:100%;margin-top:10px;border-radius:16px;display:none;">
 </div>
 
 <div id="feedsList"></div>
+
+</div>
+
+<!-- FRIENDS PAGE -->
+
+<div id="friendsPage" class="page">
+<h2>👥 Friends</h2>
+<div class="card subText">Friends feature coming soon</div>
+</div>
+
+<!-- MESSAGES PAGE -->
+
+<div id="messagesPage" class="page">
+<h2>💬 Messages</h2>
+<div class="card subText">Messenger coming soon</div>
+</div>
+
+<!-- BOTTOM NAV -->
+
+<div class="bottomnav">
+
+<button class="active"
+onclick="showPage('feedsPage',this)">
+📰 Feeds
+</button>
+
+<button onclick="showPage('friendsPage',this)">
+👥 Friends
+</button>
+
+<button onclick="showPage('messagesPage',this)">
+💬 Messages
+</button>
+
+<button onclick="location.href='app.html'">
+👤 Profile
+</button>
 
 </div>
 
@@ -226,12 +294,32 @@ let isPosting=false;
 const feedsList=document.getElementById("feedsList");
 const who=document.getElementById("who");
 
+/* NAVIGATION */
+
+window.showPage=function(id,btn){
+
+document.querySelectorAll(".page")
+.forEach(p=>p.style.display="none");
+
+document.querySelectorAll(".bottomnav button")
+.forEach(b=>b.classList.remove("active"));
+
+document.getElementById(id).style.display="block";
+
+if(btn) btn.classList.add("active");
+
+};
+
+/* AUTH */
+
 onAuthStateChanged(auth,(user)=>{
 
 if(!user){
+
 document.getElementById("loginPage").style.display="block";
 document.getElementById("feedsPage").style.display="none";
 return;
+
 }
 
 document.getElementById("loginPage").style.display="none";
@@ -246,6 +334,8 @@ loadFeeds();
 
 });
 
+/* LOGIN */
+
 window.login=async function(){
 
 const email=document.getElementById("loginEmail").value;
@@ -258,6 +348,8 @@ alert(e.message);
 }
 
 }
+
+/* SIGNUP */
 
 window.signup=async function(){
 
@@ -273,10 +365,14 @@ alert(e.message);
 
 }
 
+/* LOGOUT */
+
 window.logout=async function(){
 await signOut(auth);
 location.reload();
 }
+
+/* CREATE POST */
 
 window.createFeed = async function(){
 
@@ -367,6 +463,8 @@ isPosting=false;
 
 };
 
+/* LOAD FEEDS */
+
 function loadFeeds(){
 
 const q=query(collection(db,"feeds"),orderBy("createdAt","desc"));
@@ -442,6 +540,8 @@ loadComments(id);
 
 }
 
+/* LIKE */
+
 window.toggleLike=async function(id){
 
 const ref=doc(db,"feeds",id);
@@ -459,6 +559,8 @@ await updateDoc(ref,{likes});
 
 }
 
+/* DELETE POST */
+
 window.deletePost=async function(id){
 
 if(confirm("Delete post?")){
@@ -466,6 +568,8 @@ await deleteDoc(doc(db,"feeds",id));
 }
 
 }
+
+/* COMMENTS */
 
 window.sendComment=async function(feedId){
 
@@ -535,6 +639,8 @@ await deleteDoc(doc(db,"comments",id));
 }
 
 }
+
+/* IMAGE PREVIEW */
 
 document.getElementById("feedPhoto").addEventListener("change",function(){
 

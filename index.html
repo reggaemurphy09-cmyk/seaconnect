@@ -1,99 +1,222 @@
-SeaConnect
-Login / Sign Up
-LoginSign Up
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SeaConnect Login</title>
+
+<style>
+
+body{
+margin:0;
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
+background:linear-gradient(180deg,#0f172a,#1e293b);
+color:white;
+display:flex;
+align-items:center;
+justify-content:center;
+height:100vh;
+}
+
+.card{
+background:rgba(255,255,255,0.05);
+padding:30px;
+border-radius:20px;
+width:320px;
+backdrop-filter:blur(12px);
+box-shadow:0 10px 30px rgba(0,0,0,.4);
+}
+
+h1{
+text-align:center;
+margin-bottom:20px;
+}
+
+input{
+width:100%;
+padding:12px;
+margin-top:10px;
+border-radius:12px;
+border:none;
+background:rgba(255,255,255,0.1);
+color:white;
+}
+
+button{
+width:100%;
+padding:12px;
+margin-top:12px;
+border:none;
+border-radius:12px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.login{
+background:#3b82f6;
+color:white;
+}
+
+.signup{
+background:#22c55e;
+color:white;
+}
+
+#msg{
+margin-top:10px;
+font-size:13px;
+color:#94a3b8;
+text-align:center;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+<h1>SeaConnect</h1>
+
+<input id="email" placeholder="Email">
+<input id="password" type="password" placeholder="Password">
+
+<button class="login" onclick="login()">Login</button>
+<button class="signup" onclick="signup()">Sign Up</button>
+
+<div id="msg"></div>
+
+</div>
+
+
+<script type="module">
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+
 import {
-  getAuth,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+getAuth,
+signInWithEmailAndPassword,
+createUserWithEmailAndPassword,
+onAuthStateChanged
+}
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
 import {
-  getFirestore,
-  doc,
-  setDoc,
-  getDoc
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+getFirestore,
+doc,
+setDoc,
+getDoc
+}
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCNlodsmEHrSXxgH0gTOcx4cAXwG8qmG9w",
-  authDomain: "seaconnect-d2baa.firebaseapp.com",
-  projectId: "seaconnect-d2baa",
-  storageBucket: "seaconnect-d2baa.appspot.com",
-  messagingSenderId: "402383997556",
-  appId: "1:402383997556:web:d4b5894b25545ecaef9f21"
+apiKey: "AIzaSyCNlodsmEHrSXxgH0gTOcx4cAXwG8qmG9w",
+authDomain: "seaconnect-d2baa.firebaseapp.com",
+projectId: "seaconnect-d2baa",
+storageBucket: "seaconnect-d2baa.appspot.com",
+messagingSenderId: "402383997556",
+appId: "1:402383997556:web:d4b5894b25545ecaef9f21"
 };
+
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-function setMsg(t){ document.getElementById("msg").innerText = t || ""; }
+const email = document.getElementById("email");
+const password = document.getElementById("password");
+
+function setMsg(t){
+document.getElementById("msg").innerText = t || "";
+}
+
 function safeNameFromEmail(e){
-  const s = (e || "").toLowerCase();
-  return s.includes("@") ? s.split("@")[0] : "User";
+const s=(e||"").toLowerCase();
+return s.includes("@") ? s.split("@")[0] : "User";
 }
 
-// ✅ Make sure users/{uid} exists (if you deleted it before)
+
 async function ensureUserDoc(user){
-  const ref = doc(db,"users",user.uid);
-  const snap = await getDoc(ref);
 
-  if(!snap.exists()){
-    await setDoc(ref,{
-      name: safeNameFromEmail(user.email),
-      email: (user.email||"").toLowerCase(),
-      avatar: "😀",
-      createdAt: Date.now()
-    });
-  }else{
-    // patch missing fields
-    const data = snap.data() || {};
-    const patch = {};
-    if(!data.name) patch.name = safeNameFromEmail(user.email);
-    if(!data.email) patch.email = (user.email||"").toLowerCase();
-    if(!data.avatar) patch.avatar = "😀";
-    if(Object.keys(patch).length){
-      await setDoc(ref, patch, {merge:true});
-    }
-  }
-}
+const ref = doc(db,"users",user.uid);
+const snap = await getDoc(ref);
 
-/* ✅ AUTO LOGIN → GO TO app.html (NOT home.html) */
-onAuthStateChanged(auth, async (user)=>{
-  if(user){
-    try{ await ensureUserDoc(user); }catch(e){ console.log(e); }
-    location.replace("app.html#home");
-  }
+if(!snap.exists()){
+
+await setDoc(ref,{
+name: safeNameFromEmail(user.email),
+email:(user.email||"").toLowerCase(),
+avatar:"😀",
+createdAt:Date.now()
 });
 
+}
+
+}
+
+
+onAuthStateChanged(auth, async (user)=>{
+
+if(user){
+
+await ensureUserDoc(user);
+
+location.replace("app.html");
+
+}
+
+});
+
+
 window.login = async ()=>{
-  try{
-    setMsg("Logging in...");
-    await signInWithEmailAndPassword(auth,email.value,password.value);
-    // redirect handled by onAuthStateChanged
-  }catch(e){
-    setMsg("");
-    alert(e.message);
-  }
+
+try{
+
+setMsg("Logging in...");
+
+await signInWithEmailAndPassword(
+auth,
+email.value,
+password.value
+);
+
+}catch(e){
+
+setMsg("");
+alert(e.message);
+
+}
+
 };
+
 
 window.signup = async ()=>{
-  try{
-    setMsg("Creating account...");
-    const cred = await createUserWithEmailAndPassword(auth,email.value,password.value);
 
-    await setDoc(doc(db,"users",cred.user.uid),{
-      name: safeNameFromEmail(cred.user.email),
-      email: (cred.user.email||"").toLowerCase(),
-      avatar:"😀",
-      createdAt: Date.now()
-    });
+try{
 
-    setMsg("Account created ✅");
-    // redirect handled by onAuthStateChanged
-  }catch(e){
-    setMsg("");
-    alert(e.message);
-  }
+setMsg("Creating account...");
+
+const cred = await createUserWithEmailAndPassword(
+auth,
+email.value,
+password.value
+);
+
+await ensureUserDoc(cred.user);
+
+setMsg("Account created ✅");
+
+}catch(e){
+
+setMsg("");
+alert(e.message);
+
+}
+
 };
+
+</script>
+
+</body>
+</html>

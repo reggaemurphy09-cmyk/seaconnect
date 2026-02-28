@@ -1,308 +1,393 @@
-import { initializeApp }
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-
-import { getAuth,onAuthStateChanged,signOut }
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
-import {
-getFirestore,
-collection,
-addDoc,
-query,
-orderBy,
-onSnapshot,
-doc,
-getDoc,
-deleteDoc,
-updateDoc,
-where
-}
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-const firebaseConfig={
-apiKey:"AIzaSyCNlodsmEHrSXxgH0gTOcx4cAXwG8qmG9w",
-authDomain:"seaconnect-d2baa.firebaseapp.com",
-projectId:"seaconnect-d2baa"
-};
-
-const app=initializeApp(firebaseConfig);
-const auth=getAuth(app);
-const db=getFirestore(app);
-
-let currentUID=null;
-let currentName="Crew";
-let currentEmail="";
-
-const IMGBB_KEY="5b417e8de4a883f7425eeda12dc38f06";
-
-
-/* PAGE NAV */
-
-window.showPage=function(id,btn){
-
-document.querySelectorAll(".page")
-.forEach(p=>p.style.display="none");
-
-document.querySelectorAll(".bottomnav button")
-.forEach(b=>b.classList.remove("active"));
-
-document.getElementById(id).style.display="block";
-
-if(btn) btn.classList.add("active");
-
-};
-
-
-/* AUTH */
-
-onAuthStateChanged(auth,async(user)=>{
-
-if(!user){
-alert("Login first");
-return;
-}
-
-currentUID=user.uid;
-currentEmail=user.email;
-
-profileEmail.innerText=currentEmail;
-
-const ref=doc(db,"users",currentUID);
-const snap=await getDoc(ref);
-
-if(snap.exists()){
-currentName=snap.data().name || currentEmail.split("@")[0];
-}
-
-profileName.innerText=currentName;
-
-loadFeeds();
-
-});
-
-
-/* CREATE POST */
-
-window.createFeed=async function(){
-
-const text=feedInput.value.trim();
-let photoURL="";
-
-const file=photoInput.files[0];
-
-if(file){
-
-const formData=new FormData();
-formData.append("image",file);
-
-const res=await fetch(
-"https://api.imgbb.com/1/upload?key="+IMGBB_KEY,
-{method:"POST",body:formData}
-);
-
-const data=await res.json();
-
-photoURL=data.data.url;
-
-}
-
-await addDoc(collection(db,"feeds"),{
-
-uid:currentUID,
-name:currentName,
-email:currentEmail,
-text:text,
-photo:photoURL,
-likes:[],
-createdAt:Date.now()
-
-});
-
-feedInput.value="";
-photoInput.value="";
-
-};
-
-
-/* LOAD FEEDS */
-
-function loadFeeds(){
-
-const q=query(
-collection(db,"feeds"),
-orderBy("createdAt","desc")
-);
-
-onSnapshot(q,(snap)=>{
-
-feedsList.innerHTML="";
-
-snap.forEach(docSnap=>{
-
-const d=docSnap.data();
-const id=docSnap.id;
-
-const date=new Date(d.createdAt).toLocaleString();
-
-const likeCount=d.likes ? d.likes.length : 0;
-
-feedsList.innerHTML+=`
-
-<div class="card">
-
-<div style="font-weight:900">
-${d.name}
-</div>
-
-<div style="margin-top:6px">
-${d.text || ""}
-</div>
-
-${d.photo ? `<img src="${d.photo}" class="feedPhoto">` : ""}
-
-<div class="subText">
-${date}
-</div>
-
-<div style="margin-top:10px">
-
-<button onclick="toggleLike('${id}')">
-👍 Like
-</button>
-
-<span class="subText">
-${likeCount} likes
-</span>
-
-</div>
-
-<div style="margin-top:10px">
-
-<input id="commentInput-${id}"
-placeholder="Write comment">
-
-<button onclick="sendComment('${id}')">
-Send
-</button>
-
-</div>
-
-<div id="comments-${id}"></div>
-
-${d.uid===currentUID ? `
-<button class="danger"
-onclick="deletePost('${id}')"
-style="margin-top:10px">
-Delete
-</button>
-` : ``}
-
-</div>
-
-`;
-
-loadComments(id);
-
-});
-
-});
-
-}
-
-
-/* LIKE SYSTEM */
-
-window.toggleLike=async function(feedId){
-
-const ref=doc(db,"feeds",feedId);
-const snap=await getDoc(ref);
-
-let likes=snap.data().likes || [];
-
-if(likes.includes(currentUID)){
-likes=likes.filter(x=>x!==currentUID);
-}else{
-likes.push(currentUID);
-}
-
-await updateDoc(ref,{likes:likes});
-
-};
-
-
-/* DELETE POST */
-
-window.deletePost=async function(id){
-
-if(confirm("Delete post?")){
-await deleteDoc(doc(db,"feeds",id));
-}
-
-};
-
-
-/* COMMENT */
-
-window.sendComment=async function(feedId){
-
-const input=document.getElementById("commentInput-"+feedId);
-const text=input.value.trim();
-
-if(!text) return;
-
-await addDoc(collection(db,"comments"),{
-
-feedId:feedId,
-name:currentName,
-text:text,
-createdAt:Date.now()
-
-});
-
-input.value="";
-
-};
-
-
-/* LOAD COMMENTS */
-
-function loadComments(feedId){
-
-const q=query(
-collection(db,"comments"),
-where("feedId","==",feedId),
-orderBy("createdAt","asc")
-);
-
-onSnapshot(q,(snap)=>{
-
-const list=document.getElementById("comments-"+feedId);
-if(!list) return;
-
-list.innerHTML="";
-
-snap.forEach(docSnap=>{
-
-const d=docSnap.data();
-
-list.innerHTML+=`
-<div class="subText">
-<b>${d.name}</b>: ${d.text}
-</div>
-`;
-
-});
-
-});
-
-}
-
-
-/* LOGOUT */
-
-window.logout=async function(){
-
-await signOut(auth);
-location.reload();
-
-};
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SeaConnect Feeds</title>
+
+  <style>
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
+      background:linear-gradient(180deg,#0f172a,#1e293b);
+      color:#f1f5f9;
+    }
+    .page{ display:none; padding:20px; padding-bottom:95px; }
+    .card{
+      background:rgba(255,255,255,0.06);
+      backdrop-filter:blur(12px);
+      border:1px solid rgba(255,255,255,0.08);
+      padding:18px;
+      border-radius:22px;
+      margin-bottom:16px;
+      box-shadow:0 10px 30px rgba(0,0,0,.35);
+    }
+    input, textarea{
+      width:100%;
+      padding:12px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,0.15);
+      margin-top:6px;
+      box-sizing:border-box;
+      background:rgba(255,255,255,0.05);
+      color:#fff;
+      outline:none;
+    }
+    textarea{ min-height:90px; resize:vertical; }
+    button{
+      padding:11px 16px;
+      border:none;
+      border-radius:14px;
+      font-weight:700;
+      cursor:pointer;
+      transition:all .2s ease;
+    }
+    button:hover{ transform:translateY(-1px); opacity:.95; }
+    .primary{ background:linear-gradient(135deg,#3b82f6,#2563eb); color:#fff; }
+    .danger{ background:linear-gradient(135deg,#ef4444,#dc2626); color:#fff; }
+    .light{ background:rgba(255,255,255,0.1); color:#fff; }
+    .row{ display:flex; gap:10px; margin-top:12px; align-items:center; }
+    .row > button{ flex:0 0 auto; }
+    .subText{ font-size:13px; color:#94a3b8; }
+    .feedPhoto{
+      width:100%;
+      margin-top:10px;
+      border-radius:16px;
+      object-fit:cover;
+      border:1px solid rgba(255,255,255,0.1);
+    }
+    .comment{
+      padding:8px 10px;
+      border-radius:14px;
+      background:rgba(255,255,255,0.06);
+      border:1px solid rgba(255,255,255,0.08);
+      margin-top:8px;
+      font-size:13px;
+    }
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      margin-bottom:12px;
+    }
+    .title{ font-size:22px; font-weight:900; }
+    .likeBtn{ background:rgba(255,255,255,0.08); color:#fff; }
+    .likeBtn.liked{ background:rgba(59,130,246,0.25); border:1px solid rgba(59,130,246,0.6); }
+  </style>
+</head>
+
+<body>
+
+  <div id="feedsPage" class="page" style="display:block;">
+    <div class="topbar">
+      <div>
+        <div class="title">📰 Crew Feeds</div>
+        <div class="subText">Logged in as: <span id="who"></span></div>
+      </div>
+      <button class="danger" onclick="logout()">Logout</button>
+    </div>
+
+    <!-- CREATE POST -->
+    <div class="card">
+      <div style="font-weight:900;margin-bottom:8px;">Create Post</div>
+
+      <textarea id="feedInput" placeholder="What’s happening on board?"></textarea>
+
+      <div class="row">
+        <input type="file" id="feedPhoto" accept="image/*" />
+        <button class="primary" onclick="createFeed()">Post</button>
+      </div>
+
+      <div id="postMsg" class="subText" style="margin-top:10px;"></div>
+    </div>
+
+    <!-- FEEDS LIST -->
+    <div id="feedsList"></div>
+  </div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import {
+    getFirestore,
+    collection,
+    addDoc,
+    query,
+    orderBy,
+    onSnapshot,
+    doc,
+    getDoc,
+    deleteDoc,
+    updateDoc,
+    where
+  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig={
+    apiKey:"AIzaSyCNlodsmEHrSXxgH0gTOcx4cAXwG8qmG9w",
+    authDomain:"seaconnect-d2baa.firebaseapp.com",
+    projectId:"seaconnect-d2baa"
+  };
+
+  const app=initializeApp(firebaseConfig);
+  const auth=getAuth(app);
+  const db=getFirestore(app);
+
+  const IMGBB_KEY="5b417e8de4a883f7425eeda12dc38f06";
+
+  let currentUID=null;
+  let currentName="Crew";
+  let currentEmail="";
+  let feedsListenerStarted=false;
+
+  const feedsList=document.getElementById("feedsList");
+  const who=document.getElementById("who");
+  const postMsg=document.getElementById("postMsg");
+
+  function setPostMsg(t){ postMsg.innerText = t || ""; }
+
+  onAuthStateChanged(auth, async (user)=>{
+    if(!user){
+      alert("Login first");
+      return;
+    }
+
+    currentUID=user.uid;
+    currentEmail=user.email || "";
+    who.innerText = currentEmail;
+
+    // get name from users/{uid}
+    try{
+      const snap=await getDoc(doc(db,"users",currentUID));
+      if(snap.exists()){
+        const d=snap.data()||{};
+        currentName = d.name || (currentEmail.includes("@") ? currentEmail.split("@")[0] : "Crew");
+      }else{
+        currentName = (currentEmail.includes("@") ? currentEmail.split("@")[0] : "Crew");
+      }
+      who.innerText = currentName + " (" + currentEmail + ")";
+    }catch(e){
+      console.log(e);
+    }
+
+    if(!feedsListenerStarted){
+      feedsListenerStarted=true;
+      loadFeeds();
+    }
+  });
+
+  // CREATE POST
+  window.createFeed = async function(){
+    try{
+      if(!currentUID) return alert("Please login first.");
+
+      const text=document.getElementById("feedInput").value.trim();
+      const file=document.getElementById("feedPhoto").files[0];
+
+      if(!text && !file){
+        alert("Write something or choose a photo.");
+        return;
+      }
+
+      setPostMsg("Posting...");
+
+      let photoURL="";
+
+      // upload photo (optional)
+      if(file){
+        const formData=new FormData();
+        formData.append("image",file);
+
+        const res=await fetch(
+          "https://api.imgbb.com/1/upload?key="+IMGBB_KEY,
+          {method:"POST", body: formData}
+        );
+        const data=await res.json();
+        if(!data || !data.data || !data.data.url){
+          throw new Error("ImgBB upload failed");
+        }
+        photoURL=data.data.url;
+      }
+
+      await addDoc(collection(db,"feeds"),{
+        uid: currentUID,
+        name: currentName,
+        email: currentEmail,
+        text: text,
+        photo: photoURL,
+        likes: [],          // ✅ per-user likes
+        createdAt: Date.now()
+      });
+
+      document.getElementById("feedInput").value="";
+      document.getElementById("feedPhoto").value="";
+      setPostMsg("✅ Posted!");
+      setTimeout(()=>setPostMsg(""),1200);
+
+    }catch(e){
+      console.error(e);
+      setPostMsg("");
+      alert("❌ Post failed");
+    }
+  };
+
+  // LOAD FEEDS
+  function loadFeeds(){
+    const q=query(collection(db,"feeds"), orderBy("createdAt","desc"));
+
+    onSnapshot(q,(snap)=>{
+      feedsList.innerHTML="";
+
+      snap.forEach(docSnap=>{
+        const d=docSnap.data()||{};
+        const id=docSnap.id;
+
+        const date = d.createdAt ? new Date(d.createdAt).toLocaleString() : "";
+        const likesArr = Array.isArray(d.likes) ? d.likes : [];
+        const liked = likesArr.includes(currentUID);
+        const likeCount = likesArr.length;
+
+        feedsList.innerHTML += `
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;">
+              <div>
+                <div style="font-weight:900">${escapeHtml(d.name || "Crew")}</div>
+                <div class="subText">${escapeHtml(d.email || "")}</div>
+              </div>
+              <div class="subText">${escapeHtml(date)}</div>
+            </div>
+
+            <div style="margin-top:10px;white-space:pre-wrap;">${escapeHtml(d.text || "")}</div>
+
+            ${d.photo ? `<img src="${d.photo}" class="feedPhoto" loading="lazy">` : ""}
+
+            <div class="row" style="margin-top:12px;">
+              <button class="likeBtn ${liked ? "liked" : ""}" onclick="toggleLike('${id}')">
+                ${liked ? "💙 Liked" : "👍 Like"}
+              </button>
+              <span class="subText">${likeCount} likes</span>
+
+              ${d.uid===currentUID ? `
+                <button class="danger" onclick="deletePost('${id}')">Delete</button>
+              ` : ``}
+            </div>
+
+            <div style="margin-top:12px;">
+              <input id="commentInput-${id}" placeholder="Write comment">
+              <div class="row">
+                <button class="light" onclick="sendComment('${id}')">Send</button>
+              </div>
+              <div id="comments-${id}" style="margin-top:10px;"></div>
+            </div>
+          </div>
+        `;
+
+        loadComments(id); // real-time per post
+      });
+    });
+  }
+
+  // LIKE TOGGLE
+  window.toggleLike = async function(feedId){
+    try{
+      const ref=doc(db,"feeds",feedId);
+      const snap=await getDoc(ref);
+      if(!snap.exists()) return;
+
+      const d=snap.data()||{};
+      let likes=Array.isArray(d.likes) ? d.likes : [];
+
+      if(likes.includes(currentUID)){
+        likes = likes.filter(x=>x!==currentUID);
+      }else{
+        likes.push(currentUID);
+      }
+
+      await updateDoc(ref,{likes:likes});
+    }catch(e){
+      console.error(e);
+      alert("❌ Like failed");
+    }
+  };
+
+  // DELETE POST
+  window.deletePost = async function(id){
+    try{
+      if(confirm("Delete post?")){
+        await deleteDoc(doc(db,"feeds",id));
+      }
+    }catch(e){
+      console.error(e);
+      alert("❌ Delete failed");
+    }
+  };
+
+  // SEND COMMENT
+  window.sendComment = async function(feedId){
+    try{
+      const input=document.getElementById("commentInput-"+feedId);
+      const text=(input.value||"").trim();
+      if(!text) return;
+
+      await addDoc(collection(db,"comments"),{
+        feedId: feedId,
+        uid: currentUID,
+        name: currentName,
+        text: text,
+        createdAt: Date.now()
+      });
+
+      input.value="";
+    }catch(e){
+      console.error(e);
+      alert("❌ Comment failed");
+    }
+  };
+
+  // LOAD COMMENTS (NO INDEX REQUIRED)
+  function loadComments(feedId){
+    const q=query(collection(db,"comments"), where("feedId","==",feedId));
+
+    onSnapshot(q,(snap)=>{
+      const box=document.getElementById("comments-"+feedId);
+      if(!box) return;
+
+      const items=[];
+      snap.forEach(ds=>{
+        const d=ds.data()||{};
+        items.push(d);
+      });
+
+      // sort in JS (so Firestore doesn't need composite index)
+      items.sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
+
+      box.innerHTML="";
+      items.forEach(d=>{
+        box.innerHTML += `
+          <div class="comment">
+            <b>${escapeHtml(d.name || "Crew")}</b>: ${escapeHtml(d.text || "")}
+          </div>
+        `;
+      });
+    });
+  }
+
+  // LOGOUT
+  window.logout = async function(){
+    await signOut(auth);
+    location.reload();
+  };
+
+  // small helper to avoid HTML breaking
+  function escapeHtml(str){
+    return String(str||"")
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#039;");
+  }
+</script>
+
+</body>
+</html>

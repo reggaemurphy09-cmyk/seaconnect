@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SeaConnect Feeds</title>
 
 <style>
+
 body{
 margin:0;
 font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
@@ -13,7 +14,11 @@ background:linear-gradient(180deg,#0f172a,#1e293b);
 color:#f1f5f9;
 }
 
-.page{ display:none; padding:20px; padding-bottom:95px; }
+.page{
+display:none;
+padding:20px;
+padding-bottom:95px;
+}
 
 .card{
 background:rgba(255,255,255,0.06);
@@ -25,7 +30,7 @@ margin-bottom:16px;
 box-shadow:0 10px 30px rgba(0,0,0,.35);
 }
 
-input, textarea{
+input,textarea{
 width:100%;
 padding:12px;
 border-radius:14px;
@@ -36,7 +41,9 @@ background:rgba(255,255,255,0.05);
 color:#fff;
 }
 
-textarea{ min-height:90px; }
+textarea{
+min-height:90px;
+}
 
 button{
 padding:11px 16px;
@@ -46,13 +53,26 @@ font-weight:700;
 cursor:pointer;
 }
 
-.primary{ background:linear-gradient(135deg,#3b82f6,#2563eb); color:#fff; }
-.danger{ background:linear-gradient(135deg,#ef4444,#dc2626); color:#fff; }
-.light{ background:rgba(255,255,255,0.1); color:#fff; }
+.primary{
+background:linear-gradient(135deg,#3b82f6,#2563eb);
+color:#fff;
+}
 
-.row{ display:flex; gap:10px; margin-top:12px; }
+.light{
+background:rgba(255,255,255,0.1);
+color:#fff;
+}
 
-.subText{ font-size:13px; color:#94a3b8; }
+.danger{
+background:linear-gradient(135deg,#ef4444,#dc2626);
+color:#fff;
+}
+
+.row{
+display:flex;
+gap:10px;
+margin-top:12px;
+}
 
 .feedPhoto{
 width:100%;
@@ -75,20 +95,37 @@ align-items:center;
 margin-bottom:12px;
 }
 
-.title{ font-size:22px; font-weight:900; }
+.title{
+font-size:22px;
+font-weight:900;
+}
 
-.likeBtn{ background:rgba(255,255,255,0.08); color:#fff; }
-.likeBtn.liked{ background:rgba(59,130,246,0.25); }
+.likeBtn{
+background:rgba(255,255,255,0.08);
+color:#fff;
+}
+
+.likeBtn.liked{
+background:rgba(59,130,246,0.25);
+}
+
+.subText{
+font-size:13px;
+color:#94a3b8;
+}
 
 </style>
 </head>
 
 <body>
+
+<!-- LOGIN PAGE -->
+
 <div id="loginPage" class="page" style="display:block;">
 
 <div class="card">
 
-<h2 style="margin-top:0;">SeaConnect Login</h2>
+<h2>SeaConnect Login</h2>
 
 <input id="loginEmail" placeholder="Email">
 
@@ -99,20 +136,24 @@ margin-bottom:12px;
 <button class="light" onclick="signup()">Sign Up</button>
 </div>
 
-<div id="loginMsg" class="subText"></div>
-
 </div>
 
 </div>
-<div id="feedsPage" class="page" style="display:block;">
+
+<!-- FEEDS PAGE -->
+
+<div id="feedsPage" class="page">
 
 <div class="topbar">
 <div>
 <div class="title">📰 Crew Feeds</div>
 <div class="subText">Logged in as: <span id="who"></span></div>
 </div>
+
 <button class="danger" onclick="logout()">Logout</button>
 </div>
+
+<!-- CREATE POST -->
 
 <div class="card">
 
@@ -139,8 +180,8 @@ style="width:100%;margin-top:10px;border-radius:16px;display:none;">
 
 <script type="module">
 
-import { initializeApp } from
-"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 
 import {
 getAuth,
@@ -149,8 +190,7 @@ signOut,
 signInWithEmailAndPassword,
 createUserWithEmailAndPassword
 }
-from
-"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 import {
 getFirestore,
@@ -165,8 +205,7 @@ deleteDoc,
 updateDoc,
 where
 }
-from
-"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig={
 apiKey:"AIzaSyCNlodsmEHrSXxgH0gTOcx4cAXwG8qmG9w",
@@ -181,18 +220,13 @@ const db=getFirestore(app);
 const IMGBB_KEY="5b417e8de4a883f7425eeda12dc38f06";
 
 let currentUID=null;
-let currentName="Crew";
 let currentEmail="";
+let currentName="Crew";
 
 const feedsList=document.getElementById("feedsList");
 const who=document.getElementById("who");
-const postMsg=document.getElementById("postMsg");
 
-function setPostMsg(t){
-postMsg.innerText=t||"";
-}
-
-onAuthStateChanged(auth,async(user)=>{
+onAuthStateChanged(auth,(user)=>{
 
 if(!user){
 
@@ -206,7 +240,7 @@ document.getElementById("loginPage").style.display="none";
 document.getElementById("feedsPage").style.display="block";
 
 currentUID=user.uid;
-currentEmail=user.email||"";
+currentEmail=user.email;
 
 who.innerText=currentEmail;
 
@@ -214,19 +248,60 @@ loadFeeds();
 
 });
 
-window.createFeed=async function(){
+window.login=async function(){
+
+const email=document.getElementById("loginEmail").value;
+const password=document.getElementById("loginPassword").value;
 
 try{
+
+await signInWithEmailAndPassword(auth,email,password);
+
+}catch(e){
+
+alert(e.message);
+
+}
+
+}
+
+window.signup=async function(){
+
+const email=document.getElementById("loginEmail").value;
+const password=document.getElementById("loginPassword").value;
+
+try{
+
+await createUserWithEmailAndPassword(auth,email,password);
+
+alert("Account created. Now login.");
+
+}catch(e){
+
+alert(e.message);
+
+}
+
+}
+
+window.logout=async function(){
+
+await signOut(auth);
+location.reload();
+
+}
+
+window.createFeed=async function(){
 
 const text=document.getElementById("feedInput").value.trim();
 const file=document.getElementById("feedPhoto").files[0];
 
 if(!text && !file){
+
 alert("Write something or choose a photo");
 return;
-}
 
-setPostMsg("Posting...");
+}
 
 let photoURL="";
 
@@ -244,41 +319,27 @@ const data=await res.json();
 
 if(data.success){
 photoURL=data.data.url;
-}else{
-alert("Photo upload failed");
-return;
 }
 
 }
 
 await addDoc(collection(db,"feeds"),{
+
 uid:currentUID,
-name:currentName,
 email:currentEmail,
+name:currentEmail.split("@")[0],
 text:text,
 photo:photoURL,
 likes:[],
 createdAt:Date.now()
+
 });
 
 document.getElementById("feedInput").value="";
 document.getElementById("feedPhoto").value="";
-  document.getElementById("previewPhoto").style.display="none";
-document.getElementById("previewPhoto").src="";
 document.getElementById("previewPhoto").style.display="none";
 
-setPostMsg("✅ Posted!");
-
-setTimeout(()=>setPostMsg(""),1500);
-
-}catch(e){
-
-console.error(e);
-alert("Post failed: "+e.message);
-
 }
-
-};
 
 function loadFeeds(){
 
@@ -296,11 +357,14 @@ const id=docSnap.id;
 const likesArr=d.likes||[];
 const liked=likesArr.includes(currentUID);
 
-<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+feedsList.innerHTML+=`
+
+<div class="card">
 
 <div style="display:flex;gap:10px;align-items:center;">
-<img src="${d.photoProfile || 'https://i.ibb.co/2kRZ7Z6/avatar.png'}"
-style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+
+<img src="https://i.ibb.co/2kRZ7Z6/avatar.png"
+style="width:40px;height:40px;border-radius:50%;">
 
 <div>
 <div style="font-weight:900">${d.name}</div>
@@ -309,7 +373,6 @@ style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
 
 </div>
 
-</div>
 <div style="margin-top:10px">${d.text||""}</div>
 
 ${d.photo?`<img src="${d.photo}" class="feedPhoto">`:""}
@@ -326,9 +389,7 @@ ${liked?"💙 Liked":"👍 Like"}
 <span class="subText">${likesArr.length} likes</span>
 
 ${d.uid===currentUID?`
-<button class="danger" onclick="deletePost('${id}')">
-Delete
-</button>
+<button class="danger" onclick="deletePost('${id}')">Delete</button>
 `:""}
 
 </div>
@@ -337,9 +398,7 @@ Delete
 
 <input id="commentInput-${id}" placeholder="Write comment">
 
-<button onclick="sendComment('${id}')">
-Send
-</button>
+<button onclick="sendComment('${id}')">Send</button>
 
 <div id="comments-${id}"></div>
 
@@ -357,9 +416,9 @@ loadComments(id);
 
 }
 
-window.toggleLike=async function(feedId){
+window.toggleLike=async function(id){
 
-const ref=doc(db,"feeds",feedId);
+const ref=doc(db,"feeds",id);
 const snap=await getDoc(ref);
 
 let likes=snap.data().likes||[];
@@ -372,7 +431,7 @@ likes.push(currentUID);
 
 await updateDoc(ref,{likes});
 
-};
+}
 
 window.deletePost=async function(id){
 
@@ -380,7 +439,7 @@ if(confirm("Delete post?")){
 await deleteDoc(doc(db,"feeds",id));
 }
 
-};
+}
 
 window.sendComment=async function(feedId){
 
@@ -390,16 +449,18 @@ const text=input.value.trim();
 if(!text) return;
 
 await addDoc(collection(db,"comments"),{
+
 feedId:feedId,
 uid:currentUID,
-name:currentName,
+name:currentEmail.split("@")[0],
 text:text,
 createdAt:Date.now()
+
 });
 
 input.value="";
 
-};
+}
 
 function loadComments(feedId){
 
@@ -413,6 +474,7 @@ if(!box) return;
 box.innerHTML="";
 
 snap.forEach(docSnap=>{
+
 const d=docSnap.data();
 
 box.innerHTML+=`
@@ -420,56 +482,14 @@ box.innerHTML+=`
 <b>${d.name}</b>: ${d.text}
 </div>
 `;
-});
 
 });
 
-}
-
-window.logout=async function(){
-await signOut(auth);
-location.reload();
-};
-window.login = async function(){
-
-const email=document.getElementById("loginEmail").value;
-const password=document.getElementById("loginPassword").value;
-
-try{
-
-await signInWithEmailAndPassword(auth,email,password);
-
-document.getElementById("loginPage").style.display="none";
-document.getElementById("feedsPage").style.display="block";
-
-}catch(e){
-
-alert(e.message);
+});
 
 }
 
-}
-
-window.signup = async function(){
-
-const email=document.getElementById("loginEmail").value;
-const password=document.getElementById("loginPassword").value;
-
-try{
-
-await createUserWithEmailAndPassword(auth,email,password);
-
-alert("Account created. You can now login.");
-
-}catch(e){
-
-alert(e.message);
-
-}
-
-}
-document.getElementById("feedPhoto")
-.addEventListener("change",function(){
+document.getElementById("feedPhoto").addEventListener("change",function(){
 
 const file=this.files[0];
 if(!file) return;
@@ -477,8 +497,10 @@ if(!file) return;
 const reader=new FileReader();
 
 reader.onload=function(e){
+
 document.getElementById("previewPhoto").src=e.target.result;
 document.getElementById("previewPhoto").style.display="block";
+
 };
 
 reader.readAsDataURL(file);

@@ -84,7 +84,26 @@ margin-bottom:12px;
 </head>
 
 <body>
+<div id="loginPage" class="page" style="display:block;">
 
+<div class="card">
+
+<h2 style="margin-top:0;">SeaConnect Login</h2>
+
+<input id="loginEmail" placeholder="Email">
+
+<input id="loginPassword" type="password" placeholder="Password">
+
+<div class="row">
+<button class="primary" onclick="login()">Login</button>
+<button class="light" onclick="signup()">Sign Up</button>
+</div>
+
+<div id="loginMsg" class="subText"></div>
+
+</div>
+
+</div>
 <div id="feedsPage" class="page" style="display:block;">
 
 <div class="topbar">
@@ -126,7 +145,9 @@ import { initializeApp } from
 import {
 getAuth,
 onAuthStateChanged,
-signOut
+signOut,
+signInWithEmailAndPassword,
+createUserWithEmailAndPassword
 }
 from
 "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -174,23 +195,20 @@ postMsg.innerText=t||"";
 onAuthStateChanged(auth,async(user)=>{
 
 if(!user){
-alert("Login first");
+
+document.getElementById("loginPage").style.display="block";
+document.getElementById("feedsPage").style.display="none";
 return;
+
 }
+
+document.getElementById("loginPage").style.display="none";
+document.getElementById("feedsPage").style.display="block";
 
 currentUID=user.uid;
 currentEmail=user.email||"";
 
 who.innerText=currentEmail;
-
-const snap=await getDoc(doc(db,"users",currentUID));
-
-if(snap.exists()){
-const d=snap.data();
-currentName=d.name||currentEmail.split("@")[0];
-}
-
-who.innerText=currentName+" ("+currentEmail+")";
 
 loadFeeds();
 
@@ -404,7 +422,44 @@ window.logout=async function(){
 await signOut(auth);
 location.reload();
 };
+window.login = async function(){
 
+const email=document.getElementById("loginEmail").value;
+const password=document.getElementById("loginPassword").value;
+
+try{
+
+await signInWithEmailAndPassword(auth,email,password);
+
+document.getElementById("loginPage").style.display="none";
+document.getElementById("feedsPage").style.display="block";
+
+}catch(e){
+
+alert(e.message);
+
+}
+
+}
+
+window.signup = async function(){
+
+const email=document.getElementById("loginEmail").value;
+const password=document.getElementById("loginPassword").value;
+
+try{
+
+await createUserWithEmailAndPassword(auth,email,password);
+
+alert("Account created. You can now login.");
+
+}catch(e){
+
+alert(e.message);
+
+}
+
+}
 document.getElementById("feedPhoto")
 .addEventListener("change",function(){
 

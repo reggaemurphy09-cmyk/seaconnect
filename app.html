@@ -150,7 +150,7 @@ color:#94a3b8;
 
 <div class="card" style="text-align:center;">
 
-<!-- FIXED PHOTO URL -->
+<!-- FIXED IMAGE URL -->
 <img id="profilePhoto"
 src="https://i.ibb.co/2kRZ7Z6/avatar.png"
 style="width:120px;height:120px;border-radius:50%;object-fit:cover;border:4px solid #e5e7eb;">
@@ -168,65 +168,6 @@ Upload Photo
 <div style="font-size:24px;font-weight:900;margin-top:10px;" id="profileName"></div>
 <div style="font-size:16px;color:#6b7280;margin-top:4px;" id="profileRank"></div>
 
-</div>
-
-<div class="card">
-<div style="display:flex;justify-content:space-between;align-items:center;">
-<div style="font-weight:900;">Professional Information</div>
-<button class="light" onclick="toggleInfo()" id="infoBtn">Show</button>
-</div>
-
-<div id="infoSection" style="display:none; margin-top:12px;">
-<div class="subText">Email</div>
-<div id="profileEmail"></div>
-
-<div class="subText" style="margin-top:10px;">Company</div>
-<div id="profileCompany"></div>
-
-<div class="subText" style="margin-top:10px;">Vessel</div>
-<div id="profileVessel"></div>
-
-<div class="subText" style="margin-top:10px;">Experience</div>
-<div id="profileExperience"></div>
-
-<div class="subText" style="margin-top:10px;">Phone</div>
-<div id="profilePhone"></div>
-
-<div class="subText" style="margin-top:10px;">Address</div>
-<div id="profileAddress"></div>
-</div>
-</div>
-
-<div class="card">
-<button class="primary" onclick="toggleEdit()">Edit Profile</button>
-
-<div id="editSection" style="display:none;margin-top:20px;">
-<label>Full Name</label>
-<input id="nameInput">
-
-<label>Rank</label>
-<input id="rankInput">
-
-<label>Company</label>
-<input id="companyInput">
-
-<label>Vessel</label>
-<input id="vesselInput">
-
-<label>Experience</label>
-<input id="experienceInput">
-
-<label>Phone</label>
-<input id="phoneInput">
-
-<label>Address</label>
-<input id="addressInput">
-
-<div class="row">
-<button class="primary" onclick="saveProfile()">Save</button>
-<button class="light" onclick="toggleEdit()">Cancel</button>
-</div>
-</div>
 </div>
 
 <div class="card">
@@ -253,6 +194,7 @@ Upload Photo
 <button class="primary" onclick="addDocument()">Save</button>
 <button class="light" onclick="toggleDocForm()">Cancel</button>
 </div>
+
 </div>
 
 </div>
@@ -261,7 +203,6 @@ Upload Photo
 
 </div>
 
-<!-- NAV -->
 <div class="bottomnav">
 <button class="active" onclick="showPage('feedsPage',this)">📰 Feeds</button>
 <button onclick="showPage('friendsPage',this)">👥 Friends</button>
@@ -297,14 +238,6 @@ if(page) page.style.display="block";
 if(btn) btn.classList.add("active");
 };
 
-window.toggleInfo=function(){
-const sec=document.getElementById("infoSection");
-const btn=document.getElementById("infoBtn");
-const isHidden=(sec.style.display==="none"||sec.style.display==="");
-sec.style.display=isHidden?"block":"none";
-btn.innerText=isHidden?"Hide":"Show";
-};
-
 onAuthStateChanged(auth,async(user)=>{
 if(!user){
 location.href="index.html";
@@ -314,62 +247,10 @@ return;
 currentUID=user.uid;
 currentEmail=user.email.toLowerCase();
 
-const ref=doc(db,"users",currentUID);
-const snap=await getDoc(ref);
-
-if(!snap.exists()){
-await setDoc(ref,{
-email:currentEmail,
-name:user.email.split("@")[0],
-createdAt:Date.now()
-});
-}
-
-loadProfile();
 loadDocuments();
 });
 
-/* PROFILE */
-async function loadProfile(){
-const snap=await getDoc(doc(db,"users",currentUID));
-const d=snap.data()||{};
-
-if(d.photo){
-document.getElementById("profilePhoto").src=d.photo;
-}
-
-profileName.innerText=d.name||"";
-profileRank.innerText=d.rank||"";
-profileEmail.innerText=d.email||currentEmail;
-profileCompany.innerText=d.company||"-";
-profileVessel.innerText=d.vessel||"-";
-profileExperience.innerText=d.experience||"-";
-profilePhone.innerText=d.phone||"-";
-profileAddress.innerText=d.address||"-";
-}
-
-window.toggleEdit=function(){
-const section=document.getElementById("editSection");
-section.style.display=(section.style.display==="none")?"block":"none";
-};
-
-window.saveProfile=async function(){
-await setDoc(doc(db,"users",currentUID),{
-email:currentEmail,
-name:nameInput.value,
-rank:rankInput.value,
-company:companyInput.value,
-vessel:vesselInput.value,
-experience:experienceInput.value,
-phone:phoneInput.value,
-address:addressInput.value,
-updatedAt:Date.now()
-},{merge:true});
-
-await loadProfile();
-toggleEdit();
-alert("✅ Profile saved!");
-};
+/* DOCUMENTS */
 
 window.toggleDocForm=function(){
 const form=document.getElementById("docFormSection");
@@ -406,24 +287,75 @@ alert("✅ Document saved!");
 };
 
 function loadDocuments(){
+
 const list=document.getElementById("documentsList");
+
 const q=query(collection(db,"documents"),where("uid","==",currentUID));
 
 onSnapshot(q,(snap)=>{
+
 list.innerHTML="";
+
 snap.forEach(docSnap=>{
+
 const d=docSnap.data();
 const id=docSnap.id;
 
+let status="";
+let color="#111";
+
+if(d.expiry){
+
+const diff=Math.ceil((new Date(d.expiry)-new Date())/(1000*60*60*24));
+
+if(diff<0){
+status="❌ Expired";
+color="#ef4444";
+}
+else if(diff<=30){
+status=`⚠️ ${diff} days left`;
+color="#f59e0b";
+}
+else{
+status=`✅ ${diff} days left`;
+color="#16a34a";
+}
+
+}
+
 list.innerHTML+=`
+
 <div class="card">
-<b>${d.type}</b><br>
-${d.number || ""}
-<button onclick="deleteDocument('${id}')">Delete</button>
+
+<div style="font-weight:900;font-size:18px;">${d.type}</div>
+
+<div class="subText">Document Number</div>
+<div>${d.number || "-"}</div>
+
+<div class="subText" style="margin-top:8px;">Issue Date</div>
+<div>${d.issue || "-"}</div>
+
+<div class="subText" style="margin-top:8px;">Expiry Date</div>
+
+<div>
+${d.expiry || "-"}
+<span style="color:${color};font-weight:800;">
+${status}
+</span>
 </div>
+
+<button class="danger" onclick="deleteDocument('${id}')">
+Delete
+</button>
+
+</div>
+
 `;
+
 });
+
 });
+
 }
 
 window.deleteDocument=async function(id){

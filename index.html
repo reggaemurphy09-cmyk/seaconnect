@@ -168,7 +168,6 @@ location.replace("app.html");
 
 });
 
-
 window.login = async ()=>{
 
 try{
@@ -181,6 +180,9 @@ email.value,
 password.value
 );
 
+/* redirect after login */
+location.href="feeds.html";
+
 }catch(e){
 
 setMsg("");
@@ -188,6 +190,7 @@ alert(e.message);
 
 }
 
+}
 };
 
 

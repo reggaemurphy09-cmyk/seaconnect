@@ -1,5 +1,83 @@
-📰 Crew Feeds
-Post
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SeaConnect Feeds</title>
+
+<style>
+
+body{
+margin:0;
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
+background:#0f172a;
+color:white;
+padding:20px;
+}
+
+.card{
+background:#1e293b;
+padding:16px;
+border-radius:14px;
+margin-bottom:16px;
+}
+
+textarea{
+width:100%;
+padding:10px;
+border-radius:10px;
+border:none;
+margin-top:8px;
+}
+
+input{
+margin-top:8px;
+}
+
+button{
+padding:8px 14px;
+border:none;
+border-radius:8px;
+margin-top:8px;
+cursor:pointer;
+}
+
+.feedPhoto{
+width:100%;
+border-radius:12px;
+margin-top:10px;
+}
+
+.comment{
+font-size:13px;
+margin-top:4px;
+padding:4px;
+background:#334155;
+border-radius:6px;
+}
+
+</style>
+</head>
+
+<body>
+
+<h2>📰 Crew Feeds</h2>
+
+<div class="card">
+
+<textarea id="feedInput" placeholder="Share something with crew..."></textarea>
+
+<input type="file" id="feedPhoto">
+
+<br>
+
+<button onclick="createFeed()">Post</button>
+
+</div>
+
+<div id="feedsList"></div>
+
+<script type="module">
 
 import { initializeApp }
 from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -17,7 +95,8 @@ onSnapshot,
 doc,
 deleteDoc,
 getDoc,
-updateDoc
+updateDoc,
+where
 }
 from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
@@ -64,9 +143,15 @@ window.createFeed=async function(){
 const text=document.getElementById("feedInput").value.trim();
 const photo=document.getElementById("feedPhoto").files[0];
 
+if(!text && !photo){
+alert("Write something or upload photo");
+return;
+}
+
 let photoURL="";
 
 if(photo){
+
 const formData=new FormData();
 formData.append("image",photo);
 
@@ -76,6 +161,7 @@ const res=await fetch(
 
 const data=await res.json();
 photoURL=data.data.url;
+
 }
 
 await addDoc(collection(db,"feeds"),{
@@ -139,8 +225,7 @@ ${d.likes?.length || 0} likes
 </span>
 
 ${d.uid===currentUID ? `
-<button class="danger"
-onclick="deletePost('${id}')">
+<button onclick="deletePost('${id}')">
 Delete
 </button>
 ` : ""}
@@ -149,8 +234,7 @@ Delete
 
 <div style="margin-top:10px">
 
-<input id="comment-${id}"
-placeholder="Write comment">
+<input id="comment-${id}" placeholder="Write comment">
 
 <button onclick="sendComment('${id}')">
 Send
@@ -234,6 +318,7 @@ function loadComments(feedId){
 
 const q=query(
 collection(db,"comments"),
+where("feedId","==",feedId),
 orderBy("createdAt","asc")
 );
 
@@ -248,19 +333,19 @@ snap.forEach(docSnap=>{
 
 const d=docSnap.data();
 
-if(d.feedId===feedId){
-
 box.innerHTML+=`
 <div class="comment">
 <b>${d.name}</b> ${d.text}
 </div>
 `;
 
-}
-
 });
 
 });
 
 }
 
+</script>
+
+</body>
+</html>

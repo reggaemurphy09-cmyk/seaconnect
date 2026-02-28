@@ -136,12 +136,24 @@ color:#3b82f6;
 font-weight:800;
 }
 
+/* PROFILE PHOTO */
+
+.avatar{
+width:40px;
+height:40px;
+border-radius:50%;
+object-fit:cover;
+}
+
+.avatar.online{
+border:3px solid #22c55e;
+box-shadow:0 0 10px #22c55e;
+}
+
 </style>
 </head>
 
 <body>
-
-<!-- FEEDS -->
 
 <div id="feedsPage" class="page">
 
@@ -172,21 +184,15 @@ style="width:100%;margin-top:10px;border-radius:16px;display:none;">
 
 </div>
 
-<!-- FRIENDS -->
-
 <div id="friendsPage" class="page">
 <h2>👥 Friends</h2>
 <div class="card subText">Friends feature coming soon</div>
 </div>
 
-<!-- MESSAGES -->
-
 <div id="messagesPage" class="page">
 <h2>💬 Messages</h2>
 <div class="card subText">Messenger coming soon</div>
 </div>
-
-<!-- NAV -->
 
 <div class="bottomnav">
 
@@ -210,7 +216,7 @@ style="width:100%;margin-top:10px;border-radius:16px;display:none;">
 
 <script type="module">
 
-import { initializeApp }
+import { initializeApp } 
 from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 
 import {
@@ -270,7 +276,7 @@ if(btn) btn.classList.add("active");
 
 /* AUTH */
 
-onAuthStateChanged(auth,(user)=>{
+onAuthStateChanged(auth,async(user)=>{
 
 if(!user){
 location.href="index.html";
@@ -280,9 +286,29 @@ return;
 currentUID=user.uid;
 currentEmail=user.email;
 
+/* SET ONLINE */
+
+await updateDoc(doc(db,"users",currentUID),{
+online:true,
+lastSeen:Date.now()
+});
+
 showPage("feedsPage");
 
 loadFeeds();
+
+});
+
+/* SET OFFLINE WHEN LEAVING */
+
+window.addEventListener("beforeunload",async()=>{
+
+if(currentUID){
+await updateDoc(doc(db,"users",currentUID),{
+online:false,
+lastSeen:Date.now()
+});
+}
 
 });
 
@@ -325,8 +351,6 @@ photoURL=data.data.url;
 }
 
 }
-
-/* GET USER PROFILE */
 
 const userSnap=await getDoc(doc(db,"users",currentUID));
 const userData=userSnap.data()||{};
@@ -380,13 +404,23 @@ onSnapshot(q,(snap)=>{
 
 feedsList.innerHTML="";
 
-snap.forEach(docSnap=>{
+snap.forEach(async docSnap=>{
 
 const d=docSnap.data();
 const id=docSnap.id;
 
 const likesArr=d.likes||[];
 const liked=likesArr.includes(currentUID);
+
+/* GET ONLINE STATUS */
+
+let online=false;
+
+try{
+const userSnap=await getDoc(doc(db,"users",d.uid));
+const userData=userSnap.data();
+online=userData?.online || false;
+}catch{}
 
 feedsList.innerHTML+=`
 
@@ -395,7 +429,7 @@ feedsList.innerHTML+=`
 <div style="display:flex;gap:10px;align-items:center;">
 
 <img src="${d.photoProfile || 'https://i.ibb.co/2kRZ7Z6/avatar.png'}"
-style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+class="avatar ${online ? 'online' : ''}">
 
 <div>
 <div style="font-weight:900">${d.name}</div>

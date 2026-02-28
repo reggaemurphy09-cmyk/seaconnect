@@ -1,113 +1,119 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>SeaConnect</title>
 
 <style>
+
 body{
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
-  background:linear-gradient(180deg,#0f172a,#1e293b);
-  color:#f1f5f9;
+margin:0;
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
+background:linear-gradient(180deg,#0f172a,#1e293b);
+color:#f1f5f9;
 }
-/* Pages */
+
 .page{
-  display:none;
-  padding:20px;
-  padding-bottom:95px;
+display:none;
+padding:20px;
+padding-bottom:95px;
 }
-/* Modern Glass Card */
+
 .card{
-  background:rgba(255,255,255,0.06);
-  backdrop-filter:blur(12px);
-  border:1px solid rgba(255,255,255,0.08);
-  padding:18px;
-  border-radius:22px;
-  margin-bottom:16px;
-  box-shadow:0 10px 30px rgba(0,0,0,.35);
+background:rgba(255,255,255,0.06);
+backdrop-filter:blur(12px);
+border:1px solid rgba(255,255,255,0.08);
+padding:18px;
+border-radius:22px;
+margin-bottom:16px;
+box-shadow:0 10px 30px rgba(0,0,0,.35);
 }
-/* Inputs */
+
 input{
-  width:100%;
-  padding:12px;
-  border-radius:14px;
-  border:1px solid rgba(255,255,255,0.15);
-  margin-top:6px;
-  box-sizing:border-box;
-  background:rgba(255,255,255,0.05);
-  color:#fff;
+width:100%;
+padding:12px;
+border-radius:14px;
+border:1px solid rgba(255,255,255,0.15);
+margin-top:6px;
+box-sizing:border-box;
+background:rgba(255,255,255,0.05);
+color:#fff;
 }
-/* Buttons */
+
 button{
-  padding:11px 16px;
-  border:none;
-  border-radius:14px;
-  font-weight:700;
-  cursor:pointer;
-  transition:all .2s ease;
+padding:11px 16px;
+border:none;
+border-radius:14px;
+font-weight:700;
+cursor:pointer;
+transition:all .2s ease;
 }
-button:hover{
-  transform:translateY(-2px);
-  opacity:.9;
-}
+
 .primary{
-  background:linear-gradient(135deg,#3b82f6,#2563eb);
-  color:#fff;
-  box-shadow:0 6px 20px rgba(37,99,235,.4);
+background:linear-gradient(135deg,#3b82f6,#2563eb);
+color:#fff;
 }
+
 .danger{
-  background:linear-gradient(135deg,#ef4444,#dc2626);
-  color:#fff;
+background:linear-gradient(135deg,#ef4444,#dc2626);
+color:#fff;
 }
+
 .light{
-  background:rgba(255,255,255,0.1);
-  color:#fff;
+background:rgba(255,255,255,0.1);
+color:#fff;
 }
+
 .row{
-  display:flex;
-  gap:10px;
-  margin-top:12px;
-}
-.row > button{ flex:1; }
-
-/* Profile Photo Glow */
-#profilePhoto{
-  box-shadow:0 0 30px rgba(59,130,246,.5);
+display:flex;
+gap:10px;
+margin-top:12px;
 }
 
-/* Bottom Navigation Modern */
-.bottomnav{
-  position:fixed;
-  bottom:15px;
-  left:50%;
-  transform:translateX(-50%);
-  width:90%;
-  height:65px;
-  background:rgba(15,23,42,0.9);
-  backdrop-filter:blur(10px);
-  border-radius:22px;
-  display:flex;
-  justify-content:space-around;
-  align-items:center;
-  box-shadow:0 10px 40px rgba(0,0,0,.6);
+.row > button{
+flex:1;
 }
-.bottomnav button{
-  background:none;
-  border:none;
-  font-size:12px;
-  font-weight:600;
-  color:#94a3b8;
-}
-.bottomnav button.active{
-  color:#3b82f6;
-  font-weight:800;
-}
+
 .subText{
-  font-size:13px;
-  color:#94a3b8;
+font-size:13px;
+color:#94a3b8;
 }
+
+.bottomnav{
+position:fixed;
+bottom:15px;
+left:50%;
+transform:translateX(-50%);
+width:90%;
+height:65px;
+background:rgba(15,23,42,0.9);
+backdrop-filter:blur(10px);
+border-radius:22px;
+display:flex;
+justify-content:space-around;
+align-items:center;
+box-shadow:0 10px 40px rgba(0,0,0,.6);
+}
+
+.bottomnav button{
+background:none;
+border:none;
+font-size:12px;
+font-weight:600;
+color:#94a3b8;
+}
+
+.bottomnav button.active{
+color:#3b82f6;
+font-weight:800;
+}
+
+#profilePhoto{
+box-shadow:0 0 30px rgba(59,130,246,.5);
+}
+
 </style>
 </head>
 
@@ -115,155 +121,206 @@ button:hover{
 
 <!-- FEEDS -->
 <div id="feedsPage" class="page" style="display:block;">
-  <h2>📰 Feeds</h2>
-  <div class="card subText">Feeds will be here.</div>
+<h2>📰 Feeds</h2>
+<div class="card subText">Feeds will be here.</div>
 </div>
 
 <!-- FRIENDS -->
 <div id="friendsPage" class="page">
-  <h2>👥 Friends</h2>
-  <div class="card subText">Friends will be here.</div>
+<h2>👥 Friends</h2>
+<div class="card subText">Friends will be here.</div>
 </div>
 
 <!-- MESSAGES -->
 <div id="messagesPage" class="page">
-  <h2>💬 Messages</h2>
-  <div class="card subText">Messages will be here.</div>
+<h2>💬 Messages</h2>
+<div class="card subText">Messages will be here.</div>
 </div>
 
 <!-- PROFILE -->
 <div id="profilePage" class="page">
-  <div style="display:flex;justify-content:space-between;align-items:center;">
-    <h2 style="margin:0;">👤 My Profile</h2>
-    <button class="danger" onclick="logout()">Logout</button>
-  </div>
 
-  <div class="card" style="text-align:center;">
-    <!-- KEEPING YOUR LINE (but JS below will fix default if needed) -->
-    <img id="profilePhoto"
-         src="[https://i.ibb.co/2kRZ7Z6/avatar.png](https://i.ibb.co/2kRZ7Z6/avatar.png)"
-         style="width:120px;height:120px;border-radius:50%;object-fit:cover;border:4px solid #e5e7eb;">
+<div style="display:flex;justify-content:space-between;">
+<h2>👤 My Profile</h2>
+<button class="danger" onclick="logout()">Logout</button>
+</div>
 
-    <br><br>
-    <input type="file" id="photoInput" accept="image/*" style="display:none">
-    <button class="primary" onclick="document.getElementById('photoInput').click()">
-      Upload Photo
-    </button>
+<div class="card" style="text-align:center">
 
-    <br><br>
-    <div style="font-size:24px;font-weight:900;margin-top:10px;" id="profileName"></div>
-    <div style="font-size:16px;color:#6b7280;margin-top:4px;" id="profileRank"></div>
-  </div>
+<img id="profilePhoto"
+src="https://i.ibb.co/2kRZ7Z6/avatar.png"
+style="width:120px;height:120px;border-radius:50%;object-fit:cover;border:4px solid #e5e7eb;">
 
-  <!-- Professional Information -->
-  <div class="card">
-    <div style="display:flex;justify-content:space-between;align-items:center;">
-      <div style="font-weight:900;">Professional Information</div>
-      <button class="light" onclick="toggleInfo()" id="infoBtn">Show</button>
-    </div>
+<br><br>
 
-    <div id="infoSection" style="display:none; margin-top:12px;">
-      <div class="subText">Email</div>
-      <div id="profileEmail"></div>
+<input type="file" id="photoInput" accept="image/*" style="display:none">
 
-      <div class="subText" style="margin-top:10px;">Company</div>
-      <div id="profileCompany"></div>
+<button class="primary"
+onclick="document.getElementById('photoInput').click()">
+Upload Photo
+</button>
 
-      <div class="subText" style="margin-top:10px;">Vessel</div>
-      <div id="profileVessel"></div>
+<br><br>
 
-      <div class="subText" style="margin-top:10px;">Experience</div>
-      <div id="profileExperience"></div>
+<div id="profileName"
+style="font-size:24px;font-weight:900"></div>
 
-      <div class="subText" style="margin-top:10px;">Phone</div>
-      <div id="profilePhone"></div>
+<div id="profileRank"
+style="color:#6b7280"></div>
 
-      <div class="subText" style="margin-top:10px;">Address</div>
-      <div id="profileAddress"></div>
-    </div>
-  </div>
+</div>
 
-  <!-- EDIT PROFILE (KEPT) -->
-  <div class="card">
-    <button class="primary" onclick="toggleEdit()">Edit Profile</button>
+<!-- PROFESSIONAL INFO -->
 
-    <div id="editSection" style="display:none;margin-top:20px;">
-      <label>Full Name</label>
-      <input id="nameInput">
+<div class="card">
 
-      <label>Rank</label>
-      <input id="rankInput">
+<div style="display:flex;justify-content:space-between;">
+<div style="font-weight:900">Professional Information</div>
 
-      <label>Company</label>
-      <input id="companyInput">
+<button class="light" onclick="toggleInfo()" id="infoBtn">
+Show
+</button>
+</div>
 
-      <label>Vessel</label>
-      <input id="vesselInput">
+<div id="infoSection" style="display:none;margin-top:12px">
 
-      <label>Experience</label>
-      <input id="experienceInput">
+<div class="subText">Email</div>
+<div id="profileEmail"></div>
 
-      <label>Phone</label>
-      <input id="phoneInput">
+<div class="subText">Company</div>
+<div id="profileCompany"></div>
 
-      <label>Address</label>
-      <input id="addressInput">
+<div class="subText">Vessel</div>
+<div id="profileVessel"></div>
 
-      <div class="row">
-        <button class="primary" onclick="saveProfile()">Save</button>
-        <button class="light" onclick="toggleEdit()">Cancel</button>
-      </div>
-    </div>
-  </div>
+<div class="subText">Experience</div>
+<div id="profileExperience"></div>
 
-  <!-- DOCUMENTS (KEPT + EXPIRY COUNTDOWN KEPT) -->
-  <div class="card">
-    <div style="display:flex;justify-content:space-between;align-items:center;">
-      <div style="font-weight:900;">📄 My Documents</div>
-      <button class="primary" onclick="toggleDocForm()">Add</button>
-    </div>
+<div class="subText">Phone</div>
+<div id="profilePhone"></div>
 
-    <div id="docFormSection" style="display:none;margin-top:20px;">
-      <label>Document Type</label>
-      <input id="docTypeInput">
+<div class="subText">Address</div>
+<div id="profileAddress"></div>
 
-      <label>Document Number</label>
-      <input id="docNumberInput">
+</div>
+</div>
 
-      <label>Issue Date</label>
-      <input type="date" id="docIssueInput">
+<!-- EDIT PROFILE -->
 
-      <label>Expiry Date</label>
-      <input type="date" id="docExpiryInput">
+<div class="card">
 
-      <div class="row">
-        <button class="primary" onclick="addDocument()">Save</button>
-        <button class="light" onclick="toggleDocForm()">Cancel</button>
-      </div>
-    </div>
-  </div>
+<button class="primary" onclick="toggleEdit()">
+Edit Profile
+</button>
 
-  <div id="documentsList"></div>
+<div id="editSection" style="display:none;margin-top:20px">
+
+<label>Full Name</label>
+<input id="nameInput">
+
+<label>Rank</label>
+<input id="rankInput">
+
+<label>Company</label>
+<input id="companyInput">
+
+<label>Vessel</label>
+<input id="vesselInput">
+
+<label>Experience</label>
+<input id="experienceInput">
+
+<label>Phone</label>
+<input id="phoneInput">
+
+<label>Address</label>
+<input id="addressInput">
+
+<div class="row">
+<button class="primary" onclick="saveProfile()">Save</button>
+<button class="light" onclick="toggleEdit()">Cancel</button>
+</div>
+
+</div>
+</div>
+
+<!-- DOCUMENTS -->
+
+<div class="card">
+
+<div style="display:flex;justify-content:space-between;">
+<div style="font-weight:900">📄 My Documents</div>
+<button class="primary" onclick="toggleDocForm()">Add</button>
+</div>
+
+<div id="docFormSection" style="display:none;margin-top:20px">
+
+<label>Document Type</label>
+<input id="docTypeInput">
+
+<label>Document Number</label>
+<input id="docNumberInput">
+
+<label>Issue Date</label>
+<input type="date" id="docIssueInput">
+
+<label>Expiry Date</label>
+<input type="date" id="docExpiryInput">
+
+<div class="row">
+<button class="primary" onclick="addDocument()">Save</button>
+<button class="light" onclick="toggleDocForm()">Cancel</button>
+</div>
+
+</div>
+
+</div>
+
+<div id="documentsList"></div>
+
 </div>
 
 <!-- NAV -->
+
 <div class="bottomnav">
-  <button class="active" onclick="showPage('feedsPage',this)">📰 Feeds</button>
-  <button onclick="showPage('friendsPage',this)">👥 Friends</button>
-  <button onclick="showPage('messagesPage',this)">💬 Messages</button>
-  <button onclick="showPage('profilePage',this)">👤 Profile</button>
+<button class="active" onclick="showPage('feedsPage',this)">📰 Feeds</button>
+<button onclick="showPage('friendsPage',this)">👥 Friends</button>
+<button onclick="showPage('messagesPage',this)">💬 Messages</button>
+<button onclick="showPage('profilePage',this)">👤 Profile</button>
 </div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, collection, addDoc, query, where, onSnapshot, deleteDoc }
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+import { initializeApp } from
+"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+
+import {
+getAuth,
+onAuthStateChanged,
+signOut
+}
+from
+"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+import {
+getFirestore,
+doc,
+getDoc,
+setDoc,
+collection,
+addDoc,
+query,
+where,
+onSnapshot,
+deleteDoc
+}
+from
+"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig={
-  apiKey:"AIzaSyCNlodsmEHrSXxgH0gTOcx4cAXwG8qmG9w",
-  authDomain:"seaconnect-d2baa.firebaseapp.com",
-  projectId:"seaconnect-d2baa"
+apiKey:"AIzaSyCNlodsmEHrSXxgH0gTOcx4cAXwG8qmG9w",
+authDomain:"seaconnect-d2baa.firebaseapp.com",
+projectId:"seaconnect-d2baa"
 };
 
 const app=initializeApp(firebaseConfig);
@@ -275,271 +332,269 @@ let currentEmail=null;
 
 const IMGBB_KEY="5b417e8de4a883f7425eeda12dc38f06";
 
-/* ✅ KEEP YOUR NAV */
 window.showPage=function(id,btn){
-  document.querySelectorAll(".page").forEach(p=>p.style.display="none");
-  document.querySelectorAll(".bottomnav button").forEach(b=>b.classList.remove("active"));
-  const page=document.getElementById(id);
-  if(page) page.style.display="block";
-  if(btn) btn.classList.add("active");
+
+document.querySelectorAll(".page")
+.forEach(p=>p.style.display="none");
+
+document.querySelectorAll(".bottomnav button")
+.forEach(b=>b.classList.remove("active"));
+
+document.getElementById(id).style.display="block";
+
+btn.classList.add("active");
+
 };
 
-/* ✅ KEEP YOUR INFO TOGGLE */
 window.toggleInfo=function(){
-  const sec=document.getElementById("infoSection");
-  const btn=document.getElementById("infoBtn");
-  const isHidden=(sec.style.display==="none" || sec.style.display==="");
-  sec.style.display=isHidden ? "block" : "none";
-  btn.innerText=isHidden ? "Hide" : "Show";
+
+const sec=document.getElementById("infoSection");
+const btn=document.getElementById("infoBtn");
+
+const show=sec.style.display==="none";
+
+sec.style.display=show?"block":"none";
+btn.innerText=show?"Hide":"Show";
+
 };
 
-/* ✅ IMPORTANT: ADD THE MISSING FUNCTION YOU WERE CALLING (so JS never crashes) */
-window.hideDocForm=function(){
-  const form=document.getElementById("docFormSection");
-  if(form) form.style.display="none";
+window.toggleEdit=function(){
+
+const s=document.getElementById("editSection");
+
+s.style.display=
+(s.style.display==="none"||s.style.display==="")?
+"block":"none";
+
+};
+
+window.toggleDocForm=function(){
+
+const s=document.getElementById("docFormSection");
+
+s.style.display=
+(s.style.display==="none"||s.style.display==="")?
+"block":"none";
+
 };
 
 onAuthStateChanged(auth,async(user)=>{
-  if(!user){
-    location.href="index.html";
-    return;
-  }
 
-  currentUID=user.uid;
-  currentEmail=user.email.toLowerCase();
-
-  const ref=doc(db,"users",currentUID);
-  const snap=await getDoc(ref);
-
-  if(!snap.exists()){
-    await setDoc(ref,{
-      email:currentEmail,
-      name:user.email.split("@")[0],
-      rank:"",
-      company:"",
-      vessel:"",
-      experience:"",
-      phone:"",
-      address:"",
-      photo:"",
-      createdAt:Date.now()
-    });
-  }
-
-  /* ✅ Fix only the DEFAULT src if it's the markdown format (does not touch saved photo) */
-  const img=document.getElementById("profilePhoto");
-  if(img && img.getAttribute("src") && img.getAttribute("src").startsWith("[")){
-    img.src="https://i.ibb.co/2kRZ7Z6/avatar.png";
-  }
-
-  loadProfile();
-  loadDocuments();
-});
-
-/* PROFILE */
-async function loadProfile(){
-  const snap=await getDoc(doc(db,"users",currentUID));
-  const d=snap.data()||{};
-
-  if(d.photo){
-    document.getElementById("profilePhoto").src=d.photo;
-  }
-
-  profileName.innerText=d.name||"";
-  profileRank.innerText=d.rank||"";
-
-  profileEmail.innerText=d.email||currentEmail;
-  profileCompany.innerText=d.company||"-";
-  profileVessel.innerText=d.vessel||"-";
-  profileExperience.innerText=d.experience||"-";
-  profilePhone.innerText=d.phone||"-";
-  profileAddress.innerText=d.address||"-";
-
-  nameInput.value=d.name||"";
-  rankInput.value=d.rank||"";
-  companyInput.value=d.company||"";
-  vesselInput.value=d.vessel||"";
-  experienceInput.value=d.experience||"";
-  phoneInput.value=d.phone||"";
-  addressInput.value=d.address||"";
+if(!user){
+location.href="index.html";
+return;
 }
 
-window.toggleEdit=function(){
-  const section=document.getElementById("editSection");
-  section.style.display=(section.style.display==="none" || section.style.display==="") ? "block" : "none";
-};
+currentUID=user.uid;
+currentEmail=user.email.toLowerCase();
+
+loadProfile();
+loadDocuments();
+
+});
+
+async function loadProfile(){
+
+const snap=await getDoc(doc(db,"users",currentUID));
+
+const d=snap.data()||{};
+
+if(d.photo){
+profilePhoto.src=d.photo;
+}
+
+profileName.innerText=d.name||"";
+profileRank.innerText=d.rank||"";
+
+profileEmail.innerText=d.email||"";
+profileCompany.innerText=d.company||"-";
+profileVessel.innerText=d.vessel||"-";
+profileExperience.innerText=d.experience||"-";
+profilePhone.innerText=d.phone||"-";
+profileAddress.innerText=d.address||"-";
+
+nameInput.value=d.name||"";
+rankInput.value=d.rank||"";
+companyInput.value=d.company||"";
+vesselInput.value=d.vessel||"";
+experienceInput.value=d.experience||"";
+phoneInput.value=d.phone||"";
+addressInput.value=d.address||"";
+
+}
 
 window.saveProfile=async function(){
-  try{
-    await setDoc(doc(db,"users",currentUID),{
-      email:currentEmail,
-      name:nameInput.value,
-      rank:rankInput.value,
-      company:companyInput.value,
-      vessel:vesselInput.value,
-      experience:experienceInput.value,
-      phone:phoneInput.value,
-      address:addressInput.value,
-      updatedAt:Date.now()
-    },{merge:true});
 
-    await loadProfile();
-    toggleEdit();
-    alert("✅ Profile saved!");
-  }catch(e){
-    console.error("saveProfile error:", e);
-    alert("❌ Profile save failed");
-  }
-};
+await setDoc(doc(db,"users",currentUID),{
 
-/* DOCUMENTS */
-window.toggleDocForm=function(){
-  const form=document.getElementById("docFormSection");
-  if(form.style.display==="none" || form.style.display===""){
-    form.style.display="block";
-  }else{
-    form.style.display="none";
-  }
+email:currentEmail,
+name:nameInput.value,
+rank:rankInput.value,
+company:companyInput.value,
+vessel:vesselInput.value,
+experience:experienceInput.value,
+phone:phoneInput.value,
+address:addressInput.value
+
+},{merge:true});
+
+alert("Profile saved");
+
+toggleEdit();
+
+loadProfile();
+
 };
 
 window.addDocument=async function(){
-  try{
-    if(!currentUID) return alert("Please wait... logging in");
-    const type=docTypeInput.value.trim();
-    if(!type) return alert("Enter document type");
 
-    await addDoc(collection(db,"documents"),{
-      uid:currentUID,
-      type,
-      number:docNumberInput.value,
-      issue:docIssueInput.value,
-      expiry:docExpiryInput.value,
-      createdAt:Date.now()
-    });
+const type=docTypeInput.value.trim();
 
-    docTypeInput.value="";
-    docNumberInput.value="";
-    docIssueInput.value="";
-    docExpiryInput.value="";
+if(!type)return alert("Enter document type");
 
-    /* ✅ KEEP YOUR ORIGINAL CALL (now it exists and will not crash) */
-    hideDocForm();
+await addDoc(collection(db,"documents"),{
 
-    alert("✅ Document saved!");
-  }catch(e){
-    console.error("addDocument error:", e);
-    alert("❌ Document save failed");
-  }
+uid:currentUID,
+type:type,
+number:docNumberInput.value,
+issue:docIssueInput.value,
+expiry:docExpiryInput.value,
+createdAt:Date.now()
+
+});
+
+docTypeInput.value="";
+docNumberInput.value="";
+docIssueInput.value="";
+docExpiryInput.value="";
+
+toggleDocForm();
+
 };
 
 function loadDocuments(){
-  if(!currentUID) return;
-  const list=document.getElementById("documentsList");
-  const q=query(collection(db,"documents"),where("uid","==",currentUID));
 
-  onSnapshot(q,(snap)=>{
-    list.innerHTML="";
-    if(snap.empty){
-      list.innerHTML=`<div class="subText">No documents yet.</div>`;
-      return;
-    }
+const q=query(
+collection(db,"documents"),
+where("uid","==",currentUID)
+);
 
-    snap.forEach(docSnap=>{
-      const d=docSnap.data();
-      const id=docSnap.id;
+onSnapshot(q,(snap)=>{
 
-      /* ✅ YOUR EXPIRY COUNTDOWN LOGIC (UNCHANGED) */
-      let status="";
-      let color="#111";
-      if(d.expiry){
-        const diff=Math.ceil((new Date(d.expiry)-new Date())/(1000*60*60*24));
-        if(diff<0){
-          status="❌ Expired";
-          color="#ef4444";
-        }
-        else if(diff<=30){
-          status=`⚠️ ${diff} days left`;
-          color="#f59e0b";
-        }
-        else{
-          status=`✅ ${diff} days left`;
-          color="#16a34a";
-        }
-      }
+documentsList.innerHTML="";
 
-      list.innerHTML += `
-      <div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:center;">
-          <div>
-            <div style="font-weight:900;font-size:18px;">${d.type}</div>
-            <div class="subText">Document Number</div>
-            <div>${d.number || "-"}</div>
+snap.forEach(docSnap=>{
 
-            <div class="subText" style="margin-top:8px;">Issue Date</div>
-            <div>${d.issue || "-"}</div>
+const d=docSnap.data();
+const id=docSnap.id;
 
-            <div class="subText" style="margin-top:8px;">Expiry Date</div>
-            <div>
-              ${d.expiry || "-"}
-              <span style="color:${color};font-weight:800;">
-                ${status}
-              </span>
-            </div>
-          </div>
+let status="";
+let color="#111";
 
-          <button class="danger" onclick="deleteDocument('${id}')">
-            Delete
-          </button>
-        </div>
-      </div>
-      `;
-    });
-  });
+if(d.expiry){
+
+const diff=Math.ceil(
+(new Date(d.expiry)-new Date())
+/(1000*60*60*24)
+);
+
+if(diff<0){
+
+status="❌ Expired";
+color="#ef4444";
+
+}
+else if(diff<=30){
+
+status="⚠️ "+diff+" days left";
+color="#f59e0b";
+
+}
+else{
+
+status="✅ "+diff+" days left";
+color="#16a34a";
+
+}
+
+}
+
+documentsList.innerHTML+=`
+
+<div class="card">
+
+<div style="font-weight:900">
+${d.type}
+</div>
+
+<div class="subText">Number</div>
+${d.number||"-"}
+
+<div class="subText">Expiry</div>
+${d.expiry||"-"}
+
+<span style="color:${color}">
+${status}
+</span>
+
+<br><br>
+
+<button class="danger"
+onclick="deleteDocument('${id}')">
+Delete
+</button>
+
+</div>
+
+`;
+
+});
+
+});
+
 }
 
 window.deleteDocument=async function(id){
-  await deleteDoc(doc(db,"documents",id));
+
+await deleteDoc(doc(db,"documents",id));
+
 };
 
-/* ✅ PHOTO UPLOAD (UNCHANGED LOGIC + extra safety checks) */
-document.getElementById("photoInput").addEventListener("change",async function(){
-  try{
-    const file=this.files[0];
-    if(!file) return;
+document.getElementById("photoInput")
+.addEventListener("change",async function(){
 
-    const formData=new FormData();
-    formData.append("image",file);
+const file=this.files[0];
+if(!file)return;
 
-    const res=await fetch("https://api.imgbb.com/1/upload?key="+IMGBB_KEY,{
-      method:"POST",
-      body:formData
-    });
+const formData=new FormData();
+formData.append("image",file);
 
-    const data=await res.json();
-    if(!data || !data.data || !data.data.url) throw new Error("ImgBB upload failed");
+const res=await fetch(
+"https://api.imgbb.com/1/upload?key="+IMGBB_KEY,
+{method:"POST",body:formData}
+);
 
-    const imageUrl=data.data.url;
+const data=await res.json();
 
-    document.getElementById("profilePhoto").src=imageUrl;
+const imageUrl=data.data.url;
 
-    await setDoc(doc(db,"users",currentUID),{
-      photo:imageUrl,
-      updatedAt:Date.now()
-    },{merge:true});
+profilePhoto.src=imageUrl;
 
-    alert("✅ Photo saved!");
-    this.value="";
-  }catch(e){
-    console.error("photo upload error:", e);
-    alert("❌ Photo upload failed");
-  }
+await setDoc(doc(db,"users",currentUID),{
+
+photo:imageUrl
+
+},{merge:true});
+
 });
 
 window.logout=async function(){
-  if(!confirm("Logout?")) return;
-  await signOut(auth);
-  location.href="index.html";
+
+await signOut(auth);
+location.href="index.html";
+
 };
+
 </script>
 
 </body>

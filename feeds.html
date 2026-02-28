@@ -155,19 +155,7 @@ font-weight:800;
 
 <!-- LOGIN PAGE -->
 
-<div id="loginPage" class="page" style="display:block;">
 
-<div class="card">
-
-<h2>SeaConnect Login</h2>
-
-<input id="loginEmail" placeholder="Email">
-<input id="loginPassword" type="password" placeholder="Password">
-
-<div class="row">
-<button class="primary" onclick="login()">Login</button>
-<button class="light" onclick="signup()">Sign Up</button>
-</div>
 
 </div>
 
@@ -313,6 +301,20 @@ if(btn) btn.classList.add("active");
 /* AUTH */
 
 onAuthStateChanged(auth,(user)=>{
+
+if(!user){
+location.href="index.html";
+return;
+}
+
+currentUID=user.uid;
+currentEmail=user.email;
+
+who.innerText=currentEmail;
+
+loadFeeds();
+
+});
 
 if(!user){
 

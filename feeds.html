@@ -291,34 +291,45 @@ location.reload();
 
 }
 
-window.createFeed=async function(){
+window.createFeed = async function(){
 
-const text=document.getElementById("feedInput").value.trim();
-const file=document.getElementById("feedPhoto").files[0];
+const btn = document.querySelector("button.primary");
+btn.disabled = true;
+btn.innerText = "Posting...";
+
+try{
+
+const text = document.getElementById("feedInput").value.trim();
+const file = document.getElementById("feedPhoto").files[0];
 
 if(!text && !file){
-
 alert("Write something or choose a photo");
+btn.disabled = false;
+btn.innerText = "Post";
 return;
-
 }
 
 let photoURL="";
 
 if(file){
 
-const formData=new FormData();
+const formData = new FormData();
 formData.append("image",file);
 
-const res=await fetch(
+const res = await fetch(
 "https://api.imgbb.com/1/upload?key="+IMGBB_KEY,
 {method:"POST",body:formData}
 );
 
-const data=await res.json();
+const data = await res.json();
 
 if(data.success){
-photoURL=data.data.url;
+photoURL = data.data.url;
+}else{
+alert("Photo upload failed");
+btn.disabled = false;
+btn.innerText = "Post";
+return;
 }
 
 }
@@ -339,8 +350,20 @@ document.getElementById("feedInput").value="";
 document.getElementById("feedPhoto").value="";
 document.getElementById("previewPhoto").style.display="none";
 
+btn.disabled = false;
+btn.innerText = "Post";
+
+}catch(e){
+
+console.log(e);
+alert("Post failed");
+
+btn.disabled = false;
+btn.innerText = "Post";
+
 }
 
+};
 function loadFeeds(){
 
 const q=query(collection(db,"feeds"),orderBy("createdAt","desc"));

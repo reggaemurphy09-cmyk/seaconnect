@@ -75,6 +75,7 @@ justify-content:flex-end;
 width:34px;
 height:34px;
 border-radius:50%;
+object-fit:cover;
 }
 
 .bubble{
@@ -114,8 +115,6 @@ border-top:1px solid rgba(255,255,255,0.1);
 padding:10px;
 }
 
-/* PREVIEW IMAGE */
-
 .preview{
 max-width:120px;
 border-radius:10px;
@@ -153,14 +152,14 @@ color:white;
 
 <!-- HEADER -->
 
-<div class="chatHeader" id="chatHeader">
+<div class="chatHeader">
 
 <button onclick="history.back()">←</button>
 
-<img id="chatAvatar">
+<img id="chatAvatar" src="https://i.ibb.co/2kRZ7Z6/avatar.png">
 
 <div>
-<div class="chatTitle" id="chatTitle"></div>
+<div class="chatTitle" id="chatTitle">Loading...</div>
 <div class="chatRank" id="chatRank"></div>
 </div>
 
@@ -223,6 +222,9 @@ let chatUserEmail;
 let currentChat;
 let sending=false;
 
+let myPhoto="https://i.ibb.co/2kRZ7Z6/avatar.png";
+let otherPhoto="https://i.ibb.co/2kRZ7Z6/avatar.png";
+
 const chatArea=document.getElementById("chatArea");
 const previewImage=document.getElementById("previewImage");
 
@@ -250,7 +252,7 @@ openChat(openUser.toLowerCase());
 
 });
 
-/* PROFILE */
+/* GET PROFILE */
 
 async function getProfile(email){
 
@@ -280,13 +282,17 @@ async function openChat(email){
 chatUserEmail=email;
 currentChat=chatId(currentEmail,email);
 
+/* load messages immediately */
+loadMessages();
+
+/* load profile in background */
 const profile=await getProfile(email);
 
 chatTitle.innerText=profile.name;
 chatRank.innerText=profile.rank;
 chatAvatar.src=profile.photo;
 
-loadMessages();
+otherPhoto=profile.photo;
 
 }
 
@@ -307,6 +313,8 @@ if(d.chatId!==currentChat) return;
 
 const me=d.from===currentEmail;
 
+const avatar=me?myPhoto:otherPhoto;
+
 const time=new Date(d.createdAt).toLocaleTimeString([],{
 hour:'2-digit',
 minute:'2-digit'
@@ -316,7 +324,7 @@ chatArea.innerHTML+=`
 
 <div class="message ${me?'me':''}">
 
-${!me?`<img class="avatar" src="https://i.ibb.co/2kRZ7Z6/avatar.png">`:''}
+${!me?`<img class="avatar" src="${avatar}">`:''}
 
 <div class="bubble">
 
@@ -387,7 +395,7 @@ messageInput.value="";
 previewImage.style.display="none";
 photoInput.value="";
 
-/* upload background */
+/* upload in background */
 
 if(file){
 

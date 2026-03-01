@@ -10,99 +10,106 @@
 body{
 margin:0;
 font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
-background:#0f172a;
-color:white;
+background:#f3f4f6;
+color:#111;
 }
 
-.container{
-padding:20px;
-padding-bottom:100px;
+/* HEADER */
+
+.header{
+height:60px;
+display:flex;
+align-items:center;
+gap:10px;
+padding:0 15px;
+background:white;
+border-bottom:1px solid #ddd;
+font-weight:700;
 }
 
-.card{
-background:rgba(255,255,255,0.06);
-padding:16px;
-border-radius:18px;
-margin-bottom:12px;
+.header button{
+background:none;
+border:none;
+font-size:20px;
 cursor:pointer;
 }
 
-.listRow{
+/* CHAT LIST */
+
+.chatList{
+padding:10px;
+}
+
+.chatItem{
 display:flex;
-align-items:center;
 gap:12px;
+align-items:center;
+background:white;
+padding:10px;
+border-radius:10px;
+margin-bottom:10px;
+cursor:pointer;
+}
+
+.avatarWrap{
+position:relative;
 }
 
 .avatar{
-width:50px;
-height:50px;
+width:45px;
+height:45px;
 border-radius:50%;
 object-fit:cover;
 }
 
-.name{
-font-weight:900;
-}
-
-.rank{
-font-size:12px;
-opacity:.6;
-}
-
-.last{
-font-size:13px;
-opacity:.6;
-}
-
-.chatBox{
-position:fixed;
-top:0;
-left:0;
-right:0;
-bottom:0;
-background:#0f172a;
-display:none;
-flex-direction:column;
-}
-
-.chatHeader{
-display:flex;
-align-items:center;
-gap:12px;
-padding:14px;
-border-bottom:1px solid rgba(255,255,255,0.1);
-}
-
-.chatHeader img{
-width:40px;
-height:40px;
+.online{
+position:absolute;
+bottom:2px;
+right:2px;
+width:10px;
+height:10px;
+background:#22c55e;
 border-radius:50%;
+border:2px solid white;
 }
+
+.name{font-weight:700;}
+.rank{font-size:12px;color:#666}
+
+/* CHAT AREA */
 
 .chatArea{
-flex:1;
+position:fixed;
+top:60px;
+bottom:70px;
+left:0;
+right:0;
 overflow:auto;
 padding:15px;
+display:none;
 }
+
+/* MESSAGE */
 
 .message{
-margin:8px 0;
 display:flex;
+gap:10px;
+margin-bottom:12px;
 }
 
-.me{
+.message.me{
 justify-content:flex-end;
 }
 
 .bubble{
-max-width:70%;
+background:#e5e7eb;
 padding:10px 14px;
-border-radius:14px;
-background:#1e293b;
+border-radius:15px;
+max-width:70%;
 }
 
-.me .bubble{
-background:#3b82f6;
+.message.me .bubble{
+background:white;
 }
 
 .chatPhoto{
@@ -113,33 +120,47 @@ margin-top:5px;
 
 .time{
 font-size:10px;
-opacity:.6;
-margin-top:3px;
+color:#777;
+margin-top:4px;
 }
+
+/* INPUT */
 
 .chatInput{
-display:flex;
-gap:10px;
-padding:12px;
-border-top:1px solid rgba(255,255,255,0.1);
+position:fixed;
+bottom:0;
+left:0;
+right:0;
+background:white;
+border-top:1px solid #ddd;
+padding:10px;
+display:none;
 }
 
-.chatInput input{
+.inputRow{
+display:flex;
+gap:10px;
+align-items:center;
+}
+
+.inputRow input{
 flex:1;
 padding:12px;
 border-radius:20px;
-border:none;
-background:#1e293b;
-color:white;
+border:1px solid #ddd;
 }
 
-.chatInput button{
+.inputRow button{
+background:none;
 border:none;
-background:#3b82f6;
-color:white;
-padding:10px 14px;
-border-radius:12px;
+font-size:22px;
 cursor:pointer;
+}
+
+.preview{
+max-width:120px;
+border-radius:10px;
+margin-bottom:5px;
 }
 
 </style>
@@ -147,38 +168,44 @@ cursor:pointer;
 
 <body>
 
-<div class="container">
+<!-- HEADER -->
 
-<h2>💬 Messages</h2>
+<div class="header">
 
-<div id="chatList"></div>
+<button id="backBtn" style="display:none">←</button>
 
-</div>
+<div id="title">Messages</div>
 
-
-<div id="chatBox" class="chatBox">
-
-<div class="chatHeader">
-<button onclick="closeChat()">←</button>
-
-<img id="chatAvatar">
-
-<div>
-<div id="chatName"></div>
-<div id="chatRank" class="rank"></div>
-</div>
+<button id="closeBtn" style="margin-left:auto;display:none">X</button>
 
 </div>
+
+
+<!-- CHAT LIST -->
+
+<div id="chatList" class="chatList"></div>
+
+
+<!-- CHAT AREA -->
 
 <div id="chatArea" class="chatArea"></div>
 
-<div class="chatInput">
 
-<input id="messageInput" placeholder="Type message">
+<!-- INPUT -->
 
-<input type="file" id="photoInput">
+<div id="chatInput" class="chatInput">
 
-<button id="sendBtn">Send</button>
+<img id="preview" class="preview" style="display:none">
+
+<div class="inputRow">
+
+<button onclick="photoInput.click()">+</button>
+
+<input id="messageInput" placeholder="Message">
+
+<button id="sendBtn">↑</button>
+
+<input type="file" id="photoInput" style="display:none">
 
 </div>
 
@@ -188,21 +215,8 @@ cursor:pointer;
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-
-import {
-getAuth,
-onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
-import {
-getFirestore,
-collection,
-addDoc,
-query,
-orderBy,
-onSnapshot,
-getDocs
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth,onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore,collection,addDoc,query,orderBy,onSnapshot,getDocs,updateDoc,doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig={
 apiKey:"AIzaSyCNlodsmEHrSXxgH0gTOcx4cAXwG8qmG9w",
@@ -214,16 +228,23 @@ const app=initializeApp(firebaseConfig);
 const auth=getAuth(app);
 const db=getFirestore(app);
 
-let currentEmail=null;
-let currentChat=null;
-let chatUser=null;
+const IMGBB_KEY="5b417e8de4a883f7425eeda12dc38f06";
+
+let currentEmail;
+let chatUser;
+let chatId;
 
 const chatList=document.getElementById("chatList");
 const chatArea=document.getElementById("chatArea");
 
-function chatId(a,b){
+const preview=document.getElementById("preview");
+
+function makeChatId(a,b){
 return [a,b].sort().join("_");
 }
+
+
+/* LOGIN */
 
 onAuthStateChanged(auth,(user)=>{
 
@@ -238,7 +259,10 @@ listenChats();
 
 });
 
-async function getProfile(email){
+
+/* GET USER PROFILE */
+
+async function getUser(email){
 
 let name=email.split("@")[0];
 let rank="";
@@ -246,15 +270,14 @@ let photo="https://i.ibb.co/2kRZ7Z6/avatar.png";
 
 const snap=await getDocs(collection(db,"users"));
 
-snap.forEach(docSnap=>{
+snap.forEach(d=>{
+const data=d.data();
 
-const d=docSnap.data();
+if(data.email===email){
 
-if(d.email===email){
-
-name=d.name||name;
-rank=d.rank||"";
-photo=d.photo||photo;
+name=data.name||name;
+rank=data.rank||"";
+photo=data.photo||photo;
 
 }
 
@@ -264,6 +287,9 @@ return {name,rank,photo};
 
 }
 
+
+/* LIST CHATS */
+
 function listenChats(){
 
 const q=query(collection(db,"messages"),orderBy("createdAt"));
@@ -272,9 +298,9 @@ onSnapshot(q,async snap=>{
 
 const chats={};
 
-snap.forEach(docSnap=>{
+snap.forEach(doc=>{
 
-const d=docSnap.data();
+const d=doc.data();
 
 if(d.from!==currentEmail && d.to!==currentEmail) return;
 
@@ -288,27 +314,24 @@ chatList.innerHTML="";
 
 for(const email in chats){
 
-const last=chats[email];
-
-const profile=await getProfile(email);
+const profile=await getUser(email);
 
 chatList.innerHTML+=`
 
-<div class="card" onclick="openChat('${email}')">
+<div class="chatItem" onclick="openChat('${email}')">
 
-<div class="listRow">
+<div class="avatarWrap">
 
 <img class="avatar" src="${profile.photo}">
+
+<div class="online"></div>
+
+</div>
 
 <div>
 
 <div class="name">${profile.name}</div>
-
 <div class="rank">${profile.rank}</div>
-
-<div class="last">${last.text||"Photo"}</div>
-
-</div>
 
 </div>
 
@@ -322,45 +345,50 @@ chatList.innerHTML+=`
 
 }
 
+
+/* OPEN CHAT */
+
 window.openChat=async function(email){
 
 chatUser=email;
 
-currentChat=chatId(currentEmail,email);
+chatId=makeChatId(currentEmail,email);
 
-const profile=await getProfile(email);
+document.getElementById("title").innerText="Chat";
 
-chatAvatar.src=profile.photo;
+document.getElementById("backBtn").style.display="block";
+document.getElementById("closeBtn").style.display="block";
 
-chatName.innerText=profile.name;
-
-chatRank.innerText=profile.rank;
-
-chatBox.style.display="flex";
+chatList.style.display="none";
+chatArea.style.display="block";
+chatInput.style.display="block";
 
 loadMessages();
 
-}
+};
+
+
+/* LOAD MESSAGES */
 
 function loadMessages(){
 
 const q=query(collection(db,"messages"),orderBy("createdAt"));
 
-onSnapshot(q,(snap)=>{
+onSnapshot(q,snap=>{
 
 chatArea.innerHTML="";
 
-snap.forEach(docSnap=>{
+snap.forEach(doc=>{
 
-const d=docSnap.data();
+const d=doc.data();
 
-if(d.chatId!==currentChat) return;
+if(d.chatId!==chatId) return;
 
 const me=d.from===currentEmail;
 
 const time=new Date(d.createdAt).toLocaleTimeString([],{
-hour:'2-digit',
-minute:'2-digit'
+hour:"2-digit",
+minute:"2-digit"
 });
 
 chatArea.innerHTML+=`
@@ -371,7 +399,7 @@ chatArea.innerHTML+=`
 
 ${d.text||""}
 
-${d.photo?`<img src="${d.photo}" class="chatPhoto">`:""}
+${d.photo?`<img src="${d.photo}" class="chatPhoto">`:''}
 
 <div class="time">${time}</div>
 
@@ -389,6 +417,26 @@ chatArea.scrollTop=chatArea.scrollHeight;
 
 }
 
+
+/* PHOTO PREVIEW */
+
+photoInput.onchange=()=>{
+
+const file=photoInput.files[0];
+
+if(file){
+
+preview.src=URL.createObjectURL(file);
+
+preview.style.display="block";
+
+}
+
+};
+
+
+/* SEND */
+
 sendBtn.onclick=async()=>{
 
 const text=messageInput.value.trim();
@@ -397,33 +445,80 @@ const file=photoInput.files[0];
 
 if(!text && !file) return;
 
-let photo="";
+let previewUrl="";
 
 if(file){
-photo=URL.createObjectURL(file);
+previewUrl=URL.createObjectURL(file);
 }
 
-await addDoc(collection(db,"messages"),{
+const ref=await addDoc(collection(db,"messages"),{
 
-chatId:currentChat,
+chatId:chatId,
 from:currentEmail,
 to:chatUser,
 text:text,
-photo:photo,
+photo:previewUrl,
 createdAt:Date.now()
 
 });
 
 messageInput.value="";
+preview.style.display="none";
 photoInput.value="";
 
+
+if(file){
+
+const formData=new FormData();
+formData.append("image",file);
+
+const res=await fetch(
+"https://api.imgbb.com/1/upload?key="+IMGBB_KEY,
+{method:"POST",body:formData}
+);
+
+const data=await res.json();
+
+if(data.success){
+
+await updateDoc(doc(db,"messages",ref.id),{
+photo:data.data.url
+});
+
 }
 
-window.closeChat=function(){
-
-chatBox.style.display="none";
-
 }
+
+};
+
+
+/* BACK */
+
+backBtn.onclick=()=>{
+
+chatArea.style.display="none";
+chatInput.style.display="none";
+
+chatList.style.display="block";
+
+document.getElementById("title").innerText="Messages";
+
+backBtn.style.display="none";
+closeBtn.style.display="none";
+
+};
+
+
+/* CLOSE */
+
+closeBtn.onclick=()=>{
+
+chatArea.style.display="none";
+chatInput.style.display="none";
+
+chatList.style.display="block";
+
+};
 
 </script>
 

@@ -3,114 +3,74 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>SeaConnect Messenger</title>
+<title>SeaConnect Messages</title>
 
 <style>
 
 body{
 margin:0;
 font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
-background:#f5f5f5;
+background:#0f172a;
+color:white;
 }
 
-/* HEADER */
-
-.header{
-height:60px;
-background:white;
-display:flex;
-align-items:center;
-padding:0 15px;
-border-bottom:1px solid #ddd;
-gap:10px;
+.container{
+padding:20px;
+padding-bottom:100px;
 }
 
-.header button{
-background:none;
-border:none;
-font-size:22px;
+.card{
+background:rgba(255,255,255,0.06);
+padding:16px;
+border-radius:18px;
+margin-bottom:12px;
 cursor:pointer;
 }
 
-.title{
-font-weight:700;
-font-size:18px;
-}
-
-/* MESSAGE LIST */
-
-.messageList{
-padding:10px;
-}
-
-.user{
+.listRow{
 display:flex;
-gap:10px;
-padding:12px;
-background:white;
-border-radius:10px;
-margin-bottom:8px;
-cursor:pointer;
 align-items:center;
+gap:12px;
 }
 
 .avatar{
-width:45px;
-height:45px;
-border-radius:50%;
-position:relative;
-}
-
-.avatar img{
-width:45px;
-height:45px;
+width:50px;
+height:50px;
 border-radius:50%;
 object-fit:cover;
 }
 
-.online{
-width:10px;
-height:10px;
-background:#22c55e;
-border-radius:50%;
-position:absolute;
-bottom:2px;
-right:2px;
-border:2px solid white;
-}
-
 .name{
-font-weight:700;
+font-weight:900;
 }
 
 .rank{
 font-size:12px;
-color:#666;
+opacity:.6;
 }
 
-/* CHAT SCREEN */
+.last{
+font-size:13px;
+opacity:.6;
+}
 
-.chatScreen{
+.chatBox{
 position:fixed;
 top:0;
 left:0;
 right:0;
 bottom:0;
-background:white;
+background:#0f172a;
 display:none;
 flex-direction:column;
 }
 
-/* CHAT HEADER */
-
 .chatHeader{
-height:60px;
 display:flex;
 align-items:center;
-padding:0 10px;
-border-bottom:1px solid #ddd;
-gap:10px;
+gap:12px;
+padding:14px;
+border-bottom:1px solid rgba(255,255,255,0.1);
 }
 
 .chatHeader img{
@@ -119,74 +79,66 @@ height:40px;
 border-radius:50%;
 }
 
-.chatHeader .name{
-font-weight:700;
-}
-
-.chatHeader .rank{
-font-size:12px;
-color:#666;
-}
-
-.chatHeader .close{
-margin-left:auto;
-font-size:22px;
-cursor:pointer;
-}
-
-/* CHAT AREA */
-
 .chatArea{
 flex:1;
 overflow:auto;
 padding:15px;
-background:#f5f5f5;
 }
 
 .message{
-max-width:70%;
-padding:10px 14px;
-border-radius:18px;
-background:#e5e7eb;
-margin-bottom:8px;
+margin:8px 0;
+display:flex;
 }
 
 .me{
-margin-left:auto;
-background:#dbeafe;
+justify-content:flex-end;
 }
 
-/* PREVIEW IMAGE */
+.bubble{
+max-width:70%;
+padding:10px 14px;
+border-radius:14px;
+background:#1e293b;
+}
 
-.preview{
-max-width:120px;
+.me .bubble{
+background:#3b82f6;
+}
+
+.chatPhoto{
+max-width:200px;
 border-radius:10px;
-margin-bottom:5px;
-display:none;
+margin-top:5px;
 }
 
-/* INPUT BAR */
+.time{
+font-size:10px;
+opacity:.6;
+margin-top:3px;
+}
 
-.inputBar{
+.chatInput{
 display:flex;
-align-items:center;
 gap:10px;
-padding:10px;
-background:white;
-border-top:1px solid #ddd;
+padding:12px;
+border-top:1px solid rgba(255,255,255,0.1);
 }
 
-.inputBar input{
+.chatInput input{
 flex:1;
 padding:12px;
 border-radius:20px;
-border:1px solid #ddd;
+border:none;
+background:#1e293b;
+color:white;
 }
 
-.inputBar button{
-background:none;
+.chatInput button{
 border:none;
-font-size:22px;
+background:#3b82f6;
+color:white;
+padding:10px 14px;
+border-radius:12px;
 cursor:pointer;
 }
 
@@ -195,125 +147,281 @@ cursor:pointer;
 
 <body>
 
-<!-- MESSAGE LIST -->
+<div class="container">
 
-<div id="listView">
+<h2>💬 Messages</h2>
 
-<div class="header">
-<button onclick="history.back()">←</button>
-<div class="title">Messages</div>
-</div>
-
-<div class="messageList">
-
-<div class="user" onclick="openChat()">
-
-<div class="avatar">
-<img src="https://i.ibb.co/2kRZ7Z6/avatar.png">
-<div class="online"></div>
-</div>
-
-<div>
-<div class="name">Murphy</div>
-<div class="rank">Chief</div>
-</div>
+<div id="chatList"></div>
 
 </div>
 
-</div>
 
-</div>
-
-<!-- CHAT SCREEN -->
-
-<div class="chatScreen" id="chatScreen">
+<div id="chatBox" class="chatBox">
 
 <div class="chatHeader">
+<button onclick="closeChat()">←</button>
 
-<button onclick="backList()">←</button>
-
-<img src="https://i.ibb.co/2kRZ7Z6/avatar.png">
+<img id="chatAvatar">
 
 <div>
-<div class="name">Murphy</div>
-<div class="rank">Chief</div>
+<div id="chatName"></div>
+<div id="chatRank" class="rank"></div>
 </div>
 
-<div class="close" onclick="closeChat()">X</div>
-
 </div>
 
-<div class="chatArea" id="chatArea"></div>
+<div id="chatArea" class="chatArea"></div>
 
-<img id="preview" class="preview">
+<div class="chatInput">
 
-<div class="inputBar">
+<input id="messageInput" placeholder="Type message">
 
-<button onclick="fileInput.click()">+</button>
+<input type="file" id="photoInput">
 
-<input id="messageInput" placeholder="Type message...">
-
-<button onclick="sendMessage()">↑</button>
-
-<input type="file" id="fileInput" accept="image/*" style="display:none">
+<button id="sendBtn">Send</button>
 
 </div>
 
 </div>
 
-<script>
 
-let selectedFile=null
+<script type="module">
 
-function openChat(){
-document.getElementById("chatScreen").style.display="flex"
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+
+import {
+getAuth,
+onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+import {
+getFirestore,
+collection,
+addDoc,
+query,
+orderBy,
+onSnapshot,
+getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig={
+apiKey:"AIzaSyCNlodsmEHrSXxgH0gTOcx4cAXwG8qmG9w",
+authDomain:"seaconnect-d2baa.firebaseapp.com",
+projectId:"seaconnect-d2baa"
+};
+
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+
+let currentEmail=null;
+let currentChat=null;
+let chatUser=null;
+
+const chatList=document.getElementById("chatList");
+const chatArea=document.getElementById("chatArea");
+
+function chatId(a,b){
+return [a,b].sort().join("_");
 }
 
-function backList(){
-document.getElementById("chatScreen").style.display="none"
+onAuthStateChanged(auth,(user)=>{
+
+if(!user){
+location.href="index.html";
+return;
 }
 
-function closeChat(){
-document.getElementById("chatScreen").style.display="none"
+currentEmail=user.email.toLowerCase();
+
+listenChats();
+
+});
+
+async function getProfile(email){
+
+let name=email.split("@")[0];
+let rank="";
+let photo="https://i.ibb.co/2kRZ7Z6/avatar.png";
+
+const snap=await getDocs(collection(db,"users"));
+
+snap.forEach(docSnap=>{
+
+const d=docSnap.data();
+
+if(d.email===email){
+
+name=d.name||name;
+rank=d.rank||"";
+photo=d.photo||photo;
+
 }
 
-fileInput.onchange=()=>{
+});
 
-selectedFile=fileInput.files[0]
-
-if(selectedFile){
-preview.src=URL.createObjectURL(selectedFile)
-preview.style.display="block"
-}
+return {name,rank,photo};
 
 }
 
-function sendMessage(){
+function listenChats(){
 
-const text=messageInput.value.trim()
+const q=query(collection(db,"messages"),orderBy("createdAt"));
 
-if(!text && !selectedFile) return
+onSnapshot(q,async snap=>{
 
-let html=""
+const chats={};
 
-if(text){
-html+=`<div class="message me">${text}</div>`
+snap.forEach(docSnap=>{
+
+const d=docSnap.data();
+
+if(d.from!==currentEmail && d.to!==currentEmail) return;
+
+const other=d.from===currentEmail?d.to:d.from;
+
+chats[other]=d;
+
+});
+
+chatList.innerHTML="";
+
+for(const email in chats){
+
+const last=chats[email];
+
+const profile=await getProfile(email);
+
+chatList.innerHTML+=`
+
+<div class="card" onclick="openChat('${email}')">
+
+<div class="listRow">
+
+<img class="avatar" src="${profile.photo}">
+
+<div>
+
+<div class="name">${profile.name}</div>
+
+<div class="rank">${profile.rank}</div>
+
+<div class="last">${last.text||"Photo"}</div>
+
+</div>
+
+</div>
+
+</div>
+
+`;
+
 }
 
-if(selectedFile){
-html+=`<div class="message me">
-<img src="${preview.src}" style="max-width:200px;border-radius:10px">
-</div>`
+});
+
 }
 
-chatArea.innerHTML+=html
+window.openChat=async function(email){
 
-messageInput.value=""
-preview.style.display="none"
-fileInput.value=""
-selectedFile=null
+chatUser=email;
 
-chatArea.scrollTop=chatArea.scrollHeight
+currentChat=chatId(currentEmail,email);
+
+const profile=await getProfile(email);
+
+chatAvatar.src=profile.photo;
+
+chatName.innerText=profile.name;
+
+chatRank.innerText=profile.rank;
+
+chatBox.style.display="flex";
+
+loadMessages();
+
+}
+
+function loadMessages(){
+
+const q=query(collection(db,"messages"),orderBy("createdAt"));
+
+onSnapshot(q,(snap)=>{
+
+chatArea.innerHTML="";
+
+snap.forEach(docSnap=>{
+
+const d=docSnap.data();
+
+if(d.chatId!==currentChat) return;
+
+const me=d.from===currentEmail;
+
+const time=new Date(d.createdAt).toLocaleTimeString([],{
+hour:'2-digit',
+minute:'2-digit'
+});
+
+chatArea.innerHTML+=`
+
+<div class="message ${me?'me':''}">
+
+<div class="bubble">
+
+${d.text||""}
+
+${d.photo?`<img src="${d.photo}" class="chatPhoto">`:""}
+
+<div class="time">${time}</div>
+
+</div>
+
+</div>
+
+`;
+
+});
+
+chatArea.scrollTop=chatArea.scrollHeight;
+
+});
+
+}
+
+sendBtn.onclick=async()=>{
+
+const text=messageInput.value.trim();
+
+const file=photoInput.files[0];
+
+if(!text && !file) return;
+
+let photo="";
+
+if(file){
+photo=URL.createObjectURL(file);
+}
+
+await addDoc(collection(db,"messages"),{
+
+chatId:currentChat,
+from:currentEmail,
+to:chatUser,
+text:text,
+photo:photo,
+createdAt:Date.now()
+
+});
+
+messageInput.value="";
+photoInput.value="";
+
+}
+
+window.closeChat=function(){
+
+chatBox.style.display="none";
 
 }
 

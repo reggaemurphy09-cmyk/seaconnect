@@ -28,7 +28,7 @@ margin-bottom:16px;
 box-shadow:0 10px 30px rgba(0,0,0,.35);
 }
 
-h2,h3{margin-top:0;}
+h2{margin-top:0;}
 
 input{
 width:100%;
@@ -132,29 +132,15 @@ font-weight:800;
 <h2>👥 Friends</h2>
 
 <div class="card">
-<div class="small">Add friend by email</div>
-<input id="friendEmail" placeholder="Enter email">
+<input id="friendEmail" placeholder="Enter email to add friend">
 <div class="row">
-<button class="primary" id="sendBtn">Send</button>
+<button class="primary" id="sendBtn">Send Request</button>
 <button class="light" id="resetBtn">Reset</button>
 </div>
 <div id="friendStatus" class="small"></div>
 </div>
 
-<div class="card">
-<h3>Incoming Requests</h3>
-<div id="incomingList"></div>
-</div>
-
-<div class="card">
-<h3>Sent Requests</h3>
-<div id="sentList"></div>
-</div>
-
-<div class="card">
-<h3>Friends</h3>
 <div id="friendsList"></div>
-</div>
 
 </div>
 
@@ -166,36 +152,182 @@ font-weight:800;
 </div>
 
 <script type="module">
-/* 🔥 PASTE YOUR ORIGINAL FIREBASE SCRIPT HERE */
-/* DO NOT CHANGE LOGIC */
-/* Your original friend request system already supports:
-   - pending
-   - accepted
-   - delete
-   - presence
-*/
 
-/* Only change how you render the rows to use this format: */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import {
+getFirestore,
+doc,
+setDoc,
+getDoc,
+deleteDoc,
+collection,
+onSnapshot,
+query,
+where,
+getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-function renderUserRow(userData,email,isOnline,buttons){
-return `
-<div class="friendRow">
-  <div class="friendInfo">
-    <div class="avatarWrapper">
-      <img src="${userData?.photo || 'https://i.ibb.co/2kRZ7Z6/avatar.png'}">
-      ${isOnline ? '<div class="onlineRing"></div>' : ''}
-    </div>
-    <div>
-      <div style="font-weight:900;">${userData?.name || email}</div>
-      <div class="small">${email}</div>
-    </div>
-  </div>
-  <div class="row">
-    ${buttons}
-  </div>
+const firebaseConfig={
+apiKey:"AIzaSyCNlodsmEHrSXxgH0gTOcx4cAXwG8qmG9w",
+authDomain:"seaconnect-d2baa.firebaseapp.com",
+projectId:"seaconnect-d2baa"
+};
+
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+
+let currentUserEmail=null;
+let currentUserUID=null;
+let presenceData={};
+
+function requestIdFor(a,b){
+return [a.toLowerCase(),b.toLowerCase()].sort().join("__");
+}
+
+async function getUserByEmail(email){
+const q=query(collection(db,"users"),where("email","==",email));
+const snap=await getDocs(q);
+if(!snap.empty) return snap.docs[0].data();
+return null;
+}
+
+onAuthStateChanged(auth,async(user)=>{
+if(!user){
+location.href="index.html";
+return;
+}
+currentUserEmail=user.email.toLowerCase();
+currentUserUID=user.uid;
+
+await setDoc(doc(db,"presence",currentUserUID),{
+email:currentUserEmail,
+online:true,
+lastActive:Date.now()
+});
+
+listenPresence();
+listenFriends();
+});
+
+function listenPresence(){
+onSnapshot(collection(db,"presence"),snap=>{
+presenceData={};
+snap.forEach(d=>{
+presenceData[d.data().email]=d.data();
+});
+});
+}
+
+document.getElementById("resetBtn").onclick=()=>{
+friendEmail.value="";
+friendStatus.innerText="";
+};
+
+document.getElementById("sendBtn").onclick=async()=>{
+
+const toEmail=friendEmail.value.trim().toLowerCase();
+const statusText=friendStatus;
+
+if(!toEmail){
+statusText.innerText="Enter email.";
+return;
+}
+
+if(toEmail===currentUserEmail){
+statusText.innerText="Cannot add yourself.";
+return;
+}
+
+const rid=requestIdFor(currentUserEmail,toEmail);
+const ref=doc(db,"friendRequests",rid);
+const snap=await getDoc(ref);
+
+if(snap.exists()){
+const data=snap.data();
+if(data.status==="pending"){
+statusText.innerText="Already pending.";
+return;
+}
+if(data.status==="accepted"){
+statusText.innerText="Already friends.";
+return;
+}
+}
+
+await setDoc(ref,{
+from:currentUserEmail,
+to:toEmail,
+status:"pending",
+createdAt:Date.now()
+});
+
+statusText.innerText="Request sent ✅";
+friendEmail.value="";
+};
+
+function listenFriends(){
+
+onSnapshot(collection(db,"friendRequests"),async snap=>{
+
+friendsList.innerHTML="";
+
+for(const docSnap of snap.docs){
+
+const r=docSnap.data();
+const from=r.from?.toLowerCase();
+const to=r.to?.toLowerCase();
+const status=r.status;
+
+if(from!==currentUserEmail && to!==currentUserEmail) continue;
+
+const otherEmail=from===currentUserEmail?to:from;
+const userData=await getUserByEmail(otherEmail);
+const isOnline=presenceData[otherEmail]?.online;
+
+if(status==="accepted" || (status==="pending" && from===currentUserEmail)){
+
+friendsList.innerHTML+=`
+<div class="card friendRow">
+<div class="friendInfo">
+<div class="avatarWrapper">
+<img src="${userData?.photo || 'https://i.ibb.co/2kRZ7Z6/avatar.png'}">
+${isOnline?'<div class="onlineRing"></div>':''}
+</div>
+<div>
+<div style="font-weight:900;">${userData?.name||otherEmail}</div>
+<div class="small">${status==="pending"?"Pending...":otherEmail}</div>
+</div>
+</div>
+<div class="row">
+${status==="accepted"
+? `<button class="primary" onclick="openChat('${otherEmail}')">Chat</button>
+   <button class="danger" onclick="unfriend('${otherEmail}')">Unfriend</button>`
+: `<button class="danger" onclick="cancelRequest('${otherEmail}')">Cancel</button>`
+}
+</div>
 </div>
 `;
 }
+}
+});
+}
+
+window.openChat=function(email){
+location.href="message.html?user="+encodeURIComponent(email);
+};
+
+window.unfriend=async function(other){
+const rid=requestIdFor(currentUserEmail,other);
+await deleteDoc(doc(db,"friendRequests",rid));
+};
+
+window.cancelRequest=async function(other){
+const rid=requestIdFor(currentUserEmail,other);
+await deleteDoc(doc(db,"friendRequests",rid));
+};
+
 </script>
 
 </body>

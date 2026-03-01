@@ -15,6 +15,7 @@ color:#f1f5f9;
 }
 
 .page{
+display:block;
 padding:20px;
 padding-bottom:95px;
 }
@@ -135,8 +136,6 @@ color:#3b82f6;
 font-weight:800;
 }
 
-/* PROFILE PHOTO */
-
 .avatar{
 width:40px;
 height:40px;
@@ -162,7 +161,9 @@ box-shadow:0 0 10px #22c55e;
 
 <div class="card">
 
-<div style="font-weight:900;margin-bottom:8px;">Create Post</div>
+<div style="font-weight:900;margin-bottom:8px;">
+Create Post
+</div>
 
 <textarea id="feedInput" placeholder="What’s happening on board?"></textarea>
 
@@ -172,7 +173,11 @@ box-shadow:0 0 10px #22c55e;
 style="width:100%;margin-top:10px;border-radius:16px;display:none;">
 
 <div class="row">
-<button id="postBtn" class="primary" onclick="createFeed()">Post</button>
+<button id="postBtn"
+class="primary"
+onclick="createFeed()">
+Post
+</button>
 </div>
 
 <div id="postMsg" class="subText"></div>
@@ -183,10 +188,9 @@ style="width:100%;margin-top:10px;border-radius:16px;display:none;">
 
 </div>
 
-
 <div class="bottomnav">
 
-<button class="active">
+<button class="active" onclick="location.href='feeds.html'">
 📰 Feeds
 </button>
 
@@ -194,16 +198,15 @@ style="width:100%;margin-top:10px;border-radius:16px;display:none;">
 👥 Friends
 </button>
 
-<button onclick="location.href='messages.html'">
+<button onclick="location.href='message.html'">
 💬 Messages
 </button>
 
-<button onclick="location.href='app.html'">
+<button onclick="location.href='profile.html'">
 👤 Profile
 </button>
 
 </div>
-
 
 <script type="module">
 
@@ -268,6 +271,14 @@ loadFeeds();
 
 });
 
+window.addEventListener("beforeunload",async()=>{
+if(currentUID){
+await updateDoc(doc(db,"users",currentUID),{
+online:false,
+lastSeen:Date.now()
+});
+}
+});
 
 window.createFeed=async function(){
 
@@ -283,15 +294,13 @@ return;
 
 isPosting=true;
 
-let previewPhoto="";
+let previewURL="";
 if(file){
-previewPhoto=URL.createObjectURL(file);
+previewURL=URL.createObjectURL(file);
 }
 
 const userSnap=await getDoc(doc(db,"users",currentUID));
 const userData=userSnap.data()||{};
-
-/* POST IMMEDIATELY */
 
 const newPost=await addDoc(collection(db,"feeds"),{
 
@@ -300,21 +309,17 @@ name:userData.name || currentEmail.split("@")[0],
 rank:userData.rank || "",
 photoProfile:userData.photo || "",
 text:text,
-photo:previewPhoto,
+photo:previewURL,
 likes:[],
 createdAt:Date.now()
 
 });
 
-/* CLEAR INPUT */
-
-feedInput.value="";
-feedPhoto.value="";
-previewPhoto.style.display="none";
+document.getElementById("feedInput").value="";
+document.getElementById("feedPhoto").value="";
+document.getElementById("previewPhoto").style.display="none";
 
 isPosting=false;
-
-/* BACKGROUND UPLOAD */
 
 if(file){
 
@@ -339,14 +344,12 @@ photo:data.data.url
 }
 
 }catch(e){
-console.log("Upload failed");
+console.log("upload error");
 }
 
 }
 
 };
-
-
 
 function loadFeeds(){
 
@@ -387,7 +390,9 @@ class="avatar ${online?'online':''}">
 
 </div>
 
-<div style="margin-top:10px">${d.text||""}</div>
+<div style="margin-top:10px">
+${d.text||""}
+</div>
 
 ${d.photo?`<img src="${d.photo}" class="feedPhoto">`:""}
 
@@ -404,34 +409,17 @@ ${liked?"💙 Liked":"👍 Like"}
 ${likesArr.length} likes
 </span>
 
-${d.uid===currentUID?`
-<button onclick="deletePost('${id}')">Delete</button>
-`:""}
-
-</div>
-
-<div style="margin-top:10px">
-
-<input id="commentInput-${id}" placeholder="Write comment">
-
-<button onclick="sendComment('${id}')">Send</button>
-
-<div id="comments-${id}"></div>
-
 </div>
 
 </div>
 
 `;
 
-loadComments(id);
-
 }
 
 });
 
 }
-
 
 window.toggleLike=async function(id){
 
@@ -449,90 +437,6 @@ likes.push(currentUID);
 await updateDoc(ref,{likes});
 
 };
-
-
-
-window.deletePost=async function(id){
-
-if(confirm("Delete post?")){
-await deleteDoc(doc(db,"feeds",id));
-}
-
-};
-
-
-
-window.sendComment=async function(feedId){
-
-const input=document.getElementById("commentInput-"+feedId);
-const text=input.value.trim();
-
-if(!text) return;
-
-await addDoc(collection(db,"comments"),{
-
-feedId:feedId,
-uid:currentUID,
-name:"User",
-text:text,
-createdAt:Date.now()
-
-});
-
-input.value="";
-
-};
-
-
-
-function loadComments(feedId){
-
-const q=query(collection(db,"comments"),where("feedId","==",feedId));
-
-onSnapshot(q,(snap)=>{
-
-const box=document.getElementById("comments-"+feedId);
-
-if(!box) return;
-
-box.innerHTML="";
-
-snap.forEach(docSnap=>{
-
-const d=docSnap.data();
-
-box.innerHTML+=`
-
-<div class="comment">
-
-<div>
-<b>${d.name}</b>: ${d.text}
-</div>
-
-${d.uid===currentUID?`
-<button onclick="deleteComment('${docSnap.id}')">Delete</button>
-`:""}
-
-</div>
-
-`;
-
-});
-
-});
-
-}
-
-
-window.deleteComment=async function(id){
-
-if(confirm("Delete comment?")){
-await deleteDoc(doc(db,"comments",id));
-}
-
-};
-
-
 
 document.getElementById("feedPhoto").addEventListener("change",function(){
 

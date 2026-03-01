@@ -1,16 +1,48 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SeaConnect - Messages</title>
 
 <style>
-body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;background:linear-gradient(180deg,#0f172a,#1e293b);color:#f1f5f9;}
-.page{padding:20px;padding-bottom:95px;}
-.card{background:rgba(255,255,255,0.06);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.08);padding:18px;border-radius:22px;margin-bottom:16px;box-shadow:0 10px 30px rgba(0,0,0,.35);}
+body{
+margin:0;
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
+background:linear-gradient(180deg,#0f172a,#1e293b);
+color:#f1f5f9;
+}
 
-.chatHeader{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.container{
+padding:20px;
+padding-bottom:110px;
+}
+
+/* Glass Card */
+.card{
+background:rgba(255,255,255,0.06);
+backdrop-filter:blur(12px);
+border:1px solid rgba(255,255,255,0.08);
+padding:18px;
+border-radius:22px;
+margin-bottom:16px;
+box-shadow:0 10px 30px rgba(0,0,0,.35);
+}
+
+/* Chat List */
+.chatListItem{
+cursor:pointer;
+}
+
+.chatListItem:hover{
+background:rgba(255,255,255,0.05);
+}
+
+.listRow{
+display:flex;
+gap:12px;
+align-items:center;
+}
 
 .avatarWrapper{
 position:relative;
@@ -36,15 +68,35 @@ border:2px solid #22c55e;
 pointer-events:none;
 }
 
-.chatBox{
-height:55vh;
-overflow-y:auto;
-margin-bottom:12px;
+.listText{
+flex:1;
+min-width:0;
 }
 
+.listName{
+font-weight:900;
+}
+
+.listSub{
+font-size:13px;
+color:#94a3b8;
+margin-top:3px;
+white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis;
+}
+
+/* Chat Box */
+.chatBox{
+height:50vh;
+overflow:auto;
+margin-bottom:10px;
+}
+
+/* Bubble Chat */
 .message{
 display:flex;
-margin-bottom:10px;
+margin:6px 0;
 }
 
 .message.me{
@@ -70,30 +122,52 @@ background:rgba(255,255,255,0.1);
 border-bottom-left-radius:6px;
 }
 
-.inputRow{
-display:flex;
-gap:10px;
-}
-
+/* Inputs */
 input{
-flex:1;
+width:100%;
 padding:12px;
 border-radius:14px;
 border:1px solid rgba(255,255,255,0.15);
+margin-top:8px;
+box-sizing:border-box;
 background:rgba(255,255,255,0.05);
 color:#fff;
 }
 
 button{
-padding:12px 18px;
+padding:11px 16px;
 border:none;
 border-radius:14px;
 font-weight:700;
 cursor:pointer;
+}
+
+.primary{
 background:linear-gradient(135deg,#3b82f6,#2563eb);
 color:#fff;
 }
 
+.light{
+background:rgba(255,255,255,0.1);
+color:#fff;
+}
+
+.danger{
+background:linear-gradient(135deg,#ef4444,#dc2626);
+color:#fff;
+}
+
+.row{
+display:flex;
+gap:10px;
+margin-top:10px;
+}
+
+.row button{
+flex:1;
+}
+
+/* Bottom Nav */
 .bottomnav{
 position:fixed;
 bottom:15px;
@@ -127,115 +201,72 @@ font-weight:800;
 
 <body>
 
-<div class="page">
+<div class="container">
 
+<!-- Chat List -->
+<div id="chatListSection">
 <h2>💬 Messages</h2>
+<div id="chatList"></div>
+</div>
+
+<!-- Chat Section -->
+<div id="chatSection" style="display:none;">
 
 <div class="card">
 
-<div class="chatHeader">
-<div class="avatarWrapper">
-<img id="chatAvatar" src="https://i.ibb.co/2kRZ7Z6/avatar.png">
-<div class="onlineRing"></div>
-</div>
-<div>
-<div id="chatName" style="font-weight:900;">Crew Mate</div>
-<div style="color:#22c55e;font-size:13px;">Online</div>
-</div>
+<div style="display:flex;justify-content:space-between;align-items:center;">
+<div id="chatTitle" style="font-weight:900;"></div>
+<button class="danger" id="deleteChatBtn">Delete</button>
 </div>
 
-<div class="chatBox" id="chatBox"></div>
+<div id="messagesBox" class="chatBox"></div>
 
-<div class="inputRow">
-<input type="text" id="messageInput" placeholder="Type message...">
-<button onclick="sendMessage()">Send</button>
+<input id="messageInput" placeholder="Type message...">
+
+<div class="row">
+<button class="primary" id="sendBtn">Send</button>
+<button class="light" id="closeBtn">Close</button>
 </div>
 
 </div>
+
 </div>
 
+</div>
+
+<!-- Bottom Navigation -->
 <div class="bottomnav">
 <button onclick="location.href='feeds.html'">📰 Feeds</button>
+<button onclick="location.href='friends.html'">👥 Friends</button>
 <button class="active">💬 Messages</button>
 <button onclick="location.href='app.html'">👤 Profile</button>
 </div>
 
 <script type="module">
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, collection, addDoc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+/* 🔥 KEEP ALL YOUR ORIGINAL FIREBASE + CHAT LOGIC BELOW */
+/* Just make sure when generating chat list you use this avatar structure:
 
-const firebaseConfig={
-apiKey:"AIzaSyCNlodsmEHrSXxgH0gTOcx4cAXwG8qmG9w",
-authDomain:"seaconnect-d2baa.firebaseapp.com",
-projectId:"seaconnect-d2baa"
-};
+Example chat list row format:
 
-const app=initializeApp(firebaseConfig);
-const auth=getAuth(app);
-const db=getFirestore(app);
+chatList.innerHTML += `
+<div class="card chatListItem" onclick="openChat('${chatId}')">
+  <div class="listRow">
+    <div class="avatarWrapper">
+      <img src="${photoURL}">
+      <div class="onlineRing"></div>
+    </div>
+    <div class="listText">
+      <div class="listName">${userName}</div>
+      <div class="listSub">${lastMessage}</div>
+    </div>
+  </div>
+</div>
+`;
 
-let currentUID=null;
-let chatId="global_chat"; // simple global chat first
+*/
 
-onAuthStateChanged(auth,async(user)=>{
-if(!user){
-location.href="index.html";
-return;
-}
-currentUID=user.uid;
-loadMyProfile();
-loadMessages();
-});
-
-async function loadMyProfile(){
-const snap=await getDoc(doc(db,"users",currentUID));
-const data=snap.data();
-if(data?.photo){
-document.getElementById("chatAvatar").src=data.photo;
-}
-document.getElementById("chatName").innerText=data?.name||"SeaCrew";
-}
-
-window.sendMessage=async function(){
-
-const input=document.getElementById("messageInput");
-const text=input.value.trim();
-if(!text) return;
-
-await addDoc(collection(db,"messages"),{
-chatId:chatId,
-sender:currentUID,
-text:text,
-createdAt:Date.now()
-});
-
-input.value="";
-};
-
-function loadMessages(){
-
-const q=query(collection(db,"messages"),orderBy("createdAt"));
-
-onSnapshot(q,(snapshot)=>{
-const chatBox=document.getElementById("chatBox");
-chatBox.innerHTML="";
-
-snapshot.forEach(docSnap=>{
-const msg=docSnap.data();
-if(msg.chatId!==chatId) return;
-
-let div=document.createElement("div");
-div.className="message "+(msg.sender===currentUID?"me":"other");
-
-div.innerHTML=`<div class="bubble">${msg.text}</div>`;
-chatBox.appendChild(div);
-});
-
-chatBox.scrollTop=chatBox.scrollHeight;
-});
-}
+/* Your Firebase code continues here */
 
 </script>
 

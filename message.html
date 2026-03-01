@@ -6,6 +6,7 @@
 <title>SeaConnect - Messages</title>
 
 <style>
+
 body{
 margin:0;
 font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
@@ -120,6 +121,19 @@ opacity:.6;
 margin-top:3px;
 }
 
+.seen{
+font-size:10px;
+opacity:.6;
+text-align:right;
+margin-top:2px;
+}
+
+.chatImage{
+max-width:200px;
+border-radius:12px;
+margin-top:6px;
+}
+
 input{
 width:100%;
 padding:12px;
@@ -187,6 +201,7 @@ color:#94a3b8;
 color:#3b82f6;
 font-weight:800;
 }
+
 </style>
 </head>
 
@@ -212,6 +227,8 @@ font-weight:800;
 
 <input id="messageInput" placeholder="Type message...">
 
+<input type="file" id="imageInput" accept="image/*">
+
 <div class="row">
 <button class="primary" id="sendBtn">Send</button>
 <button class="light" id="closeBtn">Close</button>
@@ -234,7 +251,7 @@ font-weight:800;
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth,onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore,collection,addDoc,query,orderBy,onSnapshot,doc,deleteDoc,getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore,collection,addDoc,query,orderBy,onSnapshot,doc,getDoc,updateDoc,deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig={
 apiKey:"AIzaSyCNlodsmEHrSXxgH0gTOcx4cAXwG8qmG9w",
@@ -250,16 +267,12 @@ let currentEmail=null;
 let currentChat=null;
 let chatUserEmail=null;
 
+const IMGBB_KEY="5b417e8de4a883f7425eeda12dc38f06";
+
 const chatList=document.getElementById("chatList");
-const chatSection=document.getElementById("chatSection");
 const messagesBox=document.getElementById("messagesBox");
 
-function chatId(a,b){
-return [a,b].sort().join("_");
-}
-
 onAuthStateChanged(auth,(user)=>{
-
 if(!user){
 location.href="index.html";
 return;
@@ -269,22 +282,26 @@ currentEmail=user.email.toLowerCase();
 
 listenChats();
 
-/* OPEN CHAT FROM FRIENDS */
+});
 
-const params=new URLSearchParams(window.location.search);
-const userEmail=params.get("user");
-
-if(userEmail){
-openChat(userEmail.toLowerCase());
+/* Chat ID */
+function chatId(a,b){
+return [a,b].sort().join("_");
 }
 
-});
+/* Load name + photo */
+async function getUser(email){
+const snap=await getDoc(doc(db,"users",email));
+return snap.data();
+}
+
+/* Chat List */
 
 function listenChats(){
 
 const q=query(collection(db,"messages"),orderBy("createdAt"));
 
-onSnapshot(q,(snap)=>{
+onSnapshot(q,async(snap)=>{
 
 const chats={};
 
@@ -306,6 +323,9 @@ for(const email in chats){
 
 const last=chats[email];
 
+const userSnap=await getDoc(doc(db,"users",email));
+const user=userSnap.data()||{};
+
 chatList.innerHTML+=`
 
 <div class="card chatListItem" onclick="openChat('${email}')">
@@ -313,13 +333,13 @@ chatList.innerHTML+=`
 <div class="listRow">
 
 <div class="avatarWrapper">
-<img src="https://i.ibb.co/2kRZ7Z6/avatar.png">
+<img src="${user.photo || 'https://i.ibb.co/2kRZ7Z6/avatar.png'}">
 <div class="onlineRing"></div>
 </div>
 
 <div class="listText">
-<div class="listName">${email}</div>
-<div class="listSub">${last.text}</div>
+<div class="listName">${user.name || "SeaCrew"}</div>
+<div class="listSub">${last.text || "📷 Image"}</div>
 </div>
 
 </div>
@@ -334,12 +354,17 @@ chatList.innerHTML+=`
 
 }
 
-window.openChat=function(email){
+/* Open Chat */
+
+window.openChat=async function(email){
 
 chatUserEmail=email;
 currentChat=chatId(currentEmail,email);
 
-chatTitle.innerText=email;
+const userSnap=await getDoc(doc(db,"users",email));
+const user=userSnap.data()||{};
+
+chatTitle.innerText=user.name || "SeaCrew";
 
 chatSection.style.display="block";
 
@@ -367,13 +392,24 @@ messagesBox.innerHTML+=`
 <div class="message ${me?'me':'other'}">
 
 <div class="bubble">
-${d.text}
+
+${d.text ? d.text : ""}
+
+${d.image ? `<img src="${d.image}" class="chatImage">` : ""}
+
 <div class="time">${time}</div>
+
+${me ? `<div class="seen">${d.seen ? "Seen" : "Delivered"}</div>`:""}
+
 </div>
 
 </div>
 
 `;
+
+if(!me && !d.seen){
+updateDoc(doc(db,"messages",docSnap.id),{seen:true});
+}
 
 });
 
@@ -383,10 +419,34 @@ messagesBox.scrollTop=messagesBox.scrollHeight;
 
 }
 
+/* Send Message */
+
 sendBtn.onclick=async()=>{
 
 const text=messageInput.value.trim();
-if(!text) return;
+const file=imageInput.files[0];
+
+let imageURL="";
+
+if(file){
+
+const formData=new FormData();
+formData.append("image",file);
+
+const res=await fetch(
+"https://api.imgbb.com/1/upload?key="+IMGBB_KEY,
+{method:"POST",body:formData}
+);
+
+const data=await res.json();
+
+if(data.success){
+imageURL=data.data.url;
+}
+
+}
+
+if(!text && !imageURL) return;
 
 await addDoc(collection(db,"messages"),{
 
@@ -394,13 +454,18 @@ chatId:currentChat,
 from:currentEmail,
 to:chatUserEmail,
 text:text,
+image:imageURL,
+seen:false,
 createdAt:Date.now()
 
 });
 
 messageInput.value="";
+imageInput.value="";
 
 };
+
+/* Close Chat */
 
 closeBtn.onclick=()=>{
 
@@ -408,11 +473,13 @@ chatSection.style.display="none";
 
 };
 
+/* Delete Chat */
+
 deleteChatBtn.onclick=async()=>{
 
 if(!confirm("Delete chat?")) return;
 
-const q=query(collection(db,"messages"),orderBy("createdAt"));
+const q=query(collection(db,"messages"));
 
 onSnapshot(q,(snap)=>{
 

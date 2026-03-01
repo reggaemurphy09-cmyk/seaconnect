@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SeaConnect - Messages</title>
+
+<style>
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
+  background:linear-gradient(180deg,#0f172a,#1e293b);
+  color:#f1f5f9;
+}
+
+/* Pages */
+.page{
+  padding:20px;
+  padding-bottom:95px;
+}
+
+/* Glass Card */
+.card{
+  background:rgba(255,255,255,0.06);
+  backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,0.08);
+  padding:15px;
+  border-radius:22px;
+  margin-bottom:12px;
+}
+
+/* Avatar */
+.avatar-container{
+  position:relative;
+  width:45px;
+  height:45px;
+}
+
+.avatar{
+  width:45px;
+  height:45px;
+  border-radius:50%;
+  object-fit:cover;
+}
+
+/* Online indicator thin ring */
+.online-ring{
+  position:absolute;
+  top:0;
+  left:0;
+  width:45px;
+  height:45px;
+  border-radius:50%;
+  border:2px solid #22c55e;
+  pointer-events:none;
+}
+
+/* Chat Layout */
+.chat-container{
+  height:60vh;
+  overflow-y:auto;
+  margin-bottom:10px;
+}
+
+/* Message Bubble */
+.message{
+  display:flex;
+  margin-bottom:10px;
+}
+
+.message.me{
+  justify-content:flex-end;
+}
+
+.bubble{
+  max-width:65%;
+  padding:10px 14px;
+  border-radius:20px;
+  font-size:14px;
+}
+
+.me .bubble{
+  background:#3b82f6;
+  color:white;
+  border-bottom-right-radius:5px;
+}
+
+.other .bubble{
+  background:rgba(255,255,255,0.1);
+  border-bottom-left-radius:5px;
+}
+
+/* Input area */
+.input-area{
+  display:flex;
+  gap:8px;
+}
+
+input{
+  flex:1;
+  padding:10px;
+  border-radius:20px;
+  border:none;
+  outline:none;
+}
+
+button{
+  padding:10px 16px;
+  border:none;
+  border-radius:20px;
+  background:#22c55e;
+  color:white;
+  cursor:pointer;
+}
+
+/* Bottom Navigation */
+.nav{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  height:70px;
+  background:#0f172a;
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+  border-top:1px solid rgba(255,255,255,0.1);
+}
+
+.nav a{
+  color:#94a3b8;
+  text-decoration:none;
+  font-size:14px;
+}
+
+.nav a.active{
+  color:#22c55e;
+}
+</style>
+</head>
+
+<body>
+
+<div class="page">
+
+  <h2>Messages</h2>
+
+  <!-- Chat Card -->
+  <div class="card">
+
+    <!-- Chat Header -->
+    <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+      <div class="avatar-container">
+        <img id="chatAvatar" class="avatar" src="https://via.placeholder.com/45" />
+        <div class="online-ring"></div>
+      </div>
+      <div>
+        <strong id="chatName">Crew Mate</strong><br>
+        <small style="color:#22c55e;">Online</small>
+      </div>
+    </div>
+
+    <!-- Messages -->
+    <div class="chat-container" id="chatBox">
+    </div>
+
+    <!-- Input -->
+    <div class="input-area">
+      <input type="text" id="messageInput" placeholder="Type message..." />
+      <button onclick="sendMessage()">Send</button>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- Navigation -->
+<div class="nav">
+  <a href="feeds.html">Feeds</a>
+  <a href="message.html" class="active">Messages</a>
+  <a href="app.html">Profile</a>
+</div>
+
+<script>
+let chatBox = document.getElementById("chatBox");
+
+function sendMessage(){
+  let input = document.getElementById("messageInput");
+  let text = input.value.trim();
+  if(text === "") return;
+
+  let messageDiv = document.createElement("div");
+  messageDiv.className = "message me";
+  messageDiv.innerHTML = `<div class="bubble">${text}</div>`;
+  chatBox.appendChild(messageDiv);
+
+  input.value="";
+  chatBox.scrollTop = chatBox.scrollHeight;
+
+  // Simulated reply
+  setTimeout(()=>{
+    let reply = document.createElement("div");
+    reply.className = "message other";
+    reply.innerHTML = `<div class="bubble">Roger that, Captain ⚓</div>`;
+    chatBox.appendChild(reply);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  },1000);
+}
+</script>
+
+</body>
+</html>

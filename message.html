@@ -18,7 +18,6 @@ padding:20px;
 padding-bottom:110px;
 }
 
-/* Glass Card */
 .card{
 background:rgba(255,255,255,0.06);
 backdrop-filter:blur(12px);
@@ -29,7 +28,6 @@ margin-bottom:16px;
 box-shadow:0 10px 30px rgba(0,0,0,.35);
 }
 
-/* Chat List */
 .chatListItem{
 cursor:pointer;
 }
@@ -86,14 +84,12 @@ overflow:hidden;
 text-overflow:ellipsis;
 }
 
-/* Chat Box */
 .chatBox{
 height:50vh;
 overflow:auto;
 margin-bottom:10px;
 }
 
-/* Bubble Chat */
 .message{
 display:flex;
 margin:6px 0;
@@ -122,7 +118,6 @@ background:rgba(255,255,255,0.1);
 border-bottom-left-radius:6px;
 }
 
-/* Inputs */
 input{
 width:100%;
 padding:12px;
@@ -167,7 +162,6 @@ margin-top:10px;
 flex:1;
 }
 
-/* Bottom Nav */
 .bottomnav{
 position:fixed;
 bottom:15px;
@@ -203,15 +197,12 @@ font-weight:800;
 
 <div class="container">
 
-<!-- Chat List -->
 <div id="chatListSection">
 <h2>💬 Messages</h2>
 <div id="chatList"></div>
 </div>
 
-<!-- Chat Section -->
 <div id="chatSection" style="display:none;">
-
 <div class="card">
 
 <div style="display:flex;justify-content:space-between;align-items:center;">
@@ -229,44 +220,197 @@ font-weight:800;
 </div>
 
 </div>
-
 </div>
 
 </div>
 
-<!-- Bottom Navigation -->
 <div class="bottomnav">
 <button onclick="location.href='feeds.html'">📰 Feeds</button>
 <button onclick="location.href='friends.html'">👥 Friends</button>
 <button class="active">💬 Messages</button>
-<button onclick="location.href='app.html'">👤 Profile</button>
+<button onclick="location.href='profile.html'">👤 Profile</button>
 </div>
 
 <script type="module">
 
-/* 🔥 KEEP ALL YOUR ORIGINAL FIREBASE + CHAT LOGIC BELOW */
-/* Just make sure when generating chat list you use this avatar structure:
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import {getAuth,onAuthStateChanged} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import {
+getFirestore,
+collection,
+addDoc,
+query,
+orderBy,
+onSnapshot,
+doc,
+getDoc,
+deleteDoc,
+where
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-Example chat list row format:
+const firebaseConfig={
+apiKey:"AIzaSyCNlodsmEHrSXxgH0gTOcx4cAXwG8qmG9w",
+authDomain:"seaconnect-d2baa.firebaseapp.com",
+projectId:"seaconnect-d2baa"
+};
 
-chatList.innerHTML += `
-<div class="card chatListItem" onclick="openChat('${chatId}')">
-  <div class="listRow">
-    <div class="avatarWrapper">
-      <img src="${photoURL}">
-      <div class="onlineRing"></div>
-    </div>
-    <div class="listText">
-      <div class="listName">${userName}</div>
-      <div class="listSub">${lastMessage}</div>
-    </div>
-  </div>
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+
+let currentEmail=null;
+let currentChat=null;
+
+function chatId(a,b){
+return [a,b].sort().join("__");
+}
+
+onAuthStateChanged(auth,(user)=>{
+if(!user){
+location.href="index.html";
+return;
+}
+
+currentEmail=user.email.toLowerCase();
+
+loadChatList();
+
+const params=new URLSearchParams(location.search);
+const friend=params.get("user");
+
+if(friend){
+openChat(friend);
+}
+});
+
+function loadChatList(){
+
+const q=query(collection(db,"messages"),orderBy("createdAt"));
+
+onSnapshot(q,(snap)=>{
+
+chatList.innerHTML="";
+
+let chats={};
+
+snap.forEach(docSnap=>{
+
+const d=docSnap.data();
+const id=d.chatId;
+
+if(!id.includes(currentEmail)) return;
+
+chats[id]=d;
+
+});
+
+for(const id in chats){
+
+const other=id.replace(currentEmail,"").replace("__","");
+
+chatList.innerHTML+=`
+<div class="card chatListItem" onclick="openChat('${other}')">
+
+<div class="listRow">
+
+<div class="avatarWrapper">
+<img src="https://i.ibb.co/2kRZ7Z6/avatar.png">
+<div class="onlineRing"></div>
+</div>
+
+<div class="listText">
+<div class="listName">${other}</div>
+<div class="listSub">${chats[id].text}</div>
+</div>
+
+</div>
+
 </div>
 `;
 
-*/
+}
 
-/* Your Firebase code continues here */
+});
+
+}
+
+window.openChat=function(email){
+
+currentChat=chatId(currentEmail,email);
+
+chatTitle.innerText=email;
+
+chatSection.style.display="block";
+
+loadMessages();
+
+};
+
+function loadMessages(){
+
+const q=query(
+collection(db,"messages"),
+where("chatId","==",currentChat),
+orderBy("createdAt")
+);
+
+onSnapshot(q,(snap)=>{
+
+messagesBox.innerHTML="";
+
+snap.forEach(docSnap=>{
+
+const d=docSnap.data();
+
+const cls=d.from===currentEmail?"me":"other";
+
+messagesBox.innerHTML+=`
+<div class="message ${cls}">
+<div class="bubble">${d.text}</div>
+</div>
+`;
+
+});
+
+messagesBox.scrollTop=messagesBox.scrollHeight;
+
+});
+
+}
+
+sendBtn.onclick=async()=>{
+
+const text=messageInput.value.trim();
+if(!text) return;
+
+await addDoc(collection(db,"messages"),{
+chatId:currentChat,
+from:currentEmail,
+text:text,
+createdAt:Date.now()
+});
+
+messageInput.value="";
+
+};
+
+closeBtn.onclick=()=>{
+chatSection.style.display="none";
+};
+
+deleteChatBtn.onclick=async()=>{
+
+const q=query(collection(db,"messages"),where("chatId","==",currentChat));
+
+onSnapshot(q,(snap)=>{
+snap.forEach(async d=>{
+await deleteDoc(doc(db,"messages",d.id));
+});
+});
+
+chatSection.style.display="none";
+
+};
 
 </script>
 

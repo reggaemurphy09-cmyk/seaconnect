@@ -29,6 +29,13 @@ font-weight:900;
 font-size:20px;
 }
 
+.header button{
+border:none;
+background:none;
+font-size:20px;
+cursor:pointer;
+}
+
 /* LIST */
 
 .chatList{
@@ -113,6 +120,13 @@ border-radius:50%;
 object-fit:cover;
 }
 
+.chatHeader button{
+border:none;
+background:none;
+font-size:20px;
+cursor:pointer;
+}
+
 /* MESSAGES */
 
 .messages{
@@ -189,7 +203,11 @@ cursor:pointer;
 <body>
 
 <div class="header">
-💬 Messages
+
+<button onclick="location.href='friends.html'">←</button>
+
+Messages
+
 </div>
 
 <div id="chatList" class="chatList"></div>
@@ -321,8 +339,6 @@ if(m.from!==currentEmail && m.to!==currentEmail)return;
 
 const other=m.from===currentEmail?m.to:m.from;
 
-if(!other)return;
-
 map[other]=m;
 
 });
@@ -430,7 +446,7 @@ messages.scrollTop=messages.scrollHeight;
 
 }
 
-/* IMAGE PREVIEW */
+/* PREVIEW */
 
 fileInput.onchange=function(){
 
@@ -471,7 +487,7 @@ messageInput.value="";
 preview.style.display="none";
 fileInput.value="";
 
-/* upload background */
+/* background upload */
 
 if(file){
 

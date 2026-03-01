@@ -136,8 +136,6 @@ color:#3b82f6;
 font-weight:800;
 }
 
-/* PROFILE PHOTO */
-
 .avatar{
 width:40px;
 height:40px;
@@ -155,7 +153,7 @@ box-shadow:0 0 10px #22c55e;
 
 <body>
 
-<div id="feedsPage" class="page">
+<div id="feedsPage" class="page" style="display:block">
 
 <div class="topbar">
 <div class="title">📰 Crew Feeds</div>
@@ -184,27 +182,18 @@ style="width:100%;margin-top:10px;border-radius:16px;display:none;">
 
 </div>
 
-<div id="friendsPage" class="page">
-<h2>👥 Friends</h2>
-<div class="card subText">Friends feature coming soon</div>
-</div>
-
-<div id="messagesPage" class="page">
-<h2>💬 Messages</h2>
-<div class="card subText">Messenger coming soon</div>
-</div>
 
 <div class="bottomnav">
 
-<button class="active" onclick="showPage('feedsPage',this)">
+<button class="active">
 📰 Feeds
 </button>
 
-<button onclick="showPage('friendsPage',this)">
+<button onclick="location.href='friends.html'">
 👥 Friends
 </button>
 
-<button onclick="showPage('messagesPage',this)">
+<button onclick="location.href='messages.html'">
 💬 Messages
 </button>
 
@@ -213,6 +202,7 @@ style="width:100%;margin-top:10px;border-radius:16px;display:none;">
 </button>
 
 </div>
+
 
 <script type="module">
 
@@ -233,12 +223,12 @@ query,
 orderBy,
 onSnapshot,
 doc,
-getDoc,
 deleteDoc,
 updateDoc,
 where
 }
 from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
 
 const firebaseConfig={
 apiKey:"AIzaSyCNlodsmEHrSXxgH0gTOcx4cAXwG8qmG9w",
@@ -258,25 +248,8 @@ let isPosting=false;
 
 const feedsList=document.getElementById("feedsList");
 
-/* NAV */
 
-window.showPage=function(id,btn){
-
-document.querySelectorAll(".page")
-.forEach(p=>p.style.display="none");
-
-document.querySelectorAll(".bottomnav button")
-.forEach(b=>b.classList.remove("active"));
-
-document.getElementById(id).style.display="block";
-
-if(btn) btn.classList.add("active");
-
-};
-
-/* AUTH */
-
-onAuthStateChanged(auth,async(user)=>{
+onAuthStateChanged(auth,(user)=>{
 
 if(!user){
 location.href="index.html";
@@ -286,33 +259,10 @@ return;
 currentUID=user.uid;
 currentEmail=user.email;
 
-/* SET ONLINE */
-
-await updateDoc(doc(db,"users",currentUID),{
-online:true,
-lastSeen:Date.now()
-});
-
-showPage("feedsPage");
-
 loadFeeds();
 
 });
 
-/* SET OFFLINE WHEN LEAVING */
-
-window.addEventListener("beforeunload",async()=>{
-
-if(currentUID){
-await updateDoc(doc(db,"users",currentUID),{
-online:false,
-lastSeen:Date.now()
-});
-}
-
-});
-
-/* CREATE POST */
 
 window.createFeed=async function(){
 
@@ -352,15 +302,12 @@ photoURL=data.data.url;
 
 }
 
-const userSnap=await getDoc(doc(db,"users",currentUID));
-const userData=userSnap.data()||{};
-
 await addDoc(collection(db,"feeds"),{
 
 uid:currentUID,
-name:userData.name || currentEmail.split("@")[0],
-rank:userData.rank || "",
-photoProfile:userData.photo || "",
+name:currentEmail.split("@")[0],
+rank:"",
+photoProfile:"",
 text:text,
 photo:photoURL,
 likes:[],
@@ -394,7 +341,6 @@ isPosting=false;
 
 };
 
-/* LOAD FEEDS */
 
 function loadFeeds(){
 
@@ -404,23 +350,13 @@ onSnapshot(q,(snap)=>{
 
 feedsList.innerHTML="";
 
-snap.forEach(async docSnap=>{
+snap.forEach(docSnap=>{
 
 const d=docSnap.data();
 const id=docSnap.id;
 
 const likesArr=d.likes||[];
 const liked=likesArr.includes(currentUID);
-
-/* GET ONLINE STATUS */
-
-let online=false;
-
-try{
-const userSnap=await getDoc(doc(db,"users",d.uid));
-const userData=userSnap.data();
-online=userData?.online || false;
-}catch{}
 
 feedsList.innerHTML+=`
 
@@ -429,7 +365,7 @@ feedsList.innerHTML+=`
 <div style="display:flex;gap:10px;align-items:center;">
 
 <img src="${d.photoProfile || 'https://i.ibb.co/2kRZ7Z6/avatar.png'}"
-class="avatar ${online ? 'online' : ''}">
+class="avatar">
 
 <div>
 <div style="font-weight:900">${d.name}</div>
@@ -481,14 +417,16 @@ loadComments(id);
 
 }
 
-/* LIKE */
 
 window.toggleLike=async function(id){
 
 const ref=doc(db,"feeds",id);
+
+let likes=[];
+
 const snap=await getDoc(ref);
 
-let likes=snap.data().likes||[];
+likes=snap.data().likes||[];
 
 if(likes.includes(currentUID)){
 likes=likes.filter(x=>x!==currentUID);
@@ -500,7 +438,6 @@ await updateDoc(ref,{likes});
 
 };
 
-/* DELETE POST */
 
 window.deletePost=async function(id){
 
@@ -510,7 +447,6 @@ await deleteDoc(doc(db,"feeds",id));
 
 };
 
-/* COMMENTS */
 
 window.sendComment=async function(feedId){
 
@@ -532,6 +468,7 @@ createdAt:Date.now()
 input.value="";
 
 };
+
 
 function loadComments(feedId){
 
@@ -574,6 +511,7 @@ Delete
 
 }
 
+
 window.deleteComment=async function(id){
 
 if(confirm("Delete comment?")){
@@ -582,7 +520,6 @@ await deleteDoc(doc(db,"comments",id));
 
 };
 
-/* IMAGE PREVIEW */
 
 document.getElementById("feedPhoto").addEventListener("change",function(){
 

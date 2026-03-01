@@ -251,6 +251,7 @@ let isSending=false;
 
 const chatList=document.getElementById("chatList");
 const messagesBox=document.getElementById("messagesBox");
+const chatSection=document.getElementById("chatSection");
 
 function chatId(a,b){
 return [a,b].sort().join("_");
@@ -267,7 +268,7 @@ currentEmail=user.email.toLowerCase();
 
 listenChats();
 
-/* open chat from friends page */
+/* open chat from friends */
 
 const params=new URLSearchParams(window.location.search);
 const openUser=params.get("user");
@@ -303,8 +304,6 @@ chatList.innerHTML="";
 for(const email in chats){
 
 const last=chats[email];
-
-/* get profile name */
 
 let name=email.split("@")[0];
 
@@ -403,7 +402,7 @@ if(!text) return;
 
 isSending=true;
 
-/* instant bubble */
+/* instant message bubble */
 
 const time=new Date().toLocaleTimeString([],{
 hour:'2-digit',
@@ -422,13 +421,11 @@ ${text}
 messagesBox.scrollTop=messagesBox.scrollHeight;
 
 await addDoc(collection(db,"messages"),{
-
 chatId:currentChat,
 from:currentEmail,
 to:chatUserEmail,
 text:text,
 createdAt:Date.now()
-
 });
 
 messageInput.value="";
@@ -437,9 +434,7 @@ isSending=false;
 };
 
 closeBtn.onclick=()=>{
-
 chatSection.style.display="none";
-
 };
 
 deleteChatBtn.onclick=async()=>{
@@ -453,9 +448,7 @@ onSnapshot(q,(snap)=>{
 snap.forEach(async docSnap=>{
 
 if(docSnap.data().chatId===currentChat){
-
 await deleteDoc(doc(db,"messages",docSnap.id));
-
 }
 
 });

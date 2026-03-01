@@ -3,52 +3,73 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>SeaConnect Messages</title>
 
 <style>
 
 body{
 margin:0;
-font-family:Arial;
-background:#f3f4f6;
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
+background:#f2f2f2;
 }
 
 /* HEADER */
 
 .header{
-height:60px;
+height:55px;
 display:flex;
 align-items:center;
-padding:0 12px;
+padding:0 15px;
 gap:10px;
 background:white;
 border-bottom:1px solid #ddd;
-}
-
-.header img{
-width:36px;
-height:36px;
-border-radius:50%;
-object-fit:cover;
-}
-
-.online{
-width:10px;
-height:10px;
-background:#22c55e;
-border-radius:50%;
-position:absolute;
-margin-left:-12px;
-margin-top:24px;
-border:2px solid white;
+font-weight:700;
 }
 
 .header button{
 border:none;
 background:none;
-font-size:22px;
+font-size:20px;
+}
+
+/* MESSAGE LIST */
+
+.listItem{
+display:flex;
+align-items:center;
+gap:12px;
+padding:12px;
+background:white;
+border-bottom:1px solid #eee;
 cursor:pointer;
 }
+
+/* AVATAR */
+
+.avatarBox{
+position:relative;
+}
+
+.avatar{
+width:45px;
+height:45px;
+border-radius:50%;
+object-fit:cover;
+}
+
+.online{
+position:absolute;
+bottom:2px;
+right:2px;
+width:10px;
+height:10px;
+background:#22c55e;
+border-radius:50%;
+border:2px solid white;
+}
+
+/* TEXT */
 
 .name{
 font-weight:700;
@@ -56,47 +77,52 @@ font-weight:700;
 
 .rank{
 font-size:12px;
-color:#777;
+color:#666;
 }
 
-/* MESSAGE LIST */
+/* CHAT SCREEN */
 
-.list{
-padding:10px;
+.chatScreen{
+display:none;
+height:100vh;
+flex-direction:column;
 }
 
-.item{
+/* CHAT HEADER */
+
+.chatHeader{
 display:flex;
-gap:10px;
 align-items:center;
-padding:12px;
+gap:10px;
+padding:10px;
 background:white;
-border-bottom:1px solid #eee;
-cursor:pointer;
+border-bottom:1px solid #ddd;
 }
 
-.item img{
-width:45px;
-height:45px;
+.chatHeader img{
+width:40px;
+height:40px;
 border-radius:50%;
+}
+
+.chatHeader .close{
+margin-left:auto;
+font-size:18px;
 }
 
 /* CHAT AREA */
 
-.chat{
-display:none;
-position:fixed;
-top:60px;
-bottom:70px;
-left:0;
-right:0;
+.chatArea{
+flex:1;
 overflow:auto;
-padding:10px;
+padding:15px;
 }
 
+/* MESSAGE */
+
 .message{
+margin-bottom:10px;
 display:flex;
-margin-bottom:12px;
 }
 
 .message.me{
@@ -106,7 +132,7 @@ justify-content:flex-end;
 .bubble{
 background:#e5e7eb;
 padding:10px 14px;
-border-radius:18px;
+border-radius:16px;
 max-width:70%;
 }
 
@@ -117,34 +143,24 @@ background:white;
 /* INPUT */
 
 .inputBar{
-display:none;
-position:fixed;
-bottom:0;
-left:0;
-right:0;
-background:white;
+display:flex;
+gap:10px;
 padding:10px;
+background:white;
 border-top:1px solid #ddd;
 }
 
-.row{
-display:flex;
-gap:8px;
-align-items:center;
-}
-
-.row input{
+.inputBar input{
 flex:1;
-padding:12px;
+padding:10px;
 border-radius:20px;
 border:1px solid #ddd;
 }
 
-.row button{
+.inputBar button{
 border:none;
 background:none;
-font-size:22px;
-cursor:pointer;
+font-size:20px;
 }
 
 </style>
@@ -152,43 +168,55 @@ cursor:pointer;
 
 <body>
 
-<!-- HEADER -->
-
-<div class="header">
-
-<button onclick="backFriends()">←</button>
-
-<img id="avatar" src="https://i.ibb.co/2kRZ7Z6/avatar.png">
-<div class="online"></div>
-
-<div>
-<div id="title" class="name">Messages</div>
-<div id="rank" class="rank"></div>
-</div>
-
-<div style="flex:1"></div>
-
-<button onclick="closeChat()">✕</button>
-
-</div>
-
 <!-- MESSAGE LIST -->
 
-<div id="list" class="list">
+<div id="listScreen">
 
-<div class="item" onclick="openChat('Murphy','Chief')">
-<img src="https://i.ibb.co/2kRZ7Z6/avatar.png">
+<div class="header">
+<button onclick="history.back()">←</button>
+Messages
+</div>
+
+<div class="listItem" onclick="openChat()">
+
+<div class="avatarBox">
+<img class="avatar" src="https://i.pravatar.cc/100">
+<div class="online"></div>
+</div>
+
 <div>
 <div class="name">Murphy</div>
 <div class="rank">Chief</div>
 </div>
-</div>
 
 </div>
 
-<!-- CHAT -->
+</div>
 
-<div id="chat" class="chat">
+
+<!-- CHAT SCREEN -->
+
+<div id="chatScreen" class="chatScreen">
+
+<div class="chatHeader">
+
+<button onclick="back()">←</button>
+
+<div class="avatarBox">
+<img src="https://i.pravatar.cc/100">
+<div class="online"></div>
+</div>
+
+<div>
+<div class="name">Murphy</div>
+<div class="rank">Chief</div>
+</div>
+
+<button class="close" onclick="closeChat()">X</button>
+
+</div>
+
+<div class="chatArea" id="chatArea">
 
 <div class="message">
 <div class="bubble">Hello</div>
@@ -200,19 +228,13 @@ cursor:pointer;
 
 </div>
 
-<!-- INPUT -->
+<div class="inputBar">
 
-<div id="inputBar" class="inputBar">
+<button>+</button>
 
-<div class="row">
+<input placeholder="Type message">
 
-<button onclick="photoInput.click()">+</button>
-
-<input id="text" placeholder="Type message">
-
-<button onclick="send()">↑</button>
-
-<input type="file" id="photoInput" style="display:none">
+<button>↑</button>
 
 </div>
 
@@ -220,49 +242,19 @@ cursor:pointer;
 
 <script>
 
-function openChat(name,rank){
+function openChat(){
+document.getElementById("listScreen").style.display="none"
+document.getElementById("chatScreen").style.display="flex"
+}
 
-document.getElementById("list").style.display="none"
-document.getElementById("chat").style.display="block"
-document.getElementById("inputBar").style.display="block"
-
-document.getElementById("title").innerText=name
-document.getElementById("rank").innerText=rank
-
+function back(){
+document.getElementById("chatScreen").style.display="none"
+document.getElementById("listScreen").style.display="block"
 }
 
 function closeChat(){
-
-document.getElementById("chat").style.display="none"
-document.getElementById("inputBar").style.display="none"
-document.getElementById("list").style.display="block"
-
-document.getElementById("title").innerText="Messages"
-document.getElementById("rank").innerText=""
-
-}
-
-function backFriends(){
-window.location.href="friends.html"
-}
-
-function send(){
-
-const text=document.getElementById("text").value
-if(!text) return
-
-const box=document.getElementById("chat")
-
-box.innerHTML+=`
-<div class="message me">
-<div class="bubble">${text}</div>
-</div>
-`
-
-document.getElementById("text").value=""
-
-box.scrollTop=box.scrollHeight
-
+document.getElementById("chatScreen").style.display="none"
+document.getElementById("listScreen").style.display="block"
 }
 
 </script>

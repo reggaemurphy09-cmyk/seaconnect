@@ -213,12 +213,15 @@ let currentEmail=null;
 let chatUserEmail=null;
 let currentChat=null;
 let sending=false;
+let unsubscribeMessages=null;
 
 const chatArea=document.getElementById("chatArea");
 
 function chatId(a,b){
 return [a,b].sort().join("_");
 }
+
+/* AUTH */
 
 onAuthStateChanged(auth,(user)=>{
 
@@ -277,7 +280,7 @@ chatAvatar.src=profile.photo;
 chatHeader.style.display="flex";
 chatInput.style.display="flex";
 
-loadMessages();
+loadMessages(profile.photo);
 
 }
 
@@ -289,15 +292,19 @@ chatArea.innerHTML="";
 chatHeader.style.display="none";
 chatInput.style.display="none";
 
+if(unsubscribeMessages){
+unsubscribeMessages();
+}
+
 }
 
 /* LOAD MESSAGES */
 
-function loadMessages(){
+function loadMessages(otherAvatar){
 
 const q=query(collection(db,"messages"),orderBy("createdAt"));
 
-onSnapshot(q,(snap)=>{
+unsubscribeMessages=onSnapshot(q,(snap)=>{
 
 chatArea.innerHTML="";
 
@@ -318,7 +325,7 @@ chatArea.innerHTML+=`
 
 <div class="message ${me?'me':''}">
 
-${!me?`<img class="avatar" src="https://i.ibb.co/2kRZ7Z6/avatar.png">`:''}
+${!me?`<img class="avatar" src="${otherAvatar}">`:''}
 
 <div class="bubble">
 

@@ -14,23 +14,6 @@ background:#0f172a;
 color:#fff;
 }
 
-/* LOADING SCREEN */
-
-#loadingScreen{
-position:fixed;
-top:0;
-left:0;
-right:0;
-bottom:0;
-display:flex;
-align-items:center;
-justify-content:center;
-flex-direction:column;
-background:#0f172a;
-z-index:9999;
-font-size:20px;
-}
-
 /* HEADER */
 
 .chatHeader{
@@ -52,7 +35,6 @@ background:none;
 border:none;
 font-size:22px;
 color:white;
-cursor:pointer;
 }
 
 .chatHeader img{
@@ -62,21 +44,15 @@ border-radius:50%;
 object-fit:cover;
 }
 
-.chatTitle{
-font-weight:900;
-}
-
-.chatRank{
-font-size:12px;
-opacity:.6;
-}
+.chatTitle{font-weight:900;}
+.chatRank{font-size:12px;opacity:.6}
 
 /* CHAT AREA */
 
 .chatArea{
 position:fixed;
 top:60px;
-bottom:70px;
+bottom:90px;
 left:0;
 right:0;
 overflow:auto;
@@ -99,7 +75,6 @@ justify-content:flex-end;
 width:34px;
 height:34px;
 border-radius:50%;
-object-fit:cover;
 }
 
 .bubble{
@@ -115,15 +90,11 @@ font-size:14px;
 background:white;
 }
 
-/* PHOTO */
-
 .chatPhoto{
 max-width:200px;
-border-radius:12px;
-margin-top:6px;
+border-radius:10px;
+margin-top:5px;
 }
-
-/* TIME */
 
 .time{
 font-size:10px;
@@ -138,31 +109,41 @@ position:fixed;
 bottom:0;
 left:0;
 right:0;
-height:70px;
-display:flex;
-align-items:center;
-gap:10px;
-padding:10px;
 background:#0f172a;
 border-top:1px solid rgba(255,255,255,0.1);
+padding:10px;
 }
 
-.chatInput input{
+/* PREVIEW IMAGE */
+
+.preview{
+max-width:120px;
+border-radius:10px;
+margin-bottom:6px;
+}
+
+/* INPUT ROW */
+
+.inputRow{
+display:flex;
+gap:10px;
+align-items:center;
+}
+
+.inputRow input{
 flex:1;
 padding:12px;
 border-radius:20px;
 border:none;
-outline:none;
 background:#1e293b;
 color:white;
 }
 
-.chatInput button{
+.inputRow button{
 background:none;
 border:none;
 font-size:22px;
 color:white;
-cursor:pointer;
 }
 
 </style>
@@ -170,20 +151,13 @@ cursor:pointer;
 
 <body>
 
-<!-- LOADING -->
-
-<div id="loadingScreen">
-SeaConnect<br>
-Loading...
-</div>
-
 <!-- HEADER -->
 
-<div class="chatHeader" id="chatHeader" style="display:none">
+<div class="chatHeader" id="chatHeader">
 
-<button onclick="exitChat()">←</button>
+<button onclick="history.back()">←</button>
 
-<img id="chatAvatar" src="https://i.ibb.co/2kRZ7Z6/avatar.png">
+<img id="chatAvatar">
 
 <div>
 <div class="chatTitle" id="chatTitle"></div>
@@ -192,13 +166,17 @@ Loading...
 
 </div>
 
-<!-- CHAT AREA -->
+<!-- CHAT -->
 
 <div class="chatArea" id="chatArea"></div>
 
-<!-- INPUT BAR -->
+<!-- INPUT -->
 
-<div class="chatInput" id="chatInput" style="display:none">
+<div class="chatInput">
+
+<img id="previewImage" class="preview" style="display:none">
+
+<div class="inputRow">
 
 <button onclick="photoInput.click()">+</button>
 
@@ -207,6 +185,8 @@ Loading...
 <button id="sendBtn">↑</button>
 
 <input type="file" id="photoInput" accept="image/*" style="display:none">
+
+</div>
 
 </div>
 
@@ -238,14 +218,13 @@ const db=getFirestore(app);
 
 const IMGBB_KEY="5b417e8de4a883f7425eeda12dc38f06";
 
-let currentEmail=null;
-let chatUserEmail=null;
-let currentChat=null;
+let currentEmail;
+let chatUserEmail;
+let currentChat;
 let sending=false;
 
 const chatArea=document.getElementById("chatArea");
-
-/* CHAT ID */
+const previewImage=document.getElementById("previewImage");
 
 function chatId(a,b){
 return [a,b].sort().join("_");
@@ -262,10 +241,6 @@ return;
 
 currentEmail=user.email.toLowerCase();
 
-/* hide loading */
-
-loadingScreen.style.display="none";
-
 const params=new URLSearchParams(window.location.search);
 const openUser=params.get("user");
 
@@ -275,7 +250,7 @@ openChat(openUser.toLowerCase());
 
 });
 
-/* GET PROFILE */
+/* PROFILE */
 
 async function getProfile(email){
 
@@ -287,13 +262,11 @@ const snap=await getDocs(collection(db,"users"));
 
 snap.forEach(docSnap=>{
 const d=docSnap.data();
-
 if(d.email===email){
 name=d.name||name;
 rank=d.rank||"";
 photo=d.photo||photo;
 }
-
 });
 
 return {name,rank,photo};
@@ -302,7 +275,7 @@ return {name,rank,photo};
 
 /* OPEN CHAT */
 
-window.openChat=async function(email){
+async function openChat(email){
 
 chatUserEmail=email;
 currentChat=chatId(currentEmail,email);
@@ -313,20 +286,7 @@ chatTitle.innerText=profile.name;
 chatRank.innerText=profile.rank;
 chatAvatar.src=profile.photo;
 
-chatHeader.style.display="flex";
-chatInput.style.display="flex";
-
 loadMessages();
-
-}
-
-/* EXIT CHAT */
-
-window.exitChat=function(){
-
-chatArea.innerHTML="";
-chatHeader.style.display="none";
-chatInput.style.display="none";
 
 }
 
@@ -343,7 +303,6 @@ chatArea.innerHTML="";
 snap.forEach(docSnap=>{
 
 const d=docSnap.data();
-
 if(d.chatId!==currentChat) return;
 
 const me=d.from===currentEmail;
@@ -361,7 +320,7 @@ ${!me?`<img class="avatar" src="https://i.ibb.co/2kRZ7Z6/avatar.png">`:''}
 
 <div class="bubble">
 
-${d.text?d.text:""}
+${d.text||""}
 
 ${d.photo?`<img src="${d.photo}" class="chatPhoto">`:""}
 
@@ -378,6 +337,19 @@ ${d.photo?`<img src="${d.photo}" class="chatPhoto">`:""}
 chatArea.scrollTop=chatArea.scrollHeight;
 
 });
+
+}
+
+/* PHOTO PREVIEW */
+
+photoInput.onchange=()=>{
+
+const file=photoInput.files[0];
+
+if(file){
+previewImage.src=URL.createObjectURL(file);
+previewImage.style.display="block";
+}
 
 }
 
@@ -412,9 +384,10 @@ createdAt:Date.now()
 });
 
 messageInput.value="";
+previewImage.style.display="none";
 photoInput.value="";
 
-/* background upload */
+/* upload background */
 
 if(file){
 

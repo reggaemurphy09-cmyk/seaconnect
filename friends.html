@@ -223,10 +223,16 @@ friendEmail.value="";
 friendStatus.innerText="";
 };
 
-document.getElementById("sendBtn").onclick=async()=>{
-const toEmail=friendEmail.value.trim().toLowerCase();
-if(!toEmail){friendStatus.innerText="Enter email.";return;}
-if(toEmail===currentUserEmail){friendStatus.innerText="Cannot add yourself.";return;}
+document.getElementById("sendBtn").addEventListener("click", async ()=>{
+
+const input=document.getElementById("friendEmail");
+const statusText=document.getElementById("friendStatus");
+const toEmail=input.value.trim().toLowerCase();
+
+if(!toEmail){statusText.innerText="Enter email.";return;}
+if(toEmail===currentUserEmail){statusText.innerText="Cannot add yourself.";return;}
+
+try{
 
 const rid=requestIdFor(currentUserEmail,toEmail);
 const ref=doc(db,"friendRequests",rid);
@@ -234,8 +240,8 @@ const snap=await getDoc(ref);
 
 if(snap.exists()){
 const data=snap.data();
-if(data.status==="pending"){friendStatus.innerText="Already pending.";return;}
-if(data.status==="accepted"){friendStatus.innerText="Already friends.";return;}
+if(data.status==="pending"){statusText.innerText="Already pending.";return;}
+if(data.status==="accepted"){statusText.innerText="Already friends.";return;}
 }
 
 await setDoc(ref,{
@@ -245,11 +251,18 @@ status:"pending",
 createdAt:Date.now()
 });
 
-friendStatus.innerText="Request sent ✅";
-friendEmail.value="";
-};
+statusText.innerText="Request sent ✅";
+input.value="";
+
+}catch(err){
+console.error(err);
+statusText.innerText="Error sending request.";
+}
+
+});
 
 function listenFriends(){
+
 onSnapshot(collection(db,"friendRequests"),async snap=>{
 
 friendsList.innerHTML="";

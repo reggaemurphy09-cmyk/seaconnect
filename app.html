@@ -16,22 +16,27 @@ button{padding:11px 16px;border:none;border-radius:14px;font-weight:700;cursor:p
 #profilePhoto{box-shadow:0 0 30px rgba(59,130,246,.5);}
 
 /* NEW: GREEN ONLINE RING */
-.profileWrapper{
-display:inline-block;
-padding:4px;
+
+.avatarRing{
+display:inline-flex;
+justify-content:center;
+align-items:center;
+padding:6px;
 border-radius:50%;
-background:linear-gradient(45deg,#22c55e,#16a34a);
-box-shadow:0 0 20px rgba(34,197,94,0.7);
+border:4px solid #22c55e;
+box-shadow:0 0 20px rgba(34,197,94,.6);
 }
-.profileWrapper img{
+
+#profilePhoto{
 width:120px;
 height:120px;
 border-radius:50%;
 object-fit:cover;
 display:block;
 }
-</style></head><body>
 
+</style>
+</head>
 <!-- FEEDS PLACEHOLDER -->
 <div id="feedsPage" class="page">
 <h2>📰 Feeds</h2>

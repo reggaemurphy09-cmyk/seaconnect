@@ -289,6 +289,28 @@ openChat(openUser.toLowerCase());
 
 });
 
+async function getUserProfile(email){
+
+const q=query(collection(db,"users"));
+let name=email.split("@")[0];
+let rank="";
+let photo="https://i.ibb.co/2kRZ7Z6/avatar.png";
+
+const snap=await getDocs(q);
+
+snap.forEach(docSnap=>{
+const d=docSnap.data();
+if(d.email===email){
+name=d.name||name;
+rank=d.rank||"";
+photo=d.photo||photo;
+}
+});
+
+return {name,rank,photo};
+
+}
+
 async function listenChats(){
 
 const q=query(collection(db,"messages"),orderBy("createdAt"));
@@ -315,14 +337,7 @@ for(const email in chats){
 
 const last=chats[email];
 
-let name=email.split("@")[0];
-let photo="https://i.ibb.co/2kRZ7Z6/avatar.png";
-
-try{
-const userSnap=await getDoc(doc(db,"users",email));
-name=userSnap.data()?.name || name;
-photo=userSnap.data()?.photo || photo;
-}catch{}
+const profile=await getUserProfile(email);
 
 chatList.innerHTML+=`
 
@@ -331,12 +346,13 @@ chatList.innerHTML+=`
 <div class="listRow">
 
 <div class="avatarWrapper">
-<img src="${photo}">
+<img src="${profile.photo}">
 <div class="onlineRing"></div>
 </div>
 
 <div class="listText">
-<div class="listName">${name}</div>
+<div class="listName">${profile.name}</div>
+<div class="listSub">${profile.rank}</div>
 <div class="listSub">${last.text || "Photo"}</div>
 </div>
 
@@ -352,10 +368,14 @@ chatList.innerHTML+=`
 
 }
 
-window.openChat=function(email){
+window.openChat=async function(email){
 
 chatUserEmail=email;
 currentChat=chatId(currentEmail,email);
+
+const profile=await getUserProfile(email);
+
+chatTitle.innerText=profile.name+" • "+profile.rank;
 
 chatSection.style.display="block";
 
@@ -424,9 +444,7 @@ isSending=true;
 let photoURL="";
 
 if(file){
-
 photoURL=URL.createObjectURL(file);
-
 }
 
 const msgRef=await addDoc(collection(db,"messages"),{

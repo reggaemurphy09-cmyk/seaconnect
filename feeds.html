@@ -15,7 +15,6 @@ color:#f1f5f9;
 }
 
 .page{
-display:block;
 padding:20px;
 padding-bottom:95px;
 }
@@ -136,6 +135,8 @@ color:#3b82f6;
 font-weight:800;
 }
 
+/* PROFILE PHOTO */
+
 .avatar{
 width:40px;
 height:40px;
@@ -153,7 +154,7 @@ box-shadow:0 0 10px #22c55e;
 
 <body>
 
-<div class="page">
+<div id="feedsPage" class="page">
 
 <div class="topbar">
 <div class="title">📰 Crew Feeds</div>
@@ -182,9 +183,10 @@ style="width:100%;margin-top:10px;border-radius:16px;display:none;">
 
 </div>
 
+
 <div class="bottomnav">
 
-<button class="active" onclick="location.href='feeds.html'">
+<button class="active">
 📰 Feeds
 </button>
 
@@ -192,19 +194,20 @@ style="width:100%;margin-top:10px;border-radius:16px;display:none;">
 👥 Friends
 </button>
 
-<button onclick="location.href='message.html'">
+<button onclick="location.href='messages.html'">
 💬 Messages
 </button>
 
-<button onclick="location.href='profile.html'">
+<button onclick="location.href='app.html'">
 👤 Profile
 </button>
 
 </div>
 
+
 <script type="module">
 
-import { initializeApp } 
+import { initializeApp }
 from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 
 import {
@@ -242,6 +245,7 @@ const IMGBB_KEY="5b417e8de4a883f7425eeda12dc38f06";
 
 let currentUID=null;
 let currentEmail="";
+let isPosting=false;
 
 const feedsList=document.getElementById("feedsList");
 
@@ -264,99 +268,108 @@ loadFeeds();
 
 });
 
+
 window.createFeed=async function(){
+
+if(isPosting) return;
 
 const text=document.getElementById("feedInput").value.trim();
 const file=document.getElementById("feedPhoto").files[0];
 
 if(!text && !file){
-alert("Write something");
+alert("Write something or add photo");
 return;
 }
 
-let preview="";
+isPosting=true;
 
+let previewPhoto="";
 if(file){
-preview=URL.createObjectURL(file);
-}
-
-feedsList.innerHTML=`
-
-<div class="card">
-
-<div style="display:flex;gap:10px;align-items:center;">
-
-<img src="https://i.ibb.co/2kRZ7Z6/avatar.png" class="avatar">
-
-<div>
-<div style="font-weight:900">${currentEmail.split("@")[0]}</div>
-<div class="subText">Posting...</div>
-</div>
-
-</div>
-
-<div style="margin-top:10px">${text}</div>
-
-${preview?`<img src="${preview}" class="feedPhoto">`:""}
-
-</div>
-
-` + feedsList.innerHTML;
-
-let photoURL="";
-
-if(file){
-
-const formData=new FormData();
-formData.append("image",file);
-
-fetch("https://api.imgbb.com/1/upload?key="+IMGBB_KEY,{
-method:"POST",
-body:formData
-})
-.then(res=>res.json())
-.then(data=>{
-if(data.success){
-photoURL=data.data.url;
-}
-});
-
+previewPhoto=URL.createObjectURL(file);
 }
 
 const userSnap=await getDoc(doc(db,"users",currentUID));
 const userData=userSnap.data()||{};
 
-await addDoc(collection(db,"feeds"),{
+/* POST IMMEDIATELY */
+
+const newPost=await addDoc(collection(db,"feeds"),{
 
 uid:currentUID,
 name:userData.name || currentEmail.split("@")[0],
 rank:userData.rank || "",
 photoProfile:userData.photo || "",
 text:text,
-photo:photoURL,
+photo:previewPhoto,
 likes:[],
 createdAt:Date.now()
 
 });
 
-document.getElementById("feedInput").value="";
-document.getElementById("feedPhoto").value="";
-document.getElementById("previewPhoto").style.display="none";
+/* CLEAR INPUT */
+
+feedInput.value="";
+feedPhoto.value="";
+previewPhoto.style.display="none";
+
+isPosting=false;
+
+/* BACKGROUND UPLOAD */
+
+if(file){
+
+const formData=new FormData();
+formData.append("image",file);
+
+try{
+
+const res=await fetch(
+"https://api.imgbb.com/1/upload?key="+IMGBB_KEY,
+{method:"POST",body:formData}
+);
+
+const data=await res.json();
+
+if(data.success){
+
+await updateDoc(doc(db,"feeds",newPost.id),{
+photo:data.data.url
+});
+
+}
+
+}catch(e){
+console.log("Upload failed");
+}
+
+}
 
 };
+
+
 
 function loadFeeds(){
 
 const q=query(collection(db,"feeds"),orderBy("createdAt","desc"));
 
-onSnapshot(q,(snap)=>{
+onSnapshot(q,async(snap)=>{
 
 feedsList.innerHTML="";
 
-snap.forEach(async docSnap=>{
+for(const docSnap of snap.docs){
 
 const d=docSnap.data();
 const id=docSnap.id;
+
+const likesArr=d.likes||[];
+const liked=likesArr.includes(currentUID);
+
+let online=false;
+
+try{
+const userSnap=await getDoc(doc(db,"users",d.uid));
+online=userSnap.data()?.online || false;
+}catch{}
 
 feedsList.innerHTML+=`
 
@@ -365,11 +378,11 @@ feedsList.innerHTML+=`
 <div style="display:flex;gap:10px;align-items:center;">
 
 <img src="${d.photoProfile || 'https://i.ibb.co/2kRZ7Z6/avatar.png'}"
-class="avatar">
+class="avatar ${online?'online':''}">
 
 <div>
 <div style="font-weight:900">${d.name}</div>
-<div class="subText">${d.rank || ""}</div>
+<div class="subText">${d.rank||""}</div>
 </div>
 
 </div>
@@ -377,6 +390,128 @@ class="avatar">
 <div style="margin-top:10px">${d.text||""}</div>
 
 ${d.photo?`<img src="${d.photo}" class="feedPhoto">`:""}
+
+<div class="row">
+
+<button class="likeBtn ${liked?"liked":""}"
+onclick="toggleLike('${id}')">
+
+${liked?"💙 Liked":"👍 Like"}
+
+</button>
+
+<span class="subText">
+${likesArr.length} likes
+</span>
+
+${d.uid===currentUID?`
+<button onclick="deletePost('${id}')">Delete</button>
+`:""}
+
+</div>
+
+<div style="margin-top:10px">
+
+<input id="commentInput-${id}" placeholder="Write comment">
+
+<button onclick="sendComment('${id}')">Send</button>
+
+<div id="comments-${id}"></div>
+
+</div>
+
+</div>
+
+`;
+
+loadComments(id);
+
+}
+
+});
+
+}
+
+
+window.toggleLike=async function(id){
+
+const ref=doc(db,"feeds",id);
+const snap=await getDoc(ref);
+
+let likes=snap.data().likes||[];
+
+if(likes.includes(currentUID)){
+likes=likes.filter(x=>x!==currentUID);
+}else{
+likes.push(currentUID);
+}
+
+await updateDoc(ref,{likes});
+
+};
+
+
+
+window.deletePost=async function(id){
+
+if(confirm("Delete post?")){
+await deleteDoc(doc(db,"feeds",id));
+}
+
+};
+
+
+
+window.sendComment=async function(feedId){
+
+const input=document.getElementById("commentInput-"+feedId);
+const text=input.value.trim();
+
+if(!text) return;
+
+await addDoc(collection(db,"comments"),{
+
+feedId:feedId,
+uid:currentUID,
+name:"User",
+text:text,
+createdAt:Date.now()
+
+});
+
+input.value="";
+
+};
+
+
+
+function loadComments(feedId){
+
+const q=query(collection(db,"comments"),where("feedId","==",feedId));
+
+onSnapshot(q,(snap)=>{
+
+const box=document.getElementById("comments-"+feedId);
+
+if(!box) return;
+
+box.innerHTML="";
+
+snap.forEach(docSnap=>{
+
+const d=docSnap.data();
+
+box.innerHTML+=`
+
+<div class="comment">
+
+<div>
+<b>${d.name}</b>: ${d.text}
+</div>
+
+${d.uid===currentUID?`
+<button onclick="deleteComment('${docSnap.id}')">Delete</button>
+`:""}
 
 </div>
 
@@ -387,6 +522,17 @@ ${d.photo?`<img src="${d.photo}" class="feedPhoto">`:""}
 });
 
 }
+
+
+window.deleteComment=async function(id){
+
+if(confirm("Delete comment?")){
+await deleteDoc(doc(db,"comments",id));
+}
+
+};
+
+
 
 document.getElementById("feedPhoto").addEventListener("change",function(){
 

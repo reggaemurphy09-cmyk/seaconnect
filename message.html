@@ -4,54 +4,65 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>SeaConnect Messages</title>
+<title>SeaConnect Messenger</title>
 
 <style>
 
 body{
 margin:0;
-font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
-background:#f2f2f2;
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
+background:#f5f5f5;
 }
 
 /* HEADER */
 
 .header{
-height:55px;
+height:60px;
+background:white;
 display:flex;
 align-items:center;
 padding:0 15px;
-gap:10px;
-background:white;
 border-bottom:1px solid #ddd;
-font-weight:700;
+gap:10px;
 }
 
 .header button{
-border:none;
 background:none;
-font-size:20px;
+border:none;
+font-size:22px;
+cursor:pointer;
+}
+
+.title{
+font-weight:700;
+font-size:18px;
 }
 
 /* MESSAGE LIST */
 
-.listItem{
-display:flex;
-align-items:center;
-gap:12px;
-padding:12px;
-background:white;
-border-bottom:1px solid #eee;
-cursor:pointer;
+.messageList{
+padding:10px;
 }
 
-/* AVATAR */
-
-.avatarBox{
-position:relative;
+.user{
+display:flex;
+gap:10px;
+padding:12px;
+background:white;
+border-radius:10px;
+margin-bottom:8px;
+cursor:pointer;
+align-items:center;
 }
 
 .avatar{
+width:45px;
+height:45px;
+border-radius:50%;
+position:relative;
+}
+
+.avatar img{
 width:45px;
 height:45px;
 border-radius:50%;
@@ -59,17 +70,15 @@ object-fit:cover;
 }
 
 .online{
-position:absolute;
-bottom:2px;
-right:2px;
 width:10px;
 height:10px;
 background:#22c55e;
 border-radius:50%;
+position:absolute;
+bottom:2px;
+right:2px;
 border:2px solid white;
 }
-
-/* TEXT */
 
 .name{
 font-weight:700;
@@ -83,20 +92,25 @@ color:#666;
 /* CHAT SCREEN */
 
 .chatScreen{
+position:fixed;
+top:0;
+left:0;
+right:0;
+bottom:0;
+background:white;
 display:none;
-height:100vh;
 flex-direction:column;
 }
 
 /* CHAT HEADER */
 
 .chatHeader{
+height:60px;
 display:flex;
 align-items:center;
-gap:10px;
-padding:10px;
-background:white;
+padding:0 10px;
 border-bottom:1px solid #ddd;
+gap:10px;
 }
 
 .chatHeader img{
@@ -105,9 +119,19 @@ height:40px;
 border-radius:50%;
 }
 
+.chatHeader .name{
+font-weight:700;
+}
+
+.chatHeader .rank{
+font-size:12px;
+color:#666;
+}
+
 .chatHeader .close{
 margin-left:auto;
-font-size:18px;
+font-size:22px;
+cursor:pointer;
 }
 
 /* CHAT AREA */
@@ -116,34 +140,36 @@ font-size:18px;
 flex:1;
 overflow:auto;
 padding:15px;
+background:#f5f5f5;
 }
-
-/* MESSAGE */
 
 .message{
-margin-bottom:10px;
-display:flex;
-}
-
-.message.me{
-justify-content:flex-end;
-}
-
-.bubble{
-background:#e5e7eb;
-padding:10px 14px;
-border-radius:16px;
 max-width:70%;
+padding:10px 14px;
+border-radius:18px;
+background:#e5e7eb;
+margin-bottom:8px;
 }
 
-.message.me .bubble{
-background:white;
+.me{
+margin-left:auto;
+background:#dbeafe;
 }
 
-/* INPUT */
+/* PREVIEW IMAGE */
+
+.preview{
+max-width:120px;
+border-radius:10px;
+margin-bottom:5px;
+display:none;
+}
+
+/* INPUT BAR */
 
 .inputBar{
 display:flex;
+align-items:center;
 gap:10px;
 padding:10px;
 background:white;
@@ -152,15 +178,16 @@ border-top:1px solid #ddd;
 
 .inputBar input{
 flex:1;
-padding:10px;
+padding:12px;
 border-radius:20px;
 border:1px solid #ddd;
 }
 
 .inputBar button{
-border:none;
 background:none;
-font-size:20px;
+border:none;
+font-size:22px;
+cursor:pointer;
 }
 
 </style>
@@ -170,17 +197,19 @@ font-size:20px;
 
 <!-- MESSAGE LIST -->
 
-<div id="listScreen">
+<div id="listView">
 
 <div class="header">
 <button onclick="history.back()">←</button>
-Messages
+<div class="title">Messages</div>
 </div>
 
-<div class="listItem" onclick="openChat()">
+<div class="messageList">
 
-<div class="avatarBox">
-<img class="avatar" src="https://i.pravatar.cc/100">
+<div class="user" onclick="openChat()">
+
+<div class="avatar">
+<img src="https://i.ibb.co/2kRZ7Z6/avatar.png">
 <div class="online"></div>
 </div>
 
@@ -193,48 +222,40 @@ Messages
 
 </div>
 
+</div>
 
 <!-- CHAT SCREEN -->
 
-<div id="chatScreen" class="chatScreen">
+<div class="chatScreen" id="chatScreen">
 
 <div class="chatHeader">
 
-<button onclick="back()">←</button>
+<button onclick="backList()">←</button>
 
-<div class="avatarBox">
-<img src="https://i.pravatar.cc/100">
-<div class="online"></div>
-</div>
+<img src="https://i.ibb.co/2kRZ7Z6/avatar.png">
 
 <div>
 <div class="name">Murphy</div>
 <div class="rank">Chief</div>
 </div>
 
-<button class="close" onclick="closeChat()">X</button>
+<div class="close" onclick="closeChat()">X</div>
 
 </div>
 
-<div class="chatArea" id="chatArea">
+<div class="chatArea" id="chatArea"></div>
 
-<div class="message">
-<div class="bubble">Hello</div>
-</div>
-
-<div class="message me">
-<div class="bubble">Hi</div>
-</div>
-
-</div>
+<img id="preview" class="preview">
 
 <div class="inputBar">
 
-<button>+</button>
+<button onclick="fileInput.click()">+</button>
 
-<input placeholder="Type message">
+<input id="messageInput" placeholder="Type message...">
 
-<button>↑</button>
+<button onclick="sendMessage()">↑</button>
+
+<input type="file" id="fileInput" accept="image/*" style="display:none">
 
 </div>
 
@@ -242,19 +263,58 @@ Messages
 
 <script>
 
+let selectedFile=null
+
 function openChat(){
-document.getElementById("listScreen").style.display="none"
 document.getElementById("chatScreen").style.display="flex"
 }
 
-function back(){
+function backList(){
 document.getElementById("chatScreen").style.display="none"
-document.getElementById("listScreen").style.display="block"
 }
 
 function closeChat(){
 document.getElementById("chatScreen").style.display="none"
-document.getElementById("listScreen").style.display="block"
+}
+
+fileInput.onchange=()=>{
+
+selectedFile=fileInput.files[0]
+
+if(selectedFile){
+preview.src=URL.createObjectURL(selectedFile)
+preview.style.display="block"
+}
+
+}
+
+function sendMessage(){
+
+const text=messageInput.value.trim()
+
+if(!text && !selectedFile) return
+
+let html=""
+
+if(text){
+html+=`<div class="message me">${text}</div>`
+}
+
+if(selectedFile){
+html+=`<div class="message me">
+<img src="${preview.src}" style="max-width:200px;border-radius:10px">
+</div>`
+}
+
+chatArea.innerHTML+=html
+
+messageInput.value=""
+preview.style.display="none"
+fileInput.value=""
+selectedFile=null
+
+chatArea.scrollTop=chatArea.scrollHeight
+
 }
 
 </script>

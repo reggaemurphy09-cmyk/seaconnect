@@ -37,6 +37,26 @@ display:block;
 
 </style>
 </head>
+
+  <body>
+
+<div id="profilePage" class="page" style="display:block;">
+
+<div style="display:flex;justify-content:space-between;">
+<h2>👤 My Profile</h2>
+<button class="danger" onclick="logout()">Logout</button>
+</div>
+
+<div class="card" style="text-align:center">
+
+<div class="avatarRing">
+<img id="profilePhoto"
+src="https://i.ibb.co/2kRZ7Z6/avatar.png">
+</div>
+
+<br><br>
+
+<input type="file" id="photoInput" accept="image/*" style="display:none">
 <!-- FEEDS PLACEHOLDER -->
 <div id="feedsPage" class="page">
 <h2>📰 Feeds</h2>

@@ -92,8 +92,6 @@ border:2px solid #22c55e;
 pointer-events:none;
 }
 
-.small{font-size:13px;color:#94a3b8;}
-
 .bottomnav{
 position:fixed;
 bottom:15px;
@@ -137,7 +135,7 @@ font-weight:800;
 <button class="primary" id="sendBtn">Send Request</button>
 <button class="light" id="resetBtn">Reset</button>
 </div>
-<div id="friendStatus" class="small"></div>
+<div id="friendStatus" style="font-size:13px;color:#94a3b8;"></div>
 </div>
 
 <div id="friendsList"></div>
@@ -180,7 +178,6 @@ const auth=getAuth(app);
 const db=getFirestore(app);
 
 let currentUserEmail=null;
-let currentUserUID=null;
 let presenceData={};
 
 function requestIdFor(a,b){
@@ -197,72 +194,27 @@ return null;
 onAuthStateChanged(auth,async(user)=>{
 if(!user){location.href="index.html";return;}
 currentUserEmail=user.email.toLowerCase();
-currentUserUID=user.uid;
-
-await setDoc(doc(db,"presence",currentUserUID),{
-email:currentUserEmail,
-online:true,
-lastActive:Date.now()
-});
-
-listenPresence();
 listenFriends();
 });
 
-function listenPresence(){
-onSnapshot(collection(db,"presence"),snap=>{
-presenceData={};
-snap.forEach(d=>{
-presenceData[d.data().email]=d.data();
-});
-});
-}
+document.getElementById("sendBtn").onclick=async()=>{
+const input=friendEmail.value.trim().toLowerCase();
+if(!input){friendStatus.innerText="Enter email.";return;}
+if(input===currentUserEmail){friendStatus.innerText="Cannot add yourself.";return;}
 
-document.getElementById("resetBtn").onclick=()=>{
-friendEmail.value="";
-friendStatus.innerText="";
-};
-
-document.getElementById("sendBtn").addEventListener("click", async ()=>{
-
-const input=document.getElementById("friendEmail");
-const statusText=document.getElementById("friendStatus");
-const toEmail=input.value.trim().toLowerCase();
-
-if(!toEmail){statusText.innerText="Enter email.";return;}
-if(toEmail===currentUserEmail){statusText.innerText="Cannot add yourself.";return;}
-
-try{
-
-const rid=requestIdFor(currentUserEmail,toEmail);
-const ref=doc(db,"friendRequests",rid);
-const snap=await getDoc(ref);
-
-if(snap.exists()){
-const data=snap.data();
-if(data.status==="pending"){statusText.innerText="Already pending.";return;}
-if(data.status==="accepted"){statusText.innerText="Already friends.";return;}
-}
-
-await setDoc(ref,{
+const rid=requestIdFor(currentUserEmail,input);
+await setDoc(doc(db,"friendRequests",rid),{
 from:currentUserEmail,
-to:toEmail,
+to:input,
 status:"pending",
 createdAt:Date.now()
 });
 
-statusText.innerText="Request sent ✅";
-input.value="";
-
-}catch(err){
-console.error(err);
-statusText.innerText="Error sending request.";
-}
-
-});
+friendStatus.innerText="Request sent ✅";
+friendEmail.value="";
+};
 
 function listenFriends(){
-
 onSnapshot(collection(db,"friendRequests"),async snap=>{
 
 friendsList.innerHTML="";
@@ -280,7 +232,7 @@ if(from!==currentUserEmail && to!==currentUserEmail) continue;
 
 const otherEmail=from===currentUserEmail?to:from;
 const userData=await getUserByEmail(otherEmail);
-const isOnline=presenceData[otherEmail]?.online;
+const name=userData?.name||"SeaCrew";
 
 /* Incoming */
 if(status==="pending" && to===currentUserEmail){
@@ -290,12 +242,9 @@ incomingHTML+=`
 <div class="friendInfo">
 <div class="avatarWrapper">
 <img src="${userData?.photo || 'https://i.ibb.co/2kRZ7Z6/avatar.png'}">
-${isOnline?'<div class="onlineRing"></div>':''}
+<div class="onlineRing"></div>
 </div>
-<div>
-<div style="font-weight:900;">${userData?.name||otherEmail}</div>
-<div class="small">${otherEmail}</div>
-</div>
+<div style="font-weight:900;">${name}</div>
 </div>
 <div class="row">
 <button class="primary" onclick="acceptRequest('${otherEmail}')">Accept</button>
@@ -311,12 +260,9 @@ friendsList.innerHTML+=`
 <div class="friendInfo">
 <div class="avatarWrapper">
 <img src="${userData?.photo || 'https://i.ibb.co/2kRZ7Z6/avatar.png'}">
-${isOnline?'<div class="onlineRing"></div>':''}
+<div class="onlineRing"></div>
 </div>
-<div>
-<div style="font-weight:900;">${userData?.name||otherEmail}</div>
-<div class="small">${otherEmail}</div>
-</div>
+<div style="font-weight:900;">${name}</div>
 </div>
 <div class="row">
 <button class="primary" onclick="openChat('${otherEmail}')">Chat</button>
@@ -327,7 +273,6 @@ ${isOnline?'<div class="onlineRing"></div>':''}
 
 }
 
-/* Show incoming card only if exists */
 if(hasIncoming){
 friendsList.innerHTML=
 `<div class="card"><h3>Incoming Requests</h3>${incomingHTML}</div>`

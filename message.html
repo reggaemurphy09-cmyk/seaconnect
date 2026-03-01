@@ -39,6 +39,29 @@ object-fit:cover;
 .chatTitle{font-weight:700}
 .chatRank{font-size:12px;color:#777}
 
+/* CHAT LIST */
+
+.chatList{
+padding-top:60px;
+}
+
+.chatItem{
+display:flex;
+gap:12px;
+padding:12px;
+align-items:center;
+border-bottom:1px solid #eee;
+background:white;
+cursor:pointer;
+}
+
+.chatItem img{
+width:45px;
+height:45px;
+border-radius:50%;
+object-fit:cover;
+}
+
 /* CHAT AREA */
 
 .chatArea{
@@ -49,9 +72,10 @@ left:0;
 right:0;
 overflow:auto;
 padding:15px;
+display:none;
 }
 
-/* MESSAGES */
+/* MESSAGE */
 
 .message{
 display:flex;
@@ -90,6 +114,7 @@ right:0;
 background:white;
 border-top:1px solid #ddd;
 padding:10px;
+display:none;
 }
 
 .preview{
@@ -115,6 +140,7 @@ border:1px solid #ddd;
 background:none;
 border:none;
 font-size:22px;
+cursor:pointer;
 }
 
 </style>
@@ -126,26 +152,30 @@ font-size:22px;
 
 <div class="chatHeader">
 
-<button onclick="history.back()">←</button>
+<button onclick="goBack()">←</button>
 
-<img id="chatAvatar" src="">
+<img id="chatAvatar" src="https://i.ibb.co/2kRZ7Z6/avatar.png">
 
 <div>
-<div class="chatTitle" id="chatTitle">Chat</div>
+<div class="chatTitle" id="chatTitle">Messages</div>
 <div class="chatRank" id="chatRank"></div>
 </div>
 
-<button style="margin-left:auto">✕</button>
+<button style="margin-left:auto" onclick="closeChat()">✕</button>
 
 </div>
 
-<!-- CHAT -->
+<!-- CHAT LIST -->
+
+<div class="chatList" id="chatList"></div>
+
+<!-- CHAT AREA -->
 
 <div class="chatArea" id="chatArea"></div>
 
 <!-- INPUT -->
 
-<div class="chatInput">
+<div class="chatInput" id="chatInput">
 
 <img id="preview" class="preview" style="display:none">
 
@@ -189,13 +219,14 @@ const app=initializeApp(firebaseConfig);
 const auth=getAuth(app);
 const db=getFirestore(app);
 
-const IMGBB_KEY="5b417e8de4a883f7425eeda12dc38f06";
+const DEFAULT_AVATAR="https://i.ibb.co/2kRZ7Z6/avatar.png";
 
 let myEmail;
 let otherEmail;
 let chatID;
 
 const chatArea=document.getElementById("chatArea");
+const chatList=document.getElementById("chatList");
 const preview=document.getElementById("preview");
 
 function chatId(a,b){
@@ -213,23 +244,30 @@ return;
 
 myEmail=user.email.toLowerCase();
 
-const params=new URLSearchParams(location.search);
-otherEmail=params.get("user");
-
-chatID=chatId(myEmail,otherEmail);
-
-loadMessages();
-loadProfile();
+loadChatList();
 
 });
 
-/* LOAD PROFILE */
+/* CHAT LIST */
 
-async function loadProfile(){
+async function loadChatList(){
 
-try{
+const usersSnap=await collection(db,"users");
 
-const snap=await getDoc(doc(db,"users",otherEmail));
+}
+
+/* OPEN CHAT */
+
+window.openChat=async function(email){
+
+otherEmail=email;
+chatID=chatId(myEmail,email);
+
+chatList.style.display="none";
+chatArea.style.display="block";
+chatInput.style.display="block";
+
+const snap=await getDoc(doc(db,"users",email));
 
 if(snap.exists()){
 
@@ -237,11 +275,34 @@ const d=snap.data();
 
 chatTitle.innerText=d.name || "User";
 chatRank.innerText=d.rank || "";
-chatAvatar.src=d.photo || "";
+
+chatAvatar.src=d.photo || DEFAULT_AVATAR;
 
 }
 
-}catch{}
+loadMessages();
+
+}
+
+/* CLOSE CHAT */
+
+window.closeChat=function(){
+
+chatArea.style.display="none";
+chatInput.style.display="none";
+chatList.style.display="block";
+
+chatTitle.innerText="Messages";
+chatRank.innerText="";
+chatAvatar.src=DEFAULT_AVATAR;
+
+}
+
+/* BACK BUTTON */
+
+window.goBack=function(){
+
+closeChat();
 
 }
 
@@ -287,7 +348,7 @@ chatArea.scrollTop=chatArea.scrollHeight;
 
 }
 
-/* PREVIEW IMAGE */
+/* PHOTO PREVIEW */
 
 photoInput.onchange=()=>{
 
@@ -331,30 +392,6 @@ createdAt:Date.now()
 messageInput.value="";
 preview.style.display="none";
 photoInput.value="";
-
-/* upload background */
-
-if(file){
-
-const formData=new FormData();
-formData.append("image",file);
-
-const res=await fetch(
-"https://api.imgbb.com/1/upload?key="+IMGBB_KEY,
-{method:"POST",body:formData}
-);
-
-const data=await res.json();
-
-if(data.success){
-
-await updateDoc(doc(db,"messages",ref.id),{
-photo:data.data.url
-});
-
-}
-
-}
 
 }
 

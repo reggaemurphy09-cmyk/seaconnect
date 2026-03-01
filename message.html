@@ -3,79 +3,96 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SeaConnect Messenger</title>
+<title>SeaConnect Messages</title>
 
 <style>
 
 body{
 margin:0;
-font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
+font-family:Arial;
 background:#f3f4f6;
 }
 
 /* HEADER */
 
-.chatHeader{
-position:fixed;
-top:0;
-left:0;
-right:0;
+.header{
 height:60px;
 display:flex;
 align-items:center;
-gap:12px;
-padding:0 15px;
+padding:0 12px;
+gap:10px;
 background:white;
 border-bottom:1px solid #ddd;
 }
 
-.chatHeader img{
-width:40px;
-height:40px;
+.header img{
+width:36px;
+height:36px;
 border-radius:50%;
 object-fit:cover;
 }
 
-.chatTitle{font-weight:700}
-.chatRank{font-size:12px;color:#777}
-
-/* CHAT LIST */
-
-.chatList{
-padding-top:60px;
+.online{
+width:10px;
+height:10px;
+background:#22c55e;
+border-radius:50%;
+position:absolute;
+margin-left:-12px;
+margin-top:24px;
+border:2px solid white;
 }
 
-.chatItem{
-display:flex;
-gap:12px;
-padding:12px;
-align-items:center;
-border-bottom:1px solid #eee;
-background:white;
+.header button{
+border:none;
+background:none;
+font-size:22px;
 cursor:pointer;
 }
 
-.chatItem img{
+.name{
+font-weight:700;
+}
+
+.rank{
+font-size:12px;
+color:#777;
+}
+
+/* MESSAGE LIST */
+
+.list{
+padding:10px;
+}
+
+.item{
+display:flex;
+gap:10px;
+align-items:center;
+padding:12px;
+background:white;
+border-bottom:1px solid #eee;
+cursor:pointer;
+}
+
+.item img{
 width:45px;
 height:45px;
 border-radius:50%;
-object-fit:cover;
 }
 
 /* CHAT AREA */
 
-.chatArea{
+.chat{
+display:none;
 position:fixed;
 top:60px;
-bottom:80px;
+bottom:70px;
 left:0;
 right:0;
 overflow:auto;
-padding:15px;
-display:none;
+padding:10px;
 }
-
-/* MESSAGE */
 
 .message{
 display:flex;
@@ -87,58 +104,45 @@ justify-content:flex-end;
 }
 
 .bubble{
-background:white;
+background:#e5e7eb;
 padding:10px 14px;
 border-radius:18px;
 max-width:70%;
-font-size:14px;
 }
 
 .message.me .bubble{
-background:#e5e7eb;
-}
-
-.chatPhoto{
-max-width:220px;
-border-radius:10px;
-margin-top:6px;
+background:white;
 }
 
 /* INPUT */
 
-.chatInput{
+.inputBar{
+display:none;
 position:fixed;
 bottom:0;
 left:0;
 right:0;
 background:white;
-border-top:1px solid #ddd;
 padding:10px;
-display:none;
+border-top:1px solid #ddd;
 }
 
-.preview{
-max-width:120px;
-margin-bottom:6px;
-border-radius:8px;
-}
-
-.inputRow{
+.row{
 display:flex;
-gap:10px;
+gap:8px;
 align-items:center;
 }
 
-.inputRow input{
+.row input{
 flex:1;
 padding:12px;
 border-radius:20px;
 border:1px solid #ddd;
 }
 
-.inputRow button{
-background:none;
+.row button{
 border:none;
+background:none;
 font-size:22px;
 cursor:pointer;
 }
@@ -150,248 +154,114 @@ cursor:pointer;
 
 <!-- HEADER -->
 
-<div class="chatHeader">
+<div class="header">
 
-<button onclick="goBack()">←</button>
+<button onclick="backFriends()">←</button>
 
-<img id="chatAvatar" src="https://i.ibb.co/2kRZ7Z6/avatar.png">
+<img id="avatar" src="https://i.ibb.co/2kRZ7Z6/avatar.png">
+<div class="online"></div>
 
 <div>
-<div class="chatTitle" id="chatTitle">Messages</div>
-<div class="chatRank" id="chatRank"></div>
+<div id="title" class="name">Messages</div>
+<div id="rank" class="rank"></div>
 </div>
 
-<button style="margin-left:auto" onclick="closeChat()">✕</button>
+<div style="flex:1"></div>
+
+<button onclick="closeChat()">✕</button>
 
 </div>
 
-<!-- CHAT LIST -->
+<!-- MESSAGE LIST -->
 
-<div class="chatList" id="chatList"></div>
+<div id="list" class="list">
 
-<!-- CHAT AREA -->
+<div class="item" onclick="openChat('Murphy','Chief')">
+<img src="https://i.ibb.co/2kRZ7Z6/avatar.png">
+<div>
+<div class="name">Murphy</div>
+<div class="rank">Chief</div>
+</div>
+</div>
 
-<div class="chatArea" id="chatArea"></div>
+</div>
+
+<!-- CHAT -->
+
+<div id="chat" class="chat">
+
+<div class="message">
+<div class="bubble">Hello</div>
+</div>
+
+<div class="message me">
+<div class="bubble">Hi</div>
+</div>
+
+</div>
 
 <!-- INPUT -->
 
-<div class="chatInput" id="chatInput">
+<div id="inputBar" class="inputBar">
 
-<img id="preview" class="preview" style="display:none">
-
-<div class="inputRow">
+<div class="row">
 
 <button onclick="photoInput.click()">+</button>
 
-<input id="messageInput" placeholder="Type message...">
+<input id="text" placeholder="Type message">
 
-<button id="sendBtn">↑</button>
+<button onclick="send()">↑</button>
 
-<input type="file" id="photoInput" accept="image/*" style="display:none">
-
-</div>
-
-</div>
-
-<script type="module">
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth,onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import {
-getFirestore,
-collection,
-addDoc,
-query,
-orderBy,
-onSnapshot,
-doc,
-getDoc,
-updateDoc
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-const firebaseConfig={
-apiKey:"AIzaSyCNlodsmEHrSXxgH0gTOcx4cAXwG8qmG9w",
-authDomain:"seaconnect-d2baa.firebaseapp.com",
-projectId:"seaconnect-d2baa"
-};
-
-const app=initializeApp(firebaseConfig);
-const auth=getAuth(app);
-const db=getFirestore(app);
-
-const DEFAULT_AVATAR="https://i.ibb.co/2kRZ7Z6/avatar.png";
-
-let myEmail;
-let otherEmail;
-let chatID;
-
-const chatArea=document.getElementById("chatArea");
-const chatList=document.getElementById("chatList");
-const preview=document.getElementById("preview");
-
-function chatId(a,b){
-return [a,b].sort().join("_");
-}
-
-/* LOGIN */
-
-onAuthStateChanged(auth,(user)=>{
-
-if(!user){
-location.href="index.html";
-return;
-}
-
-myEmail=user.email.toLowerCase();
-
-loadChatList();
-
-});
-
-/* CHAT LIST */
-
-async function loadChatList(){
-
-const usersSnap=await collection(db,"users");
-
-}
-
-/* OPEN CHAT */
-
-window.openChat=async function(email){
-
-otherEmail=email;
-chatID=chatId(myEmail,email);
-
-chatList.style.display="none";
-chatArea.style.display="block";
-chatInput.style.display="block";
-
-const snap=await getDoc(doc(db,"users",email));
-
-if(snap.exists()){
-
-const d=snap.data();
-
-chatTitle.innerText=d.name || "User";
-chatRank.innerText=d.rank || "";
-
-chatAvatar.src=d.photo || DEFAULT_AVATAR;
-
-}
-
-loadMessages();
-
-}
-
-/* CLOSE CHAT */
-
-window.closeChat=function(){
-
-chatArea.style.display="none";
-chatInput.style.display="none";
-chatList.style.display="block";
-
-chatTitle.innerText="Messages";
-chatRank.innerText="";
-chatAvatar.src=DEFAULT_AVATAR;
-
-}
-
-/* BACK BUTTON */
-
-window.goBack=function(){
-
-closeChat();
-
-}
-
-/* LOAD MESSAGES */
-
-function loadMessages(){
-
-const q=query(collection(db,"messages"),orderBy("createdAt"));
-
-onSnapshot(q,(snap)=>{
-
-chatArea.innerHTML="";
-
-snap.forEach(docSnap=>{
-
-const d=docSnap.data();
-
-if(d.chatId!==chatID) return;
-
-const me=d.from===myEmail;
-
-chatArea.innerHTML+=`
-
-<div class="message ${me?'me':''}">
-
-<div class="bubble">
-
-${d.text||""}
-
-${d.photo?`<img src="${d.photo}" class="chatPhoto">`:""}
+<input type="file" id="photoInput" style="display:none">
 
 </div>
 
 </div>
 
-`;
+<script>
 
-});
+function openChat(name,rank){
 
-chatArea.scrollTop=chatArea.scrollHeight;
+document.getElementById("list").style.display="none"
+document.getElementById("chat").style.display="block"
+document.getElementById("inputBar").style.display="block"
 
-});
-
-}
-
-/* PHOTO PREVIEW */
-
-photoInput.onchange=()=>{
-
-const file=photoInput.files[0];
-
-if(file){
-
-preview.src=URL.createObjectURL(file);
-preview.style.display="block";
+document.getElementById("title").innerText=name
+document.getElementById("rank").innerText=rank
 
 }
 
+function closeChat(){
+
+document.getElementById("chat").style.display="none"
+document.getElementById("inputBar").style.display="none"
+document.getElementById("list").style.display="block"
+
+document.getElementById("title").innerText="Messages"
+document.getElementById("rank").innerText=""
+
 }
 
-/* SEND MESSAGE */
-
-sendBtn.onclick=async()=>{
-
-const text=messageInput.value.trim();
-const file=photoInput.files[0];
-
-if(!text && !file) return;
-
-let previewURL="";
-
-if(file){
-previewURL=URL.createObjectURL(file);
+function backFriends(){
+window.location.href="friends.html"
 }
 
-const ref=await addDoc(collection(db,"messages"),{
+function send(){
 
-chatId:chatID,
-from:myEmail,
-to:otherEmail,
-text:text,
-photo:previewURL,
-createdAt:Date.now()
+const text=document.getElementById("text").value
+if(!text) return
 
-});
+const box=document.getElementById("chat")
 
-messageInput.value="";
-preview.style.display="none";
-photoInput.value="";
+box.innerHTML+=`
+<div class="message me">
+<div class="bubble">${text}</div>
+</div>
+`
+
+document.getElementById("text").value=""
+
+box.scrollTop=box.scrollHeight
 
 }
 

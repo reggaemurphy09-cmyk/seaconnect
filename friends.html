@@ -28,7 +28,7 @@ margin-bottom:16px;
 box-shadow:0 10px 30px rgba(0,0,0,.35);
 }
 
-h2{margin-top:0;}
+h2,h3{margin-top:0;}
 
 input{
 width:100%;
@@ -161,6 +161,7 @@ doc,
 setDoc,
 getDoc,
 deleteDoc,
+updateDoc,
 collection,
 onSnapshot,
 query,
@@ -194,10 +195,7 @@ return null;
 }
 
 onAuthStateChanged(auth,async(user)=>{
-if(!user){
-location.href="index.html";
-return;
-}
+if(!user){location.href="index.html";return;}
 currentUserEmail=user.email.toLowerCase();
 currentUserUID=user.uid;
 
@@ -226,19 +224,9 @@ friendStatus.innerText="";
 };
 
 document.getElementById("sendBtn").onclick=async()=>{
-
 const toEmail=friendEmail.value.trim().toLowerCase();
-const statusText=friendStatus;
-
-if(!toEmail){
-statusText.innerText="Enter email.";
-return;
-}
-
-if(toEmail===currentUserEmail){
-statusText.innerText="Cannot add yourself.";
-return;
-}
+if(!toEmail){friendStatus.innerText="Enter email.";return;}
+if(toEmail===currentUserEmail){friendStatus.innerText="Cannot add yourself.";return;}
 
 const rid=requestIdFor(currentUserEmail,toEmail);
 const ref=doc(db,"friendRequests",rid);
@@ -246,14 +234,8 @@ const snap=await getDoc(ref);
 
 if(snap.exists()){
 const data=snap.data();
-if(data.status==="pending"){
-statusText.innerText="Already pending.";
-return;
-}
-if(data.status==="accepted"){
-statusText.innerText="Already friends.";
-return;
-}
+if(data.status==="pending"){friendStatus.innerText="Already pending.";return;}
+if(data.status==="accepted"){friendStatus.innerText="Already friends.";return;}
 }
 
 await setDoc(ref,{
@@ -263,15 +245,16 @@ status:"pending",
 createdAt:Date.now()
 });
 
-statusText.innerText="Request sent ✅";
+friendStatus.innerText="Request sent ✅";
 friendEmail.value="";
 };
 
 function listenFriends(){
-
 onSnapshot(collection(db,"friendRequests"),async snap=>{
 
 friendsList.innerHTML="";
+let incomingHTML="";
+let hasIncoming=false;
 
 for(const docSnap of snap.docs){
 
@@ -286,8 +269,30 @@ const otherEmail=from===currentUserEmail?to:from;
 const userData=await getUserByEmail(otherEmail);
 const isOnline=presenceData[otherEmail]?.online;
 
-if(status==="accepted" || (status==="pending" && from===currentUserEmail)){
+/* Incoming */
+if(status==="pending" && to===currentUserEmail){
+hasIncoming=true;
+incomingHTML+=`
+<div class="friendRow">
+<div class="friendInfo">
+<div class="avatarWrapper">
+<img src="${userData?.photo || 'https://i.ibb.co/2kRZ7Z6/avatar.png'}">
+${isOnline?'<div class="onlineRing"></div>':''}
+</div>
+<div>
+<div style="font-weight:900;">${userData?.name||otherEmail}</div>
+<div class="small">${otherEmail}</div>
+</div>
+</div>
+<div class="row">
+<button class="primary" onclick="acceptRequest('${otherEmail}')">Accept</button>
+<button class="danger" onclick="declineRequest('${otherEmail}')">Decline</button>
+</div>
+</div>`;
+}
 
+/* Accepted */
+if(status==="accepted"){
 friendsList.innerHTML+=`
 <div class="card friendRow">
 <div class="friendInfo">
@@ -297,25 +302,36 @@ ${isOnline?'<div class="onlineRing"></div>':''}
 </div>
 <div>
 <div style="font-weight:900;">${userData?.name||otherEmail}</div>
-<div class="small">${status==="pending"?"Pending...":otherEmail}</div>
+<div class="small">${otherEmail}</div>
 </div>
 </div>
 <div class="row">
-${status==="accepted"
-? `<button class="primary" onclick="openChat('${otherEmail}')">Chat</button>
-   <button class="danger" onclick="unfriend('${otherEmail}')">Unfriend</button>`
-: `<button class="danger" onclick="cancelRequest('${otherEmail}')">Cancel</button>`
-}
+<button class="primary" onclick="openChat('${otherEmail}')">Chat</button>
+<button class="danger" onclick="unfriend('${otherEmail}')">Unfriend</button>
 </div>
-</div>
-`;
+</div>`;
 }
+
 }
+
+/* Show incoming card only if exists */
+if(hasIncoming){
+friendsList.innerHTML=
+`<div class="card"><h3>Incoming Requests</h3>${incomingHTML}</div>`
++ friendsList.innerHTML;
+}
+
 });
 }
 
-window.openChat=function(email){
-location.href="message.html?user="+encodeURIComponent(email);
+window.acceptRequest=async function(other){
+const rid=requestIdFor(currentUserEmail,other);
+await updateDoc(doc(db,"friendRequests",rid),{status:"accepted"});
+};
+
+window.declineRequest=async function(other){
+const rid=requestIdFor(currentUserEmail,other);
+await deleteDoc(doc(db,"friendRequests",rid));
 };
 
 window.unfriend=async function(other){
@@ -323,9 +339,8 @@ const rid=requestIdFor(currentUserEmail,other);
 await deleteDoc(doc(db,"friendRequests",rid));
 };
 
-window.cancelRequest=async function(other){
-const rid=requestIdFor(currentUserEmail,other);
-await deleteDoc(doc(db,"friendRequests",rid));
+window.openChat=function(email){
+location.href="message.html?user="+encodeURIComponent(email);
 };
 
 </script>

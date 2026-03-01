@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SeaConnect - Messages</title>
+<title>SeaConnect Messenger</title>
 
 <style>
 
@@ -14,7 +14,24 @@ background:#0f172a;
 color:#fff;
 }
 
-/* CHAT HEADER */
+/* LOADING SCREEN */
+
+#loadingScreen{
+position:fixed;
+top:0;
+left:0;
+right:0;
+bottom:0;
+display:flex;
+align-items:center;
+justify-content:center;
+flex-direction:column;
+background:#0f172a;
+z-index:9999;
+font-size:20px;
+}
+
+/* HEADER */
 
 .chatHeader{
 position:fixed;
@@ -28,7 +45,6 @@ gap:12px;
 padding:0 15px;
 background:#0f172a;
 border-bottom:1px solid rgba(255,255,255,0.1);
-z-index:10;
 }
 
 .chatHeader button{
@@ -67,6 +83,8 @@ overflow:auto;
 padding:15px;
 }
 
+/* MESSAGE */
+
 .message{
 display:flex;
 gap:10px;
@@ -97,11 +115,15 @@ font-size:14px;
 background:white;
 }
 
+/* PHOTO */
+
 .chatPhoto{
 max-width:200px;
 border-radius:12px;
-margin-top:5px;
+margin-top:6px;
 }
+
+/* TIME */
 
 .time{
 font-size:10px;
@@ -148,6 +170,13 @@ cursor:pointer;
 
 <body>
 
+<!-- LOADING -->
+
+<div id="loadingScreen">
+SeaConnect<br>
+Loading...
+</div>
+
 <!-- HEADER -->
 
 <div class="chatHeader" id="chatHeader" style="display:none">
@@ -167,7 +196,7 @@ cursor:pointer;
 
 <div class="chatArea" id="chatArea"></div>
 
-<!-- INPUT -->
+<!-- INPUT BAR -->
 
 <div class="chatInput" id="chatInput" style="display:none">
 
@@ -213,15 +242,16 @@ let currentEmail=null;
 let chatUserEmail=null;
 let currentChat=null;
 let sending=false;
-let unsubscribeMessages=null;
 
 const chatArea=document.getElementById("chatArea");
+
+/* CHAT ID */
 
 function chatId(a,b){
 return [a,b].sort().join("_");
 }
 
-/* AUTH */
+/* LOGIN */
 
 onAuthStateChanged(auth,(user)=>{
 
@@ -231,6 +261,10 @@ return;
 }
 
 currentEmail=user.email.toLowerCase();
+
+/* hide loading */
+
+loadingScreen.style.display="none";
 
 const params=new URLSearchParams(window.location.search);
 const openUser=params.get("user");
@@ -253,11 +287,13 @@ const snap=await getDocs(collection(db,"users"));
 
 snap.forEach(docSnap=>{
 const d=docSnap.data();
+
 if(d.email===email){
 name=d.name||name;
 rank=d.rank||"";
 photo=d.photo||photo;
 }
+
 });
 
 return {name,rank,photo};
@@ -280,7 +316,7 @@ chatAvatar.src=profile.photo;
 chatHeader.style.display="flex";
 chatInput.style.display="flex";
 
-loadMessages(profile.photo);
+loadMessages();
 
 }
 
@@ -292,19 +328,15 @@ chatArea.innerHTML="";
 chatHeader.style.display="none";
 chatInput.style.display="none";
 
-if(unsubscribeMessages){
-unsubscribeMessages();
-}
-
 }
 
 /* LOAD MESSAGES */
 
-function loadMessages(otherAvatar){
+function loadMessages(){
 
 const q=query(collection(db,"messages"),orderBy("createdAt"));
 
-unsubscribeMessages=onSnapshot(q,(snap)=>{
+onSnapshot(q,(snap)=>{
 
 chatArea.innerHTML="";
 
@@ -325,7 +357,7 @@ chatArea.innerHTML+=`
 
 <div class="message ${me?'me':''}">
 
-${!me?`<img class="avatar" src="${otherAvatar}">`:''}
+${!me?`<img class="avatar" src="https://i.ibb.co/2kRZ7Z6/avatar.png">`:''}
 
 <div class="bubble">
 

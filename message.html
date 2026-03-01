@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>SeaConnect Messenger</title>
 
 <style>
@@ -10,60 +11,86 @@
 body{
 margin:0;
 font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
-background:#0f172a;
-color:#fff;
+background:#f3f4f6;
 }
 
 /* HEADER */
 
-.chatHeader{
+.header{
 position:fixed;
 top:0;
 left:0;
 right:0;
 height:60px;
+background:white;
+border-bottom:1px solid #ddd;
 display:flex;
 align-items:center;
-gap:12px;
-padding:0 15px;
-background:#0f172a;
-border-bottom:1px solid rgba(255,255,255,0.1);
+justify-content:space-between;
+padding:0 12px;
+z-index:10;
 }
 
-.chatHeader button{
+.headerLeft{
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.header button{
 background:none;
 border:none;
 font-size:22px;
-color:white;
+cursor:pointer;
 }
 
-.chatHeader img{
-width:40px;
-height:40px;
+.avatarWrap{
+position:relative;
+}
+
+.avatar{
+width:38px;
+height:38px;
 border-radius:50%;
 object-fit:cover;
 }
 
-.chatTitle{font-weight:900;}
-.chatRank{font-size:12px;opacity:.6}
+.online{
+position:absolute;
+bottom:0;
+right:0;
+width:10px;
+height:10px;
+background:#22c55e;
+border-radius:50%;
+border:2px solid white;
+}
+
+.name{
+font-weight:700;
+font-size:14px;
+}
+
+.rank{
+font-size:11px;
+color:#6b7280;
+}
 
 /* CHAT AREA */
 
-.chatArea{
+.chat{
 position:fixed;
 top:60px;
-bottom:90px;
+bottom:80px;
 left:0;
 right:0;
 overflow:auto;
-padding:15px;
+padding:12px;
 }
-
-/* MESSAGE */
 
 .message{
 display:flex;
-gap:10px;
+gap:8px;
 margin-bottom:12px;
 }
 
@@ -71,27 +98,19 @@ margin-bottom:12px;
 justify-content:flex-end;
 }
 
-.avatar{
-width:34px;
-height:34px;
-border-radius:50%;
-object-fit:cover;
-}
-
 .bubble{
-background:#e5e7eb;
-color:#111;
+background:white;
 padding:10px 14px;
-border-radius:18px;
+border-radius:16px;
 max-width:70%;
 font-size:14px;
 }
 
 .message.me .bubble{
-background:white;
+background:#e5e7eb;
 }
 
-.chatPhoto{
+.photo{
 max-width:200px;
 border-radius:10px;
 margin-top:5px;
@@ -105,13 +124,13 @@ margin-top:4px;
 
 /* INPUT BAR */
 
-.chatInput{
+.inputBar{
 position:fixed;
 bottom:0;
 left:0;
 right:0;
-background:#0f172a;
-border-top:1px solid rgba(255,255,255,0.1);
+background:white;
+border-top:1px solid #ddd;
 padding:10px;
 }
 
@@ -121,28 +140,24 @@ border-radius:10px;
 margin-bottom:6px;
 }
 
-/* INPUT ROW */
-
-.inputRow{
+.row{
 display:flex;
-gap:10px;
+gap:8px;
 align-items:center;
 }
 
-.inputRow input{
+.row input{
 flex:1;
-padding:12px;
+padding:10px;
 border-radius:20px;
-border:none;
-background:#1e293b;
-color:white;
+border:1px solid #ddd;
 }
 
-.inputRow button{
+.row button{
 background:none;
 border:none;
 font-size:22px;
-color:white;
+cursor:pointer;
 }
 
 </style>
@@ -150,38 +165,57 @@ color:white;
 
 <body>
 
-<div class="chatHeader">
+<!-- HEADER -->
+
+<div class="header">
+
+<div class="headerLeft">
 
 <button onclick="history.back()">←</button>
 
-<img id="chatAvatar" src="https://i.ibb.co/2kRZ7Z6/avatar.png">
+<div class="avatarWrap">
+<img id="avatar" class="avatar" src="https://i.ibb.co/2kRZ7Z6/avatar.png">
+<div class="online" id="onlineDot"></div>
+</div>
 
 <div>
-<div class="chatTitle" id="chatTitle">Loading...</div>
-<div class="chatRank" id="chatRank"></div>
+<div class="name" id="name">Loading</div>
+<div class="rank" id="rank"></div>
 </div>
 
 </div>
 
-<div class="chatArea" id="chatArea"></div>
+<button onclick="history.back()">✕</button>
 
-<div class="chatInput">
+</div>
 
-<img id="previewImage" class="preview" style="display:none">
 
-<div class="inputRow">
+<!-- CHAT -->
 
-<button onclick="photoInput.click()">+</button>
+<div class="chat" id="chat"></div>
 
-<input id="messageInput" placeholder="Type message...">
 
-<button id="sendBtn">↑</button>
+<!-- INPUT -->
+
+<div class="inputBar">
+
+<img id="preview" class="preview" style="display:none">
+
+<div class="row">
+
+<button onclick="photoInput.click()">＋</button>
+
+<input id="msg" placeholder="Type message">
+
+<button id="send">↑</button>
 
 <input type="file" id="photoInput" accept="image/*" style="display:none">
 
 </div>
 
 </div>
+
+
 
 <script type="module">
 
@@ -194,10 +228,9 @@ addDoc,
 query,
 orderBy,
 onSnapshot,
-doc,
 getDocs,
-updateDoc,
-where
+doc,
+updateDoc
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig={
@@ -212,126 +245,100 @@ const db=getFirestore(app);
 
 const IMGBB_KEY="5b417e8de4a883f7425eeda12dc38f06";
 
-let currentEmail;
-let chatUserEmail;
-let currentChat;
+let myEmail;
+let otherEmail;
+let chatId;
 let sending=false;
 
-let myPhoto="https://i.ibb.co/2kRZ7Z6/avatar.png";
-let otherPhoto="https://i.ibb.co/2kRZ7Z6/avatar.png";
+const chat=document.getElementById("chat");
 
-const chatArea=document.getElementById("chatArea");
-const previewImage=document.getElementById("previewImage");
-
-function chatId(a,b){
+function makeId(a,b){
 return [a,b].sort().join("_");
 }
 
 /* LOGIN */
 
-onAuthStateChanged(auth,async(user)=>{
+onAuthStateChanged(auth,(user)=>{
 
 if(!user){
 location.href="index.html";
 return;
 }
 
-currentEmail=user.email.toLowerCase();
-
-/* load my profile */
-const me=await getProfile(currentEmail);
-myPhoto=me.photo;
+myEmail=user.email.toLowerCase();
 
 const params=new URLSearchParams(window.location.search);
-const openUser=params.get("user");
+otherEmail=params.get("user");
 
-if(openUser){
-openChat(openUser.toLowerCase());
-}
+chatId=makeId(myEmail,otherEmail);
+
+loadProfile();
+loadMessages();
 
 });
 
-/* GET PROFILE */
 
-async function getProfile(email){
+/* PROFILE */
 
-let name=email.split("@")[0];
-let rank="";
-let photo="https://i.ibb.co/2kRZ7Z6/avatar.png";
+async function loadProfile(){
 
 const snap=await getDocs(collection(db,"users"));
 
 snap.forEach(docSnap=>{
+
 const d=docSnap.data();
-if(d.email===email){
-name=d.name||name;
-rank=d.rank||"";
-photo=d.photo||photo;
+
+if(d.email===otherEmail){
+
+name.innerText=d.name || otherEmail;
+rank.innerText=d.rank || "";
+avatar.src=d.photo || avatar.src;
+
+if(d.online){
+onlineDot.style.display="block";
+}else{
+onlineDot.style.display="none";
 }
+
+}
+
 });
 
-return {name,rank,photo};
-
 }
 
-/* OPEN CHAT */
-
-async function openChat(email){
-
-chatUserEmail=email;
-currentChat=chatId(currentEmail,email);
-
-/* load messages instantly */
-loadMessages();
-
-/* load profile in background */
-const profile=await getProfile(email);
-
-chatTitle.innerText=profile.name;
-chatRank.innerText=profile.rank;
-chatAvatar.src=profile.photo;
-
-otherPhoto=profile.photo;
-
-}
 
 /* LOAD MESSAGES */
 
 function loadMessages(){
 
-const q=query(
-collection(db,"messages"),
-where("chatId","==",currentChat),
-orderBy("createdAt")
-);
+const q=query(collection(db,"messages"),orderBy("createdAt"));
 
 onSnapshot(q,(snap)=>{
 
-chatArea.innerHTML="";
+chat.innerHTML="";
 
 snap.forEach(docSnap=>{
 
 const d=docSnap.data();
 
-const me=d.from===currentEmail;
-const avatar=me?myPhoto:otherPhoto;
+if(d.chatId!==chatId) return;
+
+const me=d.from===myEmail;
 
 const time=new Date(d.createdAt).toLocaleTimeString([],{
 hour:'2-digit',
 minute:'2-digit'
 });
 
-chatArea.innerHTML+=`
+chat.innerHTML+=`
 
 <div class="message ${me?'me':''}">
-
-${!me?`<img class="avatar" src="${avatar}">`:''}
 
 <div class="bubble">
 
 ${d.text||""}
 
-${d.photo?`<img src="${d.photo}" class="chatPhoto">`:""}
+${d.photo?`<img src="${d.photo}" class="photo">`:""}
 
 <div class="time">${time}</div>
 
@@ -343,11 +350,12 @@ ${d.photo?`<img src="${d.photo}" class="chatPhoto">`:""}
 
 });
 
-chatArea.scrollTop=chatArea.scrollHeight;
+chat.scrollTop=chat.scrollHeight;
 
 });
 
 }
+
 
 /* PHOTO PREVIEW */
 
@@ -356,47 +364,51 @@ photoInput.onchange=()=>{
 const file=photoInput.files[0];
 
 if(file){
-previewImage.src=URL.createObjectURL(file);
-previewImage.style.display="block";
-}
+
+preview.src=URL.createObjectURL(file);
+preview.style.display="block";
 
 }
 
-/* SEND MESSAGE */
+}
 
-sendBtn.onclick=async()=>{
+
+/* SEND */
+
+send.onclick=async()=>{
 
 if(sending) return;
 
-const text=messageInput.value.trim();
+const text=msg.value.trim();
 const file=photoInput.files[0];
 
 if(!text && !file) return;
 
 sending=true;
 
-let preview="";
+let previewPhoto="";
 
 if(file){
-preview=URL.createObjectURL(file);
+previewPhoto=URL.createObjectURL(file);
 }
 
 const ref=await addDoc(collection(db,"messages"),{
 
-chatId:currentChat,
-from:currentEmail,
-to:chatUserEmail,
+chatId:chatId,
+from:myEmail,
+to:otherEmail,
 text:text,
-photo:preview,
+photo:previewPhoto,
 createdAt:Date.now()
 
 });
 
-messageInput.value="";
-previewImage.style.display="none";
+msg.value="";
+preview.style.display="none";
 photoInput.value="";
 
-/* upload background */
+
+/* upload real image */
 
 if(file){
 

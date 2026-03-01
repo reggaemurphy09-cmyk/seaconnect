@@ -136,18 +136,18 @@ color:#3b82f6;
 font-weight:800;
 }
 
-/* AVATAR */
+/* PROFILE PHOTO */
 
 .avatar{
 width:40px;
 height:40px;
 border-radius:50%;
 object-fit:cover;
-border:2px solid transparent;
 }
 
 .avatar.online{
-border:2px solid #22c55e;
+border:3px solid #22c55e;
+box-shadow:0 0 10px #22c55e;
 }
 
 </style>
@@ -163,12 +163,9 @@ border:2px solid #22c55e;
 
 <div class="card">
 
-<div style="font-weight:900;margin-bottom:8px;">
-Create Post
-</div>
+<div style="font-weight:900;margin-bottom:8px;">Create Post</div>
 
-<textarea id="feedInput"
-placeholder="What’s happening on board?"></textarea>
+<textarea id="feedInput" placeholder="What’s happening on board?"></textarea>
 
 <input type="file" id="feedPhoto" accept="image/*">
 
@@ -176,11 +173,7 @@ placeholder="What’s happening on board?"></textarea>
 style="width:100%;margin-top:10px;border-radius:16px;display:none;">
 
 <div class="row">
-<button id="postBtn"
-class="primary"
-onclick="createFeed()">
-Post
-</button>
+<button id="postBtn" class="primary" onclick="createFeed()">Post</button>
 </div>
 
 <div id="postMsg" class="subText"></div>
@@ -191,17 +184,27 @@ Post
 
 </div>
 
+<div id="friendsPage" class="page">
+<h2>👥 Friends</h2>
+<div class="card subText">Friends feature coming soon</div>
+</div>
+
+<div id="messagesPage" class="page">
+<h2>💬 Messages</h2>
+<div class="card subText">Messenger coming soon</div>
+</div>
+
 <div class="bottomnav">
 
-<button class="active">
+<button class="active" onclick="showPage('feedsPage',this)">
 📰 Feeds
 </button>
 
-<button>
+<button onclick="showPage('friendsPage',this)">
 👥 Friends
 </button>
 
-<button>
+<button onclick="showPage('messagesPage',this)">
 💬 Messages
 </button>
 
@@ -213,7 +216,7 @@ Post
 
 <script type="module">
 
-import { initializeApp }
+import { initializeApp } 
 from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 
 import {
@@ -255,6 +258,24 @@ let isPosting=false;
 
 const feedsList=document.getElementById("feedsList");
 
+/* NAV */
+
+window.showPage=function(id,btn){
+
+document.querySelectorAll(".page")
+.forEach(p=>p.style.display="none");
+
+document.querySelectorAll(".bottomnav button")
+.forEach(b=>b.classList.remove("active"));
+
+document.getElementById(id).style.display="block";
+
+if(btn) btn.classList.add("active");
+
+};
+
+/* AUTH */
+
 onAuthStateChanged(auth,async(user)=>{
 
 if(!user){
@@ -265,40 +286,51 @@ return;
 currentUID=user.uid;
 currentEmail=user.email;
 
+/* SET ONLINE */
+
 await updateDoc(doc(db,"users",currentUID),{
 online:true,
 lastSeen:Date.now()
 });
 
+showPage("feedsPage");
+
 loadFeeds();
 
 });
 
+/* SET OFFLINE WHEN LEAVING */
+
 window.addEventListener("beforeunload",async()=>{
+
 if(currentUID){
 await updateDoc(doc(db,"users",currentUID),{
 online:false,
 lastSeen:Date.now()
 });
 }
+
 });
+
+/* CREATE POST */
 
 window.createFeed=async function(){
 
 if(isPosting) return;
 
-const text=document.getElementById("feedInput").value.trim();
-const file=document.getElementById("feedPhoto").files[0];
-
-if(!text && !file){
-alert("Write something or add photo");
-return;
-}
-
 const btn=document.getElementById("postBtn");
-btn.disabled=true;
+const msg=document.getElementById("postMsg");
 
 isPosting=true;
+
+btn.disabled=true;
+btn.innerText="Posting...";
+msg.innerText="Uploading...";
+
+try{
+
+const text=document.getElementById("feedInput").value.trim();
+const file=document.getElementById("feedPhoto").files[0];
 
 let photoURL="";
 
@@ -340,23 +372,39 @@ document.getElementById("feedInput").value="";
 document.getElementById("feedPhoto").value="";
 document.getElementById("previewPhoto").style.display="none";
 
+msg.innerText="✅ Posted";
+
 btn.disabled=false;
+btn.innerText="Post";
+
 isPosting=false;
+
+setTimeout(()=>msg.innerText="",2000);
+
+}catch(e){
+
+alert("Post failed");
+
+btn.disabled=false;
+btn.innerText="Post";
+
+isPosting=false;
+
+}
 
 };
 
+/* LOAD FEEDS */
+
 function loadFeeds(){
 
-const q=query(
-collection(db,"feeds"),
-orderBy("createdAt","desc")
-);
+const q=query(collection(db,"feeds"),orderBy("createdAt","desc"));
 
-onSnapshot(q,async(snap)=>{
+onSnapshot(q,(snap)=>{
 
 feedsList.innerHTML="";
 
-for(const docSnap of snap.docs){
+snap.forEach(async docSnap=>{
 
 const d=docSnap.data();
 const id=docSnap.id;
@@ -364,11 +412,14 @@ const id=docSnap.id;
 const likesArr=d.likes||[];
 const liked=likesArr.includes(currentUID);
 
+/* GET ONLINE STATUS */
+
 let online=false;
 
 try{
 const userSnap=await getDoc(doc(db,"users",d.uid));
-online=userSnap.data()?.online || false;
+const userData=userSnap.data();
+online=userData?.online || false;
 }catch{}
 
 feedsList.innerHTML+=`
@@ -378,18 +429,16 @@ feedsList.innerHTML+=`
 <div style="display:flex;gap:10px;align-items:center;">
 
 <img src="${d.photoProfile || 'https://i.ibb.co/2kRZ7Z6/avatar.png'}"
-class="avatar ${online?'online':''}">
+class="avatar ${online ? 'online' : ''}">
 
 <div>
 <div style="font-weight:900">${d.name}</div>
-<div class="subText">${d.rank||""}</div>
+<div class="subText">${d.rank || ""}</div>
 </div>
 
 </div>
 
-<div style="margin-top:10px">
-${d.text||""}
-</div>
+<div style="margin-top:10px">${d.text||""}</div>
 
 ${d.photo?`<img src="${d.photo}" class="feedPhoto">`:""}
 
@@ -402,9 +451,21 @@ ${liked?"💙 Liked":"👍 Like"}
 
 </button>
 
-<span class="subText">
-${likesArr.length} likes
-</span>
+<span class="subText">${likesArr.length} likes</span>
+
+${d.uid===currentUID?`
+<button class="danger" onclick="deletePost('${id}')">Delete</button>
+`:""}
+
+</div>
+
+<div style="margin-top:10px">
+
+<input id="commentInput-${id}" placeholder="Write comment">
+
+<button onclick="sendComment('${id}')">Send</button>
+
+<div id="comments-${id}"></div>
 
 </div>
 
@@ -412,11 +473,15 @@ ${likesArr.length} likes
 
 `;
 
-}
+loadComments(id);
+
+});
 
 });
 
 }
+
+/* LIKE */
 
 window.toggleLike=async function(id){
 
@@ -435,13 +500,94 @@ await updateDoc(ref,{likes});
 
 };
 
-const photoInput=document.getElementById("feedPhoto");
+/* DELETE POST */
 
-if(photoInput){
+window.deletePost=async function(id){
 
-photoInput.addEventListener("change",function(){
+if(confirm("Delete post?")){
+await deleteDoc(doc(db,"feeds",id));
+}
+
+};
+
+/* COMMENTS */
+
+window.sendComment=async function(feedId){
+
+const input=document.getElementById("commentInput-"+feedId);
+const text=input.value.trim();
+
+if(!text) return;
+
+await addDoc(collection(db,"comments"),{
+
+feedId:feedId,
+uid:currentUID,
+name:"User",
+text:text,
+createdAt:Date.now()
+
+});
+
+input.value="";
+
+};
+
+function loadComments(feedId){
+
+const q=query(collection(db,"comments"),where("feedId","==",feedId));
+
+onSnapshot(q,(snap)=>{
+
+const box=document.getElementById("comments-"+feedId);
+
+if(!box) return;
+
+box.innerHTML="";
+
+snap.forEach(docSnap=>{
+
+const d=docSnap.data();
+
+box.innerHTML+=`
+
+<div class="comment">
+
+<div>
+<b>${d.name}</b>: ${d.text}
+</div>
+
+${d.uid===currentUID?`
+<button class="danger"
+onclick="deleteComment('${docSnap.id}')">
+Delete
+</button>
+`:""}
+
+</div>
+
+`;
+
+});
+
+});
+
+}
+
+window.deleteComment=async function(id){
+
+if(confirm("Delete comment?")){
+await deleteDoc(doc(db,"comments",id));
+}
+
+};
+
+/* IMAGE PREVIEW */
+
+document.getElementById("feedPhoto").addEventListener("change",function(){
 
 const file=this.files[0];
+
 if(!file) return;
 
 const reader=new FileReader();
@@ -456,8 +602,6 @@ document.getElementById("previewPhoto").style.display="block";
 reader.readAsDataURL(file);
 
 });
-
-}
 
 </script>
 

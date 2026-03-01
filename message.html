@@ -22,9 +22,9 @@ color:#111;
 display:flex;
 align-items:center;
 gap:10px;
-padding:15px;
+padding:16px;
 background:white;
-border-bottom:1px solid #ddd;
+border-bottom:1px solid #e5e7eb;
 font-weight:900;
 font-size:20px;
 }
@@ -32,14 +32,16 @@ font-size:20px;
 .header button{
 border:none;
 background:none;
-font-size:20px;
+font-size:24px;
+font-weight:900;
 cursor:pointer;
+color:#111;
 }
 
 /* LIST */
 
 .chatList{
-padding:10px;
+padding:12px;
 }
 
 .chatItem{
@@ -48,9 +50,10 @@ align-items:center;
 gap:12px;
 background:white;
 padding:14px;
-border-radius:12px;
+border-radius:14px;
 margin-bottom:10px;
 cursor:pointer;
+box-shadow:0 2px 8px rgba(0,0,0,.05);
 }
 
 .avatar{
@@ -68,8 +71,8 @@ position:relative;
 position:absolute;
 bottom:2px;
 right:2px;
-width:10px;
-height:10px;
+width:12px;
+height:12px;
 background:#22c55e;
 border-radius:50%;
 border:2px solid white;
@@ -77,6 +80,7 @@ border:2px solid white;
 
 .name{
 font-weight:900;
+font-size:15px;
 }
 
 .rank{
@@ -95,6 +99,7 @@ bottom:0;
 background:white;
 display:none;
 flex-direction:column;
+z-index:10;
 }
 
 /* CHAT HEADER */
@@ -103,8 +108,9 @@ flex-direction:column;
 display:flex;
 justify-content:space-between;
 align-items:center;
-padding:12px;
-border-bottom:1px solid #ddd;
+padding:14px;
+border-bottom:1px solid #e5e7eb;
+background:white;
 }
 
 .chatLeft{
@@ -114,8 +120,8 @@ gap:10px;
 }
 
 .chatHeader img{
-width:36px;
-height:36px;
+width:38px;
+height:38px;
 border-radius:50%;
 object-fit:cover;
 }
@@ -123,8 +129,10 @@ object-fit:cover;
 .chatHeader button{
 border:none;
 background:none;
-font-size:20px;
+font-size:24px;
+font-weight:900;
 cursor:pointer;
+color:#111;
 }
 
 /* MESSAGES */
@@ -151,6 +159,7 @@ background:white;
 padding:10px 14px;
 border-radius:16px;
 font-size:14px;
+box-shadow:0 1px 4px rgba(0,0,0,.05);
 }
 
 .me .bubble{
@@ -167,7 +176,7 @@ margin-top:6px;
 
 .inputArea{
 padding:10px;
-border-top:1px solid #ddd;
+border-top:1px solid #e5e7eb;
 background:white;
 }
 
@@ -185,16 +194,19 @@ align-items:center;
 
 .row input{
 flex:1;
-padding:10px;
+padding:11px 14px;
 border-radius:20px;
 border:1px solid #ddd;
+font-size:14px;
 }
 
 .row button{
 border:none;
 background:none;
-font-size:22px;
+font-size:26px;
+font-weight:900;
 cursor:pointer;
+color:#111;
 }
 
 </style>
@@ -241,7 +253,7 @@ Messages
 
 <div class="row">
 
-<button onclick="fileInput.click()">+</button>
+<button onclick="fileInput.click()">＋</button>
 
 <input id="messageInput" placeholder="Type message">
 

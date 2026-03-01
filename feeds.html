@@ -3,10 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SeaConnect Feeds</title>
+<title>SeaConnect - Friends</title>
 
 <style>
-
 body{
 margin:0;
 font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
@@ -14,10 +13,9 @@ background:linear-gradient(180deg,#0f172a,#1e293b);
 color:#f1f5f9;
 }
 
-.page{
-display:none;
+.container{
 padding:20px;
-padding-bottom:95px;
+padding-bottom:110px;
 }
 
 .card{
@@ -30,81 +28,71 @@ margin-bottom:16px;
 box-shadow:0 10px 30px rgba(0,0,0,.35);
 }
 
-input,textarea{
+h2,h3{margin-top:0;}
+
+input{
 width:100%;
 padding:12px;
 border-radius:14px;
 border:1px solid rgba(255,255,255,0.15);
-margin-top:6px;
-box-sizing:border-box;
 background:rgba(255,255,255,0.05);
 color:#fff;
-}
-
-textarea{
-min-height:90px;
+margin-top:8px;
 }
 
 button{
-padding:11px 16px;
+padding:8px 12px;
 border:none;
 border-radius:14px;
 font-weight:700;
 cursor:pointer;
 }
 
-.primary{
-background:linear-gradient(135deg,#3b82f6,#2563eb);
-color:#fff;
-}
+.primary{background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;}
+.light{background:rgba(255,255,255,0.1);color:#fff;}
+.danger{background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;}
 
-.row{
-display:flex;
-gap:10px;
-margin-top:12px;
-}
+.row{display:flex;gap:6px;margin-top:6px;}
+.row button{flex:1;}
 
-.feedPhoto{
-width:100%;
-margin-top:10px;
-border-radius:16px;
-}
-
-.comment{
-padding:8px;
-margin-top:6px;
-background:rgba(255,255,255,0.06);
-border-radius:12px;
-font-size:13px;
-display:flex;
-justify-content:space-between;
-}
-
-.topbar{
+.friendRow{
 display:flex;
 justify-content:space-between;
 align-items:center;
 margin-bottom:12px;
 }
 
-.title{
-font-size:22px;
-font-weight:900;
+.friendInfo{
+display:flex;
+align-items:center;
+gap:12px;
 }
 
-.likeBtn{
-background:rgba(255,255,255,0.08);
-color:#fff;
+.avatarWrapper{
+position:relative;
+width:50px;
+height:50px;
 }
 
-.likeBtn.liked{
-background:rgba(59,130,246,0.25);
+.avatarWrapper img{
+width:50px;
+height:50px;
+border-radius:50%;
+object-fit:cover;
 }
 
-.subText{
-font-size:13px;
-color:#94a3b8;
+.onlineRing{
+position:absolute;
+top:0;
+left:0;
+width:50px;
+height:50px;
+border-radius:50%;
+border:2px solid #22c55e;
+pointer-events:none;
 }
+
+.small{font-size:13px;color:#94a3b8;}
 
 .bottomnav{
 position:fixed;
@@ -128,117 +116,58 @@ border:none;
 font-size:12px;
 font-weight:600;
 color:#94a3b8;
-cursor:pointer;
 }
 
 .bottomnav button.active{
 color:#3b82f6;
 font-weight:800;
 }
-
-/* PROFILE PHOTO */
-
-.avatar{
-width:40px;
-height:40px;
-border-radius:50%;
-object-fit:cover;
-}
-
-.avatar.online{
-border:3px solid #22c55e;
-box-shadow:0 0 10px #22c55e;
-}
-
 </style>
 </head>
 
 <body>
 
-<div id="feedsPage" class="page">
+<div class="container">
 
-<div class="topbar">
-<div class="title">📰 Crew Feeds</div>
-</div>
+<h2>👥 Friends</h2>
 
 <div class="card">
-
-<div style="font-weight:900;margin-bottom:8px;">Create Post</div>
-
-<textarea id="feedInput" placeholder="What’s happening on board?"></textarea>
-
-<input type="file" id="feedPhoto" accept="image/*">
-
-<img id="previewPhoto"
-style="width:100%;margin-top:10px;border-radius:16px;display:none;">
-
+<input id="friendEmail" placeholder="Enter email to add friend">
 <div class="row">
-<button id="postBtn" class="primary" onclick="createFeed()">Post</button>
+<button class="primary" id="sendBtn">Send Request</button>
+<button class="light" id="resetBtn">Reset</button>
+</div>
+<div id="friendStatus" class="small"></div>
 </div>
 
-<div id="postMsg" class="subText"></div>
+<div id="friendsList"></div>
 
-</div>
-
-<div id="feedsList"></div>
-
-</div>
-
-<div id="friendsPage" class="page">
-<h2>👥 Friends</h2>
-<div class="card subText">Friends feature coming soon</div>
-</div>
-
-<div id="messagesPage" class="page">
-<h2>💬 Messages</h2>
-<div class="card subText">Messenger coming soon</div>
 </div>
 
 <div class="bottomnav">
-
-<button class="active" onclick="showPage('feedsPage',this)">
-📰 Feeds
-</button>
-
-<button onclick="showPage('friendsPage',this)">
-👥 Friends
-</button>
-
-<button onclick="showPage('messagesPage',this)">
-💬 Messages
-</button>
-
-<button onclick="location.href='app.html'">
-👤 Profile
-</button>
-
+<button onclick="location.href='feeds.html'">📰 Feeds</button>
+<button class="active">👥 Friends</button>
+<button onclick="location.href='message.html'">💬 Messages</button>
+<button onclick="location.href='app.html'">👤 Profile</button>
 </div>
 
 <script type="module">
 
-import { initializeApp } 
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-
-import {
-getAuth,
-onAuthStateChanged
-}
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import {
 getFirestore,
-collection,
-addDoc,
-query,
-orderBy,
-onSnapshot,
 doc,
+setDoc,
 getDoc,
 deleteDoc,
 updateDoc,
-where
-}
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+collection,
+onSnapshot,
+query,
+where,
+getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig={
 apiKey:"AIzaSyCNlodsmEHrSXxgH0gTOcx4cAXwG8qmG9w",
@@ -250,358 +179,182 @@ const app=initializeApp(firebaseConfig);
 const auth=getAuth(app);
 const db=getFirestore(app);
 
-const IMGBB_KEY="5b417e8de4a883f7425eeda12dc38f06";
+let currentUserEmail=null;
+let currentUserUID=null;
+let presenceData={};
 
-let currentUID=null;
-let currentEmail="";
-let isPosting=false;
+function requestIdFor(a,b){
+return [a.toLowerCase(),b.toLowerCase()].sort().join("__");
+}
 
-const feedsList=document.getElementById("feedsList");
-
-/* NAV */
-
-window.showPage=function(id,btn){
-
-document.querySelectorAll(".page")
-.forEach(p=>p.style.display="none");
-
-document.querySelectorAll(".bottomnav button")
-.forEach(b=>b.classList.remove("active"));
-
-document.getElementById(id).style.display="block";
-
-if(btn) btn.classList.add("active");
-
-};
-
-/* AUTH */
+async function getUserByEmail(email){
+const q=query(collection(db,"users"),where("email","==",email));
+const snap=await getDocs(q);
+if(!snap.empty) return snap.docs[0].data();
+return null;
+}
 
 onAuthStateChanged(auth,async(user)=>{
+if(!user){location.href="index.html";return;}
+currentUserEmail=user.email.toLowerCase();
+currentUserUID=user.uid;
 
-if(!user){
-location.href="index.html";
-return;
-}
-
-currentUID=user.uid;
-currentEmail=user.email;
-
-/* SET ONLINE */
-
-await updateDoc(doc(db,"users",currentUID),{
+await setDoc(doc(db,"presence",currentUserUID),{
+email:currentUserEmail,
 online:true,
-lastSeen:Date.now()
+lastActive:Date.now()
 });
 
-showPage("feedsPage");
-
-loadFeeds();
-
+listenPresence();
+listenFriends();
 });
 
-/* SET OFFLINE WHEN LEAVING */
-
-window.addEventListener("beforeunload",async()=>{
-
-if(currentUID){
-await updateDoc(doc(db,"users",currentUID),{
-online:false,
-lastSeen:Date.now()
+function listenPresence(){
+onSnapshot(collection(db,"presence"),snap=>{
+presenceData={};
+snap.forEach(d=>{
+presenceData[d.data().email]=d.data();
+});
 });
 }
 
-});
-
-/* CREATE POST */
-
-window.createFeed=async function(){
-
-if(isPosting) return;
-
-const btn=document.getElementById("postBtn");
-const msg=document.getElementById("postMsg");
-
-isPosting=true;
-
-btn.disabled=true;
-btn.innerText="Posting...";
-msg.innerText="Uploading...";
-
-try{
-
-const text=document.getElementById("feedInput").value.trim();
-const file=document.getElementById("feedPhoto").files[0];
-
-let photoURL="";
-
-if(file){
-
-const formData=new FormData();
-formData.append("image",file);
-
-const res=await fetch(
-"https://api.imgbb.com/1/upload?key="+IMGBB_KEY,
-{method:"POST",body:formData}
-);
-
-const data=await res.json();
-
-if(data.success){
-photoURL=data.data.url;
-}
-
-}
-
-const userSnap=await getDoc(doc(db,"users",currentUID));
-const userData=userSnap.data()||{};
-
-await addDoc(collection(db,"feeds"),{
-
-uid:currentUID,
-name:userData.name || currentEmail.split("@")[0],
-rank:userData.rank || "",
-photoProfile:userData.photo || "",
-text:text,
-photo:photoURL,
-likes:[],
-createdAt:Date.now()
-
-});
-
-document.getElementById("feedInput").value="";
-document.getElementById("feedPhoto").value="";
-document.getElementById("previewPhoto").style.display="none";
-
-msg.innerText="✅ Posted";
-
-btn.disabled=false;
-btn.innerText="Post";
-
-isPosting=false;
-
-setTimeout(()=>msg.innerText="",2000);
-
-}catch(e){
-
-alert("Post failed");
-
-btn.disabled=false;
-btn.innerText="Post";
-
-isPosting=false;
-
-}
-
+document.getElementById("resetBtn").onclick=()=>{
+friendEmail.value="";
+friendStatus.innerText="";
 };
 
-/* LOAD FEEDS */
+document.getElementById("sendBtn").addEventListener("click", async ()=>{
 
-function loadFeeds(){
+const input=document.getElementById("friendEmail");
+const statusText=document.getElementById("friendStatus");
+const toEmail=input.value.trim().toLowerCase();
 
-const q=query(collection(db,"feeds"),orderBy("createdAt","desc"));
-
-onSnapshot(q,(snap)=>{
-
-feedsList.innerHTML="";
-
-snap.forEach(async docSnap=>{
-
-const d=docSnap.data();
-const id=docSnap.id;
-
-const likesArr=d.likes||[];
-const liked=likesArr.includes(currentUID);
-
-/* GET ONLINE STATUS */
-
-let online=false;
+if(!toEmail){statusText.innerText="Enter email.";return;}
+if(toEmail===currentUserEmail){statusText.innerText="Cannot add yourself.";return;}
 
 try{
-const userSnap=await getDoc(doc(db,"users",d.uid));
-const userData=userSnap.data();
-online=userData?.online || false;
-}catch{}
 
-feedsList.innerHTML+=`
-
-<div class="card">
-
-<div style="display:flex;gap:10px;align-items:center;">
-
-<img src="${d.photoProfile || 'https://i.ibb.co/2kRZ7Z6/avatar.png'}"
-class="avatar ${online ? 'online' : ''}">
-
-<div>
-<div style="font-weight:900">${d.name}</div>
-<div class="subText">${d.rank || ""}</div>
-</div>
-
-</div>
-
-<div style="margin-top:10px">${d.text||""}</div>
-
-${d.photo?`<img src="${d.photo}" class="feedPhoto">`:""}
-
-<div class="row">
-
-<button class="likeBtn ${liked?"liked":""}"
-onclick="toggleLike('${id}')">
-
-${liked?"💙 Liked":"👍 Like"}
-
-</button>
-
-<span class="subText">${likesArr.length} likes</span>
-
-${d.uid===currentUID?`
-<button class="danger" onclick="deletePost('${id}')">Delete</button>
-`:""}
-
-</div>
-
-<div style="margin-top:10px">
-
-<input id="commentInput-${id}" placeholder="Write comment">
-
-<button onclick="sendComment('${id}')">Send</button>
-
-<div id="comments-${id}"></div>
-
-</div>
-
-</div>
-
-`;
-
-loadComments(id);
-
-});
-
-});
-
-}
-
-/* LIKE */
-
-window.toggleLike=async function(id){
-
-const ref=doc(db,"feeds",id);
+const rid=requestIdFor(currentUserEmail,toEmail);
+const ref=doc(db,"friendRequests",rid);
 const snap=await getDoc(ref);
 
-let likes=snap.data().likes||[];
-
-if(likes.includes(currentUID)){
-likes=likes.filter(x=>x!==currentUID);
-}else{
-likes.push(currentUID);
+if(snap.exists()){
+const data=snap.data();
+if(data.status==="pending"){statusText.innerText="Already pending.";return;}
+if(data.status==="accepted"){statusText.innerText="Already friends.";return;}
 }
 
-await updateDoc(ref,{likes});
-
-};
-
-/* DELETE POST */
-
-window.deletePost=async function(id){
-
-if(confirm("Delete post?")){
-await deleteDoc(doc(db,"feeds",id));
-}
-
-};
-
-/* COMMENTS */
-
-window.sendComment=async function(feedId){
-
-const input=document.getElementById("commentInput-"+feedId);
-const text=input.value.trim();
-
-if(!text) return;
-
-await addDoc(collection(db,"comments"),{
-
-feedId:feedId,
-uid:currentUID,
-name:"User",
-text:text,
+await setDoc(ref,{
+from:currentUserEmail,
+to:toEmail,
+status:"pending",
 createdAt:Date.now()
-
 });
 
+statusText.innerText="Request sent ✅";
 input.value="";
 
-};
+}catch(err){
+console.error(err);
+statusText.innerText="Error sending request.";
+}
 
-function loadComments(feedId){
+});
 
-const q=query(collection(db,"comments"),where("feedId","==",feedId));
+function listenFriends(){
 
-onSnapshot(q,(snap)=>{
+onSnapshot(collection(db,"friendRequests"),async snap=>{
 
-const box=document.getElementById("comments-"+feedId);
+friendsList.innerHTML="";
+let incomingHTML="";
+let hasIncoming=false;
 
-if(!box) return;
+for(const docSnap of snap.docs){
 
-box.innerHTML="";
+const r=docSnap.data();
+const from=r.from?.toLowerCase();
+const to=r.to?.toLowerCase();
+const status=r.status;
 
-snap.forEach(docSnap=>{
+if(from!==currentUserEmail && to!==currentUserEmail) continue;
 
-const d=docSnap.data();
+const otherEmail=from===currentUserEmail?to:from;
+const userData=await getUserByEmail(otherEmail);
+const isOnline=presenceData[otherEmail]?.online;
 
-box.innerHTML+=`
-
-<div class="comment">
-
+/* Incoming */
+if(status==="pending" && to===currentUserEmail){
+hasIncoming=true;
+incomingHTML+=`
+<div class="friendRow">
+<div class="friendInfo">
+<div class="avatarWrapper">
+<img src="${userData?.photo || 'https://i.ibb.co/2kRZ7Z6/avatar.png'}">
+${isOnline?'<div class="onlineRing"></div>':''}
+</div>
 <div>
-<b>${d.name}</b>: ${d.text}
+<div style="font-weight:900;">${userData?.name||otherEmail}</div>
+<div class="small">${otherEmail}</div>
 </div>
-
-${d.uid===currentUID?`
-<button class="danger"
-onclick="deleteComment('${docSnap.id}')">
-Delete
-</button>
-`:""}
-
 </div>
+<div class="row">
+<button class="primary" onclick="acceptRequest('${otherEmail}')">Accept</button>
+<button class="danger" onclick="declineRequest('${otherEmail}')">Decline</button>
+</div>
+</div>`;
+}
 
-`;
-
-});
-
-});
+/* Accepted */
+if(status==="accepted"){
+friendsList.innerHTML+=`
+<div class="card friendRow">
+<div class="friendInfo">
+<div class="avatarWrapper">
+<img src="${userData?.photo || 'https://i.ibb.co/2kRZ7Z6/avatar.png'}">
+${isOnline?'<div class="onlineRing"></div>':''}
+</div>
+<div>
+<div style="font-weight:900;">${userData?.name||otherEmail}</div>
+<div class="small">${otherEmail}</div>
+</div>
+</div>
+<div class="row">
+<button class="primary" onclick="openChat('${otherEmail}')">Chat</button>
+<button class="danger" onclick="unfriend('${otherEmail}')">Unfriend</button>
+</div>
+</div>`;
+}
 
 }
 
-window.deleteComment=async function(id){
-
-if(confirm("Delete comment?")){
-await deleteDoc(doc(db,"comments",id));
+/* Show incoming card only if exists */
+if(hasIncoming){
+friendsList.innerHTML=
+`<div class="card"><h3>Incoming Requests</h3>${incomingHTML}</div>`
++ friendsList.innerHTML;
 }
 
-};
-
-/* IMAGE PREVIEW */
-
-document.getElementById("feedPhoto").addEventListener("change",function(){
-
-const file=this.files[0];
-
-if(!file) return;
-
-const reader=new FileReader();
-
-reader.onload=function(e){
-
-document.getElementById("previewPhoto").src=e.target.result;
-document.getElementById("previewPhoto").style.display="block";
-
-};
-
-reader.readAsDataURL(file);
-
 });
+}
+
+window.acceptRequest=async function(other){
+const rid=requestIdFor(currentUserEmail,other);
+await updateDoc(doc(db,"friendRequests",rid),{status:"accepted"});
+};
+
+window.declineRequest=async function(other){
+const rid=requestIdFor(currentUserEmail,other);
+await deleteDoc(doc(db,"friendRequests",rid));
+};
+
+window.unfriend=async function(other){
+const rid=requestIdFor(currentUserEmail,other);
+await deleteDoc(doc(db,"friendRequests",rid));
+};
+
+window.openChat=function(email){
+location.href="message.html?user="+encodeURIComponent(email);
+};
 
 </script>
 

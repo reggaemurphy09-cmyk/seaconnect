@@ -150,8 +150,6 @@ color:white;
 
 <body>
 
-<!-- HEADER -->
-
 <div class="chatHeader">
 
 <button onclick="history.back()">←</button>
@@ -165,11 +163,7 @@ color:white;
 
 </div>
 
-<!-- CHAT -->
-
 <div class="chatArea" id="chatArea"></div>
-
-<!-- INPUT -->
 
 <div class="chatInput">
 
@@ -202,7 +196,8 @@ orderBy,
 onSnapshot,
 doc,
 getDocs,
-updateDoc
+updateDoc,
+where
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig={
@@ -234,7 +229,7 @@ return [a,b].sort().join("_");
 
 /* LOGIN */
 
-onAuthStateChanged(auth,(user)=>{
+onAuthStateChanged(auth,async(user)=>{
 
 if(!user){
 location.href="index.html";
@@ -242,6 +237,10 @@ return;
 }
 
 currentEmail=user.email.toLowerCase();
+
+/* load my profile */
+const me=await getProfile(currentEmail);
+myPhoto=me.photo;
 
 const params=new URLSearchParams(window.location.search);
 const openUser=params.get("user");
@@ -282,7 +281,7 @@ async function openChat(email){
 chatUserEmail=email;
 currentChat=chatId(currentEmail,email);
 
-/* load messages immediately */
+/* load messages instantly */
 loadMessages();
 
 /* load profile in background */
@@ -300,7 +299,11 @@ otherPhoto=profile.photo;
 
 function loadMessages(){
 
-const q=query(collection(db,"messages"),orderBy("createdAt"));
+const q=query(
+collection(db,"messages"),
+where("chatId","==",currentChat),
+orderBy("createdAt")
+);
 
 onSnapshot(q,(snap)=>{
 
@@ -309,10 +312,8 @@ chatArea.innerHTML="";
 snap.forEach(docSnap=>{
 
 const d=docSnap.data();
-if(d.chatId!==currentChat) return;
 
 const me=d.from===currentEmail;
-
 const avatar=me?myPhoto:otherPhoto;
 
 const time=new Date(d.createdAt).toLocaleTimeString([],{
@@ -395,7 +396,7 @@ messageInput.value="";
 previewImage.style.display="none";
 photoInput.value="";
 
-/* upload in background */
+/* upload background */
 
 if(file){
 

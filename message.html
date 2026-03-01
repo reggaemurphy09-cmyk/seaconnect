@@ -12,6 +12,7 @@ body{
 margin:0;
 font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
 background:#f3f4f6;
+color:#111;
 }
 
 /* HEADER */
@@ -23,18 +24,12 @@ left:0;
 right:0;
 height:60px;
 background:white;
-border-bottom:1px solid #ddd;
+border-bottom:1px solid #e5e7eb;
 display:flex;
 align-items:center;
-justify-content:space-between;
+gap:12px;
 padding:0 12px;
 z-index:10;
-}
-
-.headerLeft{
-display:flex;
-align-items:center;
-gap:10px;
 }
 
 .header button{
@@ -44,35 +39,19 @@ font-size:22px;
 cursor:pointer;
 }
 
-.avatarWrap{
-position:relative;
-}
-
-.avatar{
+.header img{
 width:38px;
 height:38px;
 border-radius:50%;
 object-fit:cover;
 }
 
-.online{
-position:absolute;
-bottom:0;
-right:0;
-width:10px;
-height:10px;
-background:#22c55e;
-border-radius:50%;
-border:2px solid white;
-}
-
-.name{
+.title{
 font-weight:700;
-font-size:14px;
 }
 
 .rank{
-font-size:11px;
+font-size:12px;
 color:#6b7280;
 }
 
@@ -85,29 +64,39 @@ bottom:80px;
 left:0;
 right:0;
 overflow:auto;
-padding:12px;
+padding:15px;
 }
 
-.message{
+/* MESSAGE */
+
+.msg{
 display:flex;
 gap:8px;
 margin-bottom:12px;
 }
 
-.message.me{
+.msg.me{
 justify-content:flex-end;
 }
 
+.avatar{
+width:30px;
+height:30px;
+border-radius:50%;
+object-fit:cover;
+}
+
 .bubble{
-background:white;
+background:#e5e7eb;
 padding:10px 14px;
-border-radius:16px;
+border-radius:18px;
 max-width:70%;
 font-size:14px;
 }
 
-.message.me .bubble{
-background:#e5e7eb;
+.msg.me .bubble{
+background:white;
+border:1px solid #e5e7eb;
 }
 
 .photo{
@@ -118,19 +107,19 @@ margin-top:5px;
 
 .time{
 font-size:10px;
-opacity:.6;
-margin-top:4px;
+color:#6b7280;
+margin-top:3px;
 }
 
-/* INPUT BAR */
+/* INPUT */
 
-.inputBar{
+.input{
 position:fixed;
 bottom:0;
 left:0;
 right:0;
 background:white;
-border-top:1px solid #ddd;
+border-top:1px solid #e5e7eb;
 padding:10px;
 }
 
@@ -148,9 +137,10 @@ align-items:center;
 
 .row input{
 flex:1;
-padding:10px;
+padding:12px;
 border-radius:20px;
-border:1px solid #ddd;
+border:1px solid #e5e7eb;
+outline:none;
 }
 
 .row button{
@@ -165,57 +155,38 @@ cursor:pointer;
 
 <body>
 
-<!-- HEADER -->
-
 <div class="header">
-
-<div class="headerLeft">
 
 <button onclick="history.back()">←</button>
 
-<div class="avatarWrap">
-<img id="avatar" class="avatar" src="https://i.ibb.co/2kRZ7Z6/avatar.png">
-<div class="online" id="onlineDot"></div>
-</div>
+<img id="avatar" src="https://i.ibb.co/2kRZ7Z6/avatar.png">
 
 <div>
-<div class="name" id="name">Loading</div>
+<div class="title" id="name">Loading</div>
 <div class="rank" id="rank"></div>
 </div>
 
 </div>
 
-<button onclick="history.back()">✕</button>
-
-</div>
-
-
-<!-- CHAT -->
-
 <div class="chat" id="chat"></div>
 
-
-<!-- INPUT -->
-
-<div class="inputBar">
+<div class="input">
 
 <img id="preview" class="preview" style="display:none">
 
 <div class="row">
 
-<button onclick="photoInput.click()">＋</button>
+<button onclick="file.click()">+</button>
 
-<input id="msg" placeholder="Type message">
+<input id="text" placeholder="Type message">
 
 <button id="send">↑</button>
 
-<input type="file" id="photoInput" accept="image/*" style="display:none">
+<input type="file" id="file" style="display:none" accept="image/*">
 
 </div>
 
 </div>
-
-
 
 <script type="module">
 
@@ -226,6 +197,7 @@ getFirestore,
 collection,
 addDoc,
 query,
+where,
 orderBy,
 onSnapshot,
 getDocs,
@@ -251,10 +223,9 @@ let chatId;
 let sending=false;
 
 const chat=document.getElementById("chat");
-
-function makeId(a,b){
-return [a,b].sort().join("_");
-}
+const text=document.getElementById("text");
+const file=document.getElementById("file");
+const preview=document.getElementById("preview");
 
 /* LOGIN */
 
@@ -267,16 +238,15 @@ return;
 
 myEmail=user.email.toLowerCase();
 
-const params=new URLSearchParams(window.location.search);
+const params=new URLSearchParams(location.search);
 otherEmail=params.get("user");
 
-chatId=makeId(myEmail,otherEmail);
+chatId=[myEmail,otherEmail].sort().join("_");
 
 loadProfile();
-loadMessages();
+listenMessages();
 
 });
-
 
 /* PROFILE */
 
@@ -284,21 +254,15 @@ async function loadProfile(){
 
 const snap=await getDocs(collection(db,"users"));
 
-snap.forEach(docSnap=>{
+snap.forEach(d=>{
 
-const d=docSnap.data();
+const data=d.data();
 
-if(d.email===otherEmail){
+if(data.email===otherEmail){
 
-name.innerText=d.name || otherEmail;
-rank.innerText=d.rank || "";
-avatar.src=d.photo || avatar.src;
-
-if(d.online){
-onlineDot.style.display="block";
-}else{
-onlineDot.style.display="none";
-}
+name.innerText=data.name;
+rank.innerText=data.rank;
+avatar.src=data.photo;
 
 }
 
@@ -306,22 +270,23 @@ onlineDot.style.display="none";
 
 }
 
+/* MESSAGES */
 
-/* LOAD MESSAGES */
+function listenMessages(){
 
-function loadMessages(){
-
-const q=query(collection(db,"messages"),orderBy("createdAt"));
+const q=query(
+collection(db,"messages"),
+where("chatId","==",chatId),
+orderBy("createdAt")
+);
 
 onSnapshot(q,(snap)=>{
 
 chat.innerHTML="";
 
-snap.forEach(docSnap=>{
+snap.forEach(doc=>{
 
-const d=docSnap.data();
-
-if(d.chatId!==chatId) return;
+const d=doc.data();
 
 const me=d.from===myEmail;
 
@@ -332,7 +297,9 @@ minute:'2-digit'
 
 chat.innerHTML+=`
 
-<div class="message ${me?'me':''}">
+<div class="msg ${me?'me':''}">
+
+${!me?`<img class="avatar" src="${avatar.src}">`:''}
 
 <div class="bubble">
 
@@ -356,40 +323,36 @@ chat.scrollTop=chat.scrollHeight;
 
 }
 
+/* PREVIEW */
 
-/* PHOTO PREVIEW */
+file.onchange=()=>{
 
-photoInput.onchange=()=>{
+const f=file.files[0];
 
-const file=photoInput.files[0];
+if(!f)return;
 
-if(file){
-
-preview.src=URL.createObjectURL(file);
+preview.src=URL.createObjectURL(f);
 preview.style.display="block";
 
-}
-
-}
-
+};
 
 /* SEND */
 
 send.onclick=async()=>{
 
-if(sending) return;
+if(sending)return;
 
-const text=msg.value.trim();
-const file=photoInput.files[0];
+const message=text.value.trim();
+const f=file.files[0];
 
-if(!text && !file) return;
+if(!message && !f)return;
 
 sending=true;
 
-let previewPhoto="";
+let previewURL="";
 
-if(file){
-previewPhoto=URL.createObjectURL(file);
+if(f){
+previewURL=URL.createObjectURL(f);
 }
 
 const ref=await addDoc(collection(db,"messages"),{
@@ -397,27 +360,26 @@ const ref=await addDoc(collection(db,"messages"),{
 chatId:chatId,
 from:myEmail,
 to:otherEmail,
-text:text,
-photo:previewPhoto,
+text:message,
+photo:previewURL,
 createdAt:Date.now()
 
 });
 
-msg.value="";
+text.value="";
+file.value="";
 preview.style.display="none";
-photoInput.value="";
 
+/* upload background */
 
-/* upload real image */
+if(f){
 
-if(file){
-
-const formData=new FormData();
-formData.append("image",file);
+const form=new FormData();
+form.append("image",f);
 
 const res=await fetch(
 "https://api.imgbb.com/1/upload?key="+IMGBB_KEY,
-{method:"POST",body:formData}
+{method:"POST",body:form}
 );
 
 const data=await res.json();
@@ -434,7 +396,7 @@ photo:data.data.url
 
 sending=false;
 
-}
+};
 
 </script>
 

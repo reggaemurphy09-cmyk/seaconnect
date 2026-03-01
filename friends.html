@@ -144,9 +144,9 @@ font-weight:800;
 
 <div class="bottomnav">
 <button onclick="location.href='feeds.html'">📰 Feeds</button>
-<button class="active">👥 Friends</button>
+<button class="active" onclick="location.href='friends.html'">👥 Friends</button>
 <button onclick="location.href='message.html'">💬 Messages</button>
-<button onclick="location.href='app.html'">👤 Profile</button>
+<button onclick="location.href='profile.html'">👤 Profile</button>
 </div>
 
 <script type="module">
@@ -234,7 +234,6 @@ const otherEmail=from===currentUserEmail?to:from;
 const userData=await getUserByEmail(otherEmail);
 const name=userData?.name||"SeaCrew";
 
-/* Incoming */
 if(status==="pending" && to===currentUserEmail){
 hasIncoming=true;
 incomingHTML+=`
@@ -253,7 +252,6 @@ incomingHTML+=`
 </div>`;
 }
 
-/* Accepted */
 if(status==="accepted"){
 friendsList.innerHTML+=`
 <div class="card friendRow">

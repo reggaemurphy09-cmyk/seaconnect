@@ -2,9 +2,9 @@
 <html>
 
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>SeaConnect</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SeaConnect Feeds</title>
 
 <style>
 
@@ -31,7 +31,7 @@ margin-bottom:16px;
 box-shadow:0 10px 30px rgba(0,0,0,.35);
 }
 
-input{
+textarea,input{
 width:100%;
 padding:12px;
 border-radius:14px;
@@ -42,13 +42,14 @@ background:rgba(255,255,255,0.05);
 color:#fff;
 }
 
+textarea{min-height:90px;}
+
 button{
 padding:11px 16px;
 border:none;
 border-radius:14px;
 font-weight:700;
 cursor:pointer;
-transition:all .2s ease;
 }
 
 .primary{
@@ -57,13 +58,8 @@ color:#fff;
 }
 
 .danger{
-background:linear-gradient(135deg,#ef4444,#dc2626);
-color:#fff;
-}
-
-.light{
-background:rgba(255,255,255,0.1);
-color:#fff;
+background:#ef4444;
+color:white;
 }
 
 .row{
@@ -72,13 +68,43 @@ gap:10px;
 margin-top:12px;
 }
 
-.row > button{
-flex:1;
+.feedPhoto{
+width:100%;
+margin-top:10px;
+border-radius:16px;
+}
+
+.comment{
+padding:8px;
+margin-top:6px;
+background:rgba(255,255,255,0.06);
+border-radius:12px;
+font-size:13px;
+display:flex;
+justify-content:space-between;
+}
+
+.title{
+font-size:22px;
+font-weight:900;
+margin-bottom:15px;
 }
 
 .subText{
 font-size:13px;
 color:#94a3b8;
+}
+
+.avatar{
+width:40px;
+height:40px;
+border-radius:50%;
+object-fit:cover;
+border:3px solid transparent;
+}
+
+.avatar.online{
+border-color:#22c55e;
 }
 
 .bottomnav{
@@ -110,130 +136,67 @@ color:#3b82f6;
 font-weight:800;
 }
 
-/* ONLINE RING */
-
-.avatarRing{
-display:inline-flex;
-justify-content:center;
-align-items:center;
-padding:6px;
-border-radius:50%;
-border:4px solid #22c55e;
-box-shadow:0 0 20px rgba(34,197,94,.6);
-}
-
-#profilePhoto{
-width:120px;
-height:120px;
-border-radius:50%;
-object-fit:cover;
-display:block;
-}
-
 </style>
 </head>
 
 <body>
 
-<div id="profilePage" class="page" style="display:block;">
+<div id="feedsPage" class="page">
 
-<div style="display:flex;justify-content:space-between;">
-<h2>👤 My Profile</h2>
-<button class="danger" onclick="logout()">Logout</button>
-</div>
-
-<div class="card" style="text-align:center">
-
-<div class="avatarRing">
-<img id="profilePhoto"
-src="https://i.ibb.co/2kRZ7Z6/avatar.png">
-</div>
-
-<br><br>
-
-<input type="file" id="photoInput" accept="image/*" style="display:none">
-
-<button class="primary"
-onclick="document.getElementById('photoInput').click()">
-Upload Photo
-</button>
-
-<br><br>
-
-<div id="profileName"
-style="font-size:24px;font-weight:900"></div>
-
-<div id="profileRank"
-style="color:#6b7280"></div>
-
-</div>
+<div class="title">📰 Crew Feeds</div>
 
 <div class="card">
 
-<div style="display:flex;justify-content:space-between;">
-<div style="font-weight:900">Professional Information</div>
+<div style="font-weight:900;margin-bottom:8px;">Create Post</div>
 
-<button class="light" onclick="toggleInfo()" id="infoBtn">
-Show
-</button>
+<textarea id="feedInput" placeholder="What’s happening on board?"></textarea>
+
+<input type="file" id="feedPhoto" accept="image/*">
+
+<img id="previewPhoto" style="display:none;width:100%;margin-top:10px;border-radius:16px">
+
+<div class="row">
+<button id="postBtn" class="primary" onclick="createFeed()">Post</button>
 </div>
 
-<div id="infoSection" style="display:none;margin-top:12px">
-
-<div class="subText">Email</div>
-<div id="profileEmail"></div>
-
-<div class="subText">Company</div>
-<div id="profileCompany"></div>
-
-<div class="subText">Vessel</div>
-<div id="profileVessel"></div>
-
-<div class="subText">Experience</div>
-<div id="profileExperience"></div>
-
-<div class="subText">Phone</div>
-<div id="profilePhone"></div>
-
-<div class="subText">Address</div>
-<div id="profileAddress"></div>
+<div id="postMsg" class="subText"></div>
 
 </div>
+
+<div id="feedsList"></div>
+
 </div>
 
 <div class="bottomnav">
 
-<button onclick="location.href='feeds.html'">
-📰 Feeds
-</button>
-
-<button class="active">
-👤 Profile
-</button>
+<button class="active" onclick="showPage('feedsPage',this)">📰 Feeds</button>
+<button onclick="location.href='app.html'">👤 Profile</button>
 
 </div>
 
 <script type="module">
 
-import { initializeApp } from
-"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 
 import {
 getAuth,
-onAuthStateChanged,
-signOut
-}
-from
-"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 import {
 getFirestore,
+collection,
+addDoc,
+query,
+orderBy,
+onSnapshot,
 doc,
 getDoc,
+deleteDoc,
+updateDoc,
+where,
 setDoc
-}
-from
-"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig={
 apiKey:"AIzaSyCNlodsmEHrSXxgH0gTOcx4cAXwG8qmG9w",
@@ -245,20 +208,24 @@ const app=initializeApp(firebaseConfig);
 const auth=getAuth(app);
 const db=getFirestore(app);
 
-let currentUID=null;
-let currentEmail=null;
-
 const IMGBB_KEY="5b417e8de4a883f7425eeda12dc38f06";
 
-window.toggleInfo=function(){
+let currentUID=null;
+let currentEmail="";
+let isPosting=false;
 
-const sec=document.getElementById("infoSection");
-const btn=document.getElementById("infoBtn");
+const feedsList=document.getElementById("feedsList");
 
-const show=sec.style.display==="none";
+window.showPage=function(id,btn){
 
-sec.style.display=show?"block":"none";
-btn.innerText=show?"Hide":"Show";
+document.querySelectorAll(".page").forEach(p=>p.style.display="none");
+
+document.querySelectorAll(".bottomnav button")
+.forEach(b=>b.classList.remove("active"));
+
+document.getElementById(id).style.display="block";
+
+if(btn) btn.classList.add("active");
 
 };
 
@@ -270,81 +237,297 @@ return;
 }
 
 currentUID=user.uid;
-currentEmail=user.email.toLowerCase();
+currentEmail=user.email;
 
-loadProfile();
+await setDoc(doc(db,"users",currentUID),{
+online:true,
+lastSeen:Date.now()
+},{merge:true});
+
+showPage("feedsPage");
+
+loadFeeds();
 
 });
 
-async function loadProfile(){
+window.addEventListener("beforeunload",async()=>{
 
-const snap=await getDoc(doc(db,"users",currentUID));
-const d=snap.data()||{};
+if(currentUID){
 
-if(d.photo){
-profilePhoto.src=d.photo;
-}
-
-profileName.innerText=d.name||"";
-profileRank.innerText=d.rank||"";
-
-profileEmail.innerText=d.email||"";
-profileCompany.innerText=d.company||"-";
-profileVessel.innerText=d.vessel||"-";
-profileExperience.innerText=d.experience||"-";
-profilePhone.innerText=d.phone||"-";
-profileAddress.innerText=d.address||"-";
+await setDoc(doc(db,"users",currentUID),{
+online:false,
+lastSeen:Date.now()
+},{merge:true});
 
 }
 
-document.getElementById("photoInput")
-.addEventListener("change",async function(){
+});
+
+window.createFeed=async function(){
+
+if(isPosting) return;
+
+const btn=document.getElementById("postBtn");
+const msg=document.getElementById("postMsg");
+
+isPosting=true;
+
+btn.disabled=true;
+btn.innerText="Posting...";
+
+try{
+
+const text=document.getElementById("feedInput").value.trim();
+const file=document.getElementById("feedPhoto").files[0];
+
+let photoURL="";
+
+if(file){
+
+const formData=new FormData();
+formData.append("image",file);
+
+const res=await fetch("https://api.imgbb.com/1/upload?key="+IMGBB_KEY,{method:"POST",body:formData});
+
+const data=await res.json();
+
+if(data.success){
+photoURL=data.data.url;
+}
+
+}
+
+const userSnap=await getDoc(doc(db,"users",currentUID));
+const userData=userSnap.data()||{};
+
+await addDoc(collection(db,"feeds"),{
+
+uid:currentUID,
+name:userData.name || currentEmail.split("@")[0],
+rank:userData.rank || "",
+photoProfile:userData.photo || "",
+text:text,
+photo:photoURL,
+likes:[],
+createdAt:Date.now()
+
+});
+
+document.getElementById("feedInput").value="";
+document.getElementById("feedPhoto").value="";
+document.getElementById("previewPhoto").style.display="none";
+
+msg.innerText="Posted";
+
+btn.disabled=false;
+btn.innerText="Post";
+
+isPosting=false;
+
+}catch(e){
+
+alert("Post failed");
+
+btn.disabled=false;
+btn.innerText="Post";
+
+isPosting=false;
+
+}
+
+};
+
+function loadFeeds(){
+
+const q=query(collection(db,"feeds"),orderBy("createdAt","desc"));
+
+onSnapshot(q,(snap)=>{
+
+feedsList.innerHTML="";
+
+snap.forEach(async docSnap=>{
+
+const d=docSnap.data();
+const id=docSnap.id;
+
+const likesArr=d.likes||[];
+const liked=likesArr.includes(currentUID);
+
+let online=false;
+
+try{
+
+const userSnap=await getDoc(doc(db,"users",d.uid));
+online=userSnap.data()?.online || false;
+
+}catch{}
+
+feedsList.innerHTML+=`
+
+<div class="card">
+
+<div style="display:flex;gap:10px;align-items:center;">
+
+<img src="${d.photoProfile || 'https://i.ibb.co/2kRZ7Z6/avatar.png'}"
+class="avatar ${online ? 'online':''}">
+
+<div>
+<div style="font-weight:900">${d.name}</div>
+<div class="subText">${d.rank || ""}</div>
+</div>
+
+</div>
+
+<div style="margin-top:10px">${d.text||""}</div>
+
+${d.photo?`<img src="${d.photo}" class="feedPhoto">`:""}
+
+<div class="row">
+
+<button onclick="toggleLike('${id}')">
+${liked?"💙 Liked":"👍 Like"}
+</button>
+
+<span class="subText">${likesArr.length} likes</span>
+
+${d.uid===currentUID?`
+<button class="danger" onclick="deletePost('${id}')">Delete</button>
+`:""}
+
+</div>
+
+<div style="margin-top:10px">
+
+<input id="commentInput-${id}" placeholder="Write comment">
+
+<button onclick="sendComment('${id}')">Send</button>
+
+<div id="comments-${id}"></div>
+
+</div>
+
+</div>
+
+`;
+
+loadComments(id);
+
+});
+
+});
+
+}
+
+window.toggleLike=async function(id){
+
+const ref=doc(db,"feeds",id);
+const snap=await getDoc(ref);
+
+let likes=snap.data().likes||[];
+
+if(likes.includes(currentUID)){
+likes=likes.filter(x=>x!==currentUID);
+}else{
+likes.push(currentUID);
+}
+
+await updateDoc(ref,{likes});
+
+};
+
+window.deletePost=async function(id){
+
+if(confirm("Delete post?")){
+await deleteDoc(doc(db,"feeds",id));
+}
+
+};
+
+window.sendComment=async function(feedId){
+
+const input=document.getElementById("commentInput-"+feedId);
+const text=input.value.trim();
+
+if(!text) return;
+
+await addDoc(collection(db,"comments"),{
+
+feedId:feedId,
+uid:currentUID,
+name:"User",
+text:text,
+createdAt:Date.now()
+
+});
+
+input.value="";
+
+};
+
+function loadComments(feedId){
+
+const q=query(collection(db,"comments"),where("feedId","==",feedId));
+
+onSnapshot(q,(snap)=>{
+
+const box=document.getElementById("comments-"+feedId);
+
+if(!box) return;
+
+box.innerHTML="";
+
+snap.forEach(docSnap=>{
+
+const d=docSnap.data();
+
+box.innerHTML+=`
+
+<div class="comment">
+
+<div>
+<b>${d.name}</b>: ${d.text}
+</div>
+
+${d.uid===currentUID?`
+<button class="danger" onclick="deleteComment('${docSnap.id}')">Delete</button>
+`:""}
+
+</div>
+
+`;
+
+});
+
+});
+
+}
+
+window.deleteComment=async function(id){
+
+if(confirm("Delete comment?")){
+await deleteDoc(doc(db,"comments",id));
+}
+
+};
+
+document.getElementById("feedPhoto").addEventListener("change",function(){
 
 const file=this.files[0];
+
 if(!file) return;
 
 const reader=new FileReader();
 
 reader.onload=function(e){
-profilePhoto.src=e.target.result;
+
+document.getElementById("previewPhoto").src=e.target.result;
+document.getElementById("previewPhoto").style.display="block";
+
 };
 
 reader.readAsDataURL(file);
 
-const formData=new FormData();
-formData.append("image",file);
-
-try{
-
-const res=await fetch(
-"https://api.imgbb.com/1/upload?key="+IMGBB_KEY,
-{method:"POST",body:formData}
-);
-
-const data=await res.json();
-
-const imageUrl=data.data.url;
-
-await setDoc(doc(db,"users",currentUID),{
-photo:imageUrl
-},{merge:true});
-
-alert("Photo uploaded successfully");
-
-}catch(e){
-
-alert("Upload failed");
-
-}
-
 });
-
-window.logout=async function(){
-
-await signOut(auth);
-location.href="index.html";
-
-};
 
 </script>
 

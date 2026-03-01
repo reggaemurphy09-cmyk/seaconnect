@@ -17,14 +17,14 @@ color:#111;
 /* HEADER */
 
 .header{
-height:60px;
 display:flex;
 align-items:center;
-gap:10px;
-padding:0 15px;
+gap:12px;
+padding:15px;
 background:white;
-border-bottom:1px solid #ddd;
-font-weight:700;
+border-bottom:1px solid #e5e7eb;
+font-weight:900;
+font-size:18px;
 }
 
 .header button{
@@ -42,13 +42,17 @@ padding:10px;
 
 .chatItem{
 display:flex;
-gap:12px;
 align-items:center;
+gap:12px;
+padding:12px;
+border-radius:12px;
 background:white;
-padding:10px;
-border-radius:10px;
 margin-bottom:10px;
 cursor:pointer;
+}
+
+.chatItem:hover{
+background:#f1f5f9;
 }
 
 .avatarWrap{
@@ -62,10 +66,10 @@ border-radius:50%;
 object-fit:cover;
 }
 
-.online{
+.onlineDot{
 position:absolute;
-bottom:2px;
-right:2px;
+bottom:0;
+right:0;
 width:10px;
 height:10px;
 background:#22c55e;
@@ -73,43 +77,64 @@ border-radius:50%;
 border:2px solid white;
 }
 
-.name{font-weight:700;}
-.rank{font-size:12px;color:#666}
+.name{
+font-weight:700;
+}
 
-/* CHAT AREA */
+.rank{
+font-size:12px;
+color:#6b7280;
+}
 
-.chatArea{
-position:fixed;
-top:60px;
-bottom:70px;
-left:0;
-right:0;
+/* CHAT BOX */
+
+.chatBox{
+display:none;
+height:100vh;
+flex-direction:column;
+}
+
+.chatHeader{
+display:flex;
+align-items:center;
+gap:12px;
+padding:15px;
+border-bottom:1px solid #e5e7eb;
+background:white;
+}
+
+.chatHeader button{
+background:none;
+border:none;
+font-size:20px;
+cursor:pointer;
+}
+
+.chatMessages{
+flex:1;
 overflow:auto;
 padding:15px;
-display:none;
 }
 
-/* MESSAGE */
-
-.message{
+.msg{
+margin:8px 0;
 display:flex;
-gap:10px;
-margin-bottom:12px;
 }
 
-.message.me{
+.msg.me{
 justify-content:flex-end;
 }
 
 .bubble{
-background:#e5e7eb;
 padding:10px 14px;
-border-radius:15px;
+border-radius:16px;
 max-width:70%;
+background:#e5e7eb;
 }
 
-.message.me .bubble{
-background:white;
+.msg.me .bubble{
+background:#3b82f6;
+color:white;
 }
 
 .chatPhoto{
@@ -118,48 +143,34 @@ border-radius:10px;
 margin-top:5px;
 }
 
-.time{
-font-size:10px;
-color:#777;
-margin-top:4px;
-}
-
-/* INPUT */
+/* INPUT BAR */
 
 .chatInput{
-position:fixed;
-bottom:0;
-left:0;
-right:0;
-background:white;
-border-top:1px solid #ddd;
-padding:10px;
-display:none;
-}
-
-.inputRow{
 display:flex;
-gap:10px;
 align-items:center;
+gap:10px;
+padding:10px;
+background:white;
+border-top:1px solid #e5e7eb;
 }
 
-.inputRow input{
+.chatInput input{
 flex:1;
-padding:12px;
+padding:10px;
 border-radius:20px;
-border:1px solid #ddd;
+border:1px solid #e5e7eb;
 }
 
-.inputRow button{
-background:none;
+.chatInput button{
 border:none;
+background:none;
 font-size:22px;
 cursor:pointer;
 }
 
 .preview{
-max-width:120px;
-border-radius:10px;
+max-width:100px;
+border-radius:8px;
 margin-bottom:5px;
 }
 
@@ -171,52 +182,61 @@ margin-bottom:5px;
 <!-- HEADER -->
 
 <div class="header">
-
-<button id="backBtn" style="display:none">←</button>
-
-<div id="title">Messages</div>
-
-<button id="closeBtn" style="margin-left:auto;display:none">X</button>
-
+<button onclick="location.href='friends.html'">←</button>
+Messages
 </div>
-
 
 <!-- CHAT LIST -->
 
 <div id="chatList" class="chatList"></div>
 
+<!-- CHAT BOX -->
 
-<!-- CHAT AREA -->
+<div id="chatBox" class="chatBox">
 
-<div id="chatArea" class="chatArea"></div>
+<div class="chatHeader">
+<button id="backBtn">←</button>
 
+<div id="chatUserName"></div>
 
-<!-- INPUT -->
+<button style="margin-left:auto" id="closeBtn">X</button>
+</div>
 
-<div id="chatInput" class="chatInput">
+<div id="messages" class="chatMessages"></div>
 
+<div style="padding:10px">
 <img id="preview" class="preview" style="display:none">
+</div>
 
-<div class="inputRow">
+<div class="chatInput">
 
-<button onclick="photoInput.click()">+</button>
+<button onclick="fileInput.click()">+</button>
 
-<input id="messageInput" placeholder="Message">
+<input id="msgInput" placeholder="Type message">
 
 <button id="sendBtn">↑</button>
 
-<input type="file" id="photoInput" style="display:none">
+<input type="file" id="fileInput" accept="image/*" style="display:none">
 
 </div>
 
 </div>
-
 
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth,onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore,collection,addDoc,query,orderBy,onSnapshot,getDocs,updateDoc,doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import {
+getFirestore,
+collection,
+addDoc,
+query,
+orderBy,
+onSnapshot,
+getDocs,
+doc,
+updateDoc
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig={
 apiKey:"AIzaSyCNlodsmEHrSXxgH0gTOcx4cAXwG8qmG9w",
@@ -230,19 +250,17 @@ const db=getFirestore(app);
 
 const IMGBB_KEY="5b417e8de4a883f7425eeda12dc38f06";
 
-let currentEmail;
-let chatUser;
-let chatId;
+let currentEmail=null;
+let currentChat=null;
+let chatUserEmail=null;
 
 const chatList=document.getElementById("chatList");
-const chatArea=document.getElementById("chatArea");
+const chatBox=document.getElementById("chatBox");
+const messages=document.getElementById("messages");
 
-const preview=document.getElementById("preview");
-
-function makeChatId(a,b){
+function chatId(a,b){
 return [a,b].sort().join("_");
 }
-
 
 /* LOGIN */
 
@@ -259,10 +277,9 @@ listenChats();
 
 });
 
+/* GET PROFILE */
 
-/* GET USER PROFILE */
-
-async function getUser(email){
+async function getProfile(email){
 
 let name=email.split("@")[0];
 let rank="";
@@ -270,15 +287,13 @@ let photo="https://i.ibb.co/2kRZ7Z6/avatar.png";
 
 const snap=await getDocs(collection(db,"users"));
 
-snap.forEach(d=>{
-const data=d.data();
+snap.forEach(docSnap=>{
+const d=docSnap.data();
 
-if(data.email===email){
-
-name=data.name||name;
-rank=data.rank||"";
-photo=data.photo||photo;
-
+if(d.email===email){
+name=d.name||name;
+rank=d.rank||"";
+photo=d.photo||photo;
 }
 
 });
@@ -287,10 +302,9 @@ return {name,rank,photo};
 
 }
 
+/* CHAT LIST */
 
-/* LIST CHATS */
-
-function listenChats(){
+async function listenChats(){
 
 const q=query(collection(db,"messages"),orderBy("createdAt"));
 
@@ -298,15 +312,15 @@ onSnapshot(q,async snap=>{
 
 const chats={};
 
-snap.forEach(doc=>{
+snap.forEach(docSnap=>{
 
-const d=doc.data();
+const d=docSnap.data();
 
 if(d.from!==currentEmail && d.to!==currentEmail) return;
 
 const other=d.from===currentEmail?d.to:d.from;
 
-chats[other]=d;
+chats[other]=true;
 
 });
 
@@ -314,7 +328,11 @@ chatList.innerHTML="";
 
 for(const email in chats){
 
-const profile=await getUser(email);
+const profile=await getProfile(email);
+
+/* FIX NULL USERS */
+
+if(!profile.name) continue;
 
 chatList.innerHTML+=`
 
@@ -322,15 +340,16 @@ chatList.innerHTML+=`
 
 <div class="avatarWrap">
 
-<img class="avatar" src="${profile.photo}">
+<img src="${profile.photo}" class="avatar">
 
-<div class="online"></div>
+<div class="onlineDot"></div>
 
 </div>
 
 <div>
 
 <div class="name">${profile.name}</div>
+
 <div class="rank">${profile.rank}</div>
 
 </div>
@@ -345,28 +364,22 @@ chatList.innerHTML+=`
 
 }
 
-
 /* OPEN CHAT */
 
 window.openChat=async function(email){
 
-chatUser=email;
+chatUserEmail=email;
+currentChat=chatId(currentEmail,email);
 
-chatId=makeChatId(currentEmail,email);
+const profile=await getProfile(email);
 
-document.getElementById("title").innerText="Chat";
+chatUserName.innerText=profile.name+" • "+profile.rank;
 
-document.getElementById("backBtn").style.display="block";
-document.getElementById("closeBtn").style.display="block";
-
-chatList.style.display="none";
-chatArea.style.display="block";
-chatInput.style.display="block";
+chatBox.style.display="flex";
 
 loadMessages();
 
 };
-
 
 /* LOAD MESSAGES */
 
@@ -374,34 +387,27 @@ function loadMessages(){
 
 const q=query(collection(db,"messages"),orderBy("createdAt"));
 
-onSnapshot(q,snap=>{
+onSnapshot(q,(snap)=>{
 
-chatArea.innerHTML="";
+messages.innerHTML="";
 
-snap.forEach(doc=>{
+snap.forEach(docSnap=>{
 
-const d=doc.data();
+const d=docSnap.data();
 
-if(d.chatId!==chatId) return;
+if(d.chatId!==currentChat) return;
 
 const me=d.from===currentEmail;
 
-const time=new Date(d.createdAt).toLocaleTimeString([],{
-hour:"2-digit",
-minute:"2-digit"
-});
+messages.innerHTML+=`
 
-chatArea.innerHTML+=`
-
-<div class="message ${me?'me':''}">
+<div class="msg ${me?'me':''}">
 
 <div class="bubble">
 
 ${d.text||""}
 
-${d.photo?`<img src="${d.photo}" class="chatPhoto">`:''}
-
-<div class="time">${time}</div>
+${d.photo?`<img src="${d.photo}" class="chatPhoto">`:""}
 
 </div>
 
@@ -411,18 +417,17 @@ ${d.photo?`<img src="${d.photo}" class="chatPhoto">`:''}
 
 });
 
-chatArea.scrollTop=chatArea.scrollHeight;
+messages.scrollTop=messages.scrollHeight;
 
 });
 
 }
 
+/* FILE PREVIEW */
 
-/* PHOTO PREVIEW */
+fileInput.onchange=()=>{
 
-photoInput.onchange=()=>{
-
-const file=photoInput.files[0];
+const file=fileInput.files[0];
 
 if(file){
 
@@ -434,38 +439,40 @@ preview.style.display="block";
 
 };
 
-
 /* SEND */
 
 sendBtn.onclick=async()=>{
 
-const text=messageInput.value.trim();
+const text=msgInput.value.trim();
 
-const file=photoInput.files[0];
+const file=fileInput.files[0];
 
 if(!text && !file) return;
 
-let previewUrl="";
+let photoURL="";
 
 if(file){
-previewUrl=URL.createObjectURL(file);
+
+photoURL=URL.createObjectURL(file);
+
 }
 
 const ref=await addDoc(collection(db,"messages"),{
 
-chatId:chatId,
+chatId:currentChat,
 from:currentEmail,
-to:chatUser,
+to:chatUserEmail,
 text:text,
-photo:previewUrl,
+photo:photoURL,
 createdAt:Date.now()
 
 });
 
-messageInput.value="";
+msgInput.value="";
+fileInput.value="";
 preview.style.display="none";
-photoInput.value="";
 
+/* upload background */
 
 if(file){
 
@@ -491,36 +498,16 @@ photo:data.data.url
 
 };
 
-
-/* BACK */
-
-backBtn.onclick=()=>{
-
-chatArea.style.display="none";
-chatInput.style.display="none";
-
-chatList.style.display="block";
-
-document.getElementById("title").innerText="Messages";
-
-backBtn.style.display="none";
-closeBtn.style.display="none";
-
-};
-
-
-/* CLOSE */
+/* CLOSE CHAT */
 
 closeBtn.onclick=()=>{
+chatBox.style.display="none";
+};
 
-chatArea.style.display="none";
-chatInput.style.display="none";
-
-chatList.style.display="block";
-
+backBtn.onclick=()=>{
+chatBox.style.display="none";
 };
 
 </script>
 
-</body>
-</html>
+</

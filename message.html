@@ -234,7 +234,7 @@ font-weight:800;
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth,onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore,collection,addDoc,query,orderBy,onSnapshot,doc,deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore,collection,addDoc,query,orderBy,onSnapshot,doc,deleteDoc,getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig={
 apiKey:"AIzaSyCNlodsmEHrSXxgH0gTOcx4cAXwG8qmG9w",
@@ -254,7 +254,12 @@ const chatList=document.getElementById("chatList");
 const chatSection=document.getElementById("chatSection");
 const messagesBox=document.getElementById("messagesBox");
 
+function chatId(a,b){
+return [a,b].sort().join("_");
+}
+
 onAuthStateChanged(auth,(user)=>{
+
 if(!user){
 location.href="index.html";
 return;
@@ -264,11 +269,16 @@ currentEmail=user.email.toLowerCase();
 
 listenChats();
 
-});
+/* OPEN CHAT FROM FRIENDS */
 
-function chatId(a,b){
-return [a,b].sort().join("_");
+const params=new URLSearchParams(window.location.search);
+const userEmail=params.get("user");
+
+if(userEmail){
+openChat(userEmail.toLowerCase());
 }
+
+});
 
 function listenChats(){
 
@@ -279,6 +289,7 @@ onSnapshot(q,(snap)=>{
 const chats={};
 
 snap.forEach(docSnap=>{
+
 const d=docSnap.data();
 
 if(d.from!==currentEmail && d.to!==currentEmail) return;
@@ -296,6 +307,7 @@ for(const email in chats){
 const last=chats[email];
 
 chatList.innerHTML+=`
+
 <div class="card chatListItem" onclick="openChat('${email}')">
 
 <div class="listRow">
@@ -313,6 +325,7 @@ chatList.innerHTML+=`
 </div>
 
 </div>
+
 `;
 
 }
@@ -399,7 +412,7 @@ deleteChatBtn.onclick=async()=>{
 
 if(!confirm("Delete chat?")) return;
 
-const q=query(collection(db,"messages"));
+const q=query(collection(db,"messages"),orderBy("createdAt"));
 
 onSnapshot(q,(snap)=>{
 

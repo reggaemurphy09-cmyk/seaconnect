@@ -6,7 +6,6 @@
 <title>SeaConnect - Messages</title>
 
 <style>
-
 body{
 margin:0;
 font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
@@ -29,13 +28,8 @@ margin-bottom:16px;
 box-shadow:0 10px 30px rgba(0,0,0,.35);
 }
 
-.chatListItem{
-cursor:pointer;
-}
-
-.chatListItem:hover{
-background:rgba(255,255,255,0.05);
-}
+.chatListItem{cursor:pointer;}
+.chatListItem:hover{background:rgba(255,255,255,0.05);}
 
 .listRow{
 display:flex;
@@ -67,13 +61,8 @@ border:2px solid #22c55e;
 pointer-events:none;
 }
 
-.listText{
-flex:1;
-}
-
-.listName{
-font-weight:900;
-}
+.listText{flex:1;}
+.listName{font-weight:900;}
 
 .listSub{
 font-size:13px;
@@ -92,9 +81,7 @@ display:flex;
 margin:6px 0;
 }
 
-.message.me{
-justify-content:flex-end;
-}
+.message.me{justify-content:flex-end;}
 
 .bubble{
 max-width:70%;
@@ -119,19 +106,6 @@ border-bottom-left-radius:6px;
 font-size:10px;
 opacity:.6;
 margin-top:3px;
-}
-
-.seen{
-font-size:10px;
-opacity:.6;
-text-align:right;
-margin-top:2px;
-}
-
-.chatImage{
-max-width:200px;
-border-radius:12px;
-margin-top:6px;
 }
 
 input{
@@ -201,7 +175,6 @@ color:#94a3b8;
 color:#3b82f6;
 font-weight:800;
 }
-
 </style>
 </head>
 
@@ -227,8 +200,6 @@ font-weight:800;
 
 <input id="messageInput" placeholder="Type message...">
 
-<input type="file" id="imageInput" accept="image/*">
-
 <div class="row">
 <button class="primary" id="sendBtn">Send</button>
 <button class="light" id="closeBtn">Close</button>
@@ -251,7 +222,17 @@ font-weight:800;
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth,onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore,collection,addDoc,query,orderBy,onSnapshot,doc,getDoc,updateDoc,deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import {
+getFirestore,
+collection,
+addDoc,
+query,
+orderBy,
+onSnapshot,
+doc,
+getDoc,
+deleteDoc
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig={
 apiKey:"AIzaSyCNlodsmEHrSXxgH0gTOcx4cAXwG8qmG9w",
@@ -266,13 +247,17 @@ const db=getFirestore(app);
 let currentEmail=null;
 let currentChat=null;
 let chatUserEmail=null;
-
-const IMGBB_KEY="5b417e8de4a883f7425eeda12dc38f06";
+let isSending=false;
 
 const chatList=document.getElementById("chatList");
 const messagesBox=document.getElementById("messagesBox");
 
+function chatId(a,b){
+return [a,b].sort().join("_");
+}
+
 onAuthStateChanged(auth,(user)=>{
+
 if(!user){
 location.href="index.html";
 return;
@@ -282,26 +267,22 @@ currentEmail=user.email.toLowerCase();
 
 listenChats();
 
+/* open chat from friends page */
+
+const params=new URLSearchParams(window.location.search);
+const openUser=params.get("user");
+
+if(openUser){
+openChat(openUser.toLowerCase());
+}
+
 });
 
-/* Chat ID */
-function chatId(a,b){
-return [a,b].sort().join("_");
-}
-
-/* Load name + photo */
-async function getUser(email){
-const snap=await getDoc(doc(db,"users",email));
-return snap.data();
-}
-
-/* Chat List */
-
-function listenChats(){
+async function listenChats(){
 
 const q=query(collection(db,"messages"),orderBy("createdAt"));
 
-onSnapshot(q,async(snap)=>{
+onSnapshot(q,async snap=>{
 
 const chats={};
 
@@ -323,8 +304,14 @@ for(const email in chats){
 
 const last=chats[email];
 
+/* get profile name */
+
+let name=email.split("@")[0];
+
+try{
 const userSnap=await getDoc(doc(db,"users",email));
-const user=userSnap.data()||{};
+name=userSnap.data()?.name || name;
+}catch{}
 
 chatList.innerHTML+=`
 
@@ -333,13 +320,13 @@ chatList.innerHTML+=`
 <div class="listRow">
 
 <div class="avatarWrapper">
-<img src="${user.photo || 'https://i.ibb.co/2kRZ7Z6/avatar.png'}">
+<img src="https://i.ibb.co/2kRZ7Z6/avatar.png">
 <div class="onlineRing"></div>
 </div>
 
 <div class="listText">
-<div class="listName">${user.name || "SeaCrew"}</div>
-<div class="listSub">${last.text || "📷 Image"}</div>
+<div class="listName">${name}</div>
+<div class="listSub">${last.text}</div>
 </div>
 
 </div>
@@ -354,19 +341,18 @@ chatList.innerHTML+=`
 
 }
 
-/* Open Chat */
-
-window.openChat=async function(email){
+window.openChat=function(email){
 
 chatUserEmail=email;
 currentChat=chatId(currentEmail,email);
 
-const userSnap=await getDoc(doc(db,"users",email));
-const user=userSnap.data()||{};
-
-chatTitle.innerText=user.name || "SeaCrew";
-
 chatSection.style.display="block";
+
+loadMessages();
+
+};
+
+function loadMessages(){
 
 const q=query(collection(db,"messages"),orderBy("createdAt"));
 
@@ -392,24 +378,13 @@ messagesBox.innerHTML+=`
 <div class="message ${me?'me':'other'}">
 
 <div class="bubble">
-
-${d.text ? d.text : ""}
-
-${d.image ? `<img src="${d.image}" class="chatImage">` : ""}
-
+${d.text}
 <div class="time">${time}</div>
-
-${me ? `<div class="seen">${d.seen ? "Seen" : "Delivered"}</div>`:""}
-
 </div>
 
 </div>
 
 `;
-
-if(!me && !d.seen){
-updateDoc(doc(db,"messages",docSnap.id),{seen:true});
-}
 
 });
 
@@ -419,34 +394,32 @@ messagesBox.scrollTop=messagesBox.scrollHeight;
 
 }
 
-/* Send Message */
-
 sendBtn.onclick=async()=>{
 
+if(isSending) return;
+
 const text=messageInput.value.trim();
-const file=imageInput.files[0];
+if(!text) return;
 
-let imageURL="";
+isSending=true;
 
-if(file){
+/* instant bubble */
 
-const formData=new FormData();
-formData.append("image",file);
+const time=new Date().toLocaleTimeString([],{
+hour:'2-digit',
+minute:'2-digit'
+});
 
-const res=await fetch(
-"https://api.imgbb.com/1/upload?key="+IMGBB_KEY,
-{method:"POST",body:formData}
-);
+messagesBox.innerHTML+=`
+<div class="message me">
+<div class="bubble">
+${text}
+<div class="time">${time}</div>
+</div>
+</div>
+`;
 
-const data=await res.json();
-
-if(data.success){
-imageURL=data.data.url;
-}
-
-}
-
-if(!text && !imageURL) return;
+messagesBox.scrollTop=messagesBox.scrollHeight;
 
 await addDoc(collection(db,"messages"),{
 
@@ -454,26 +427,20 @@ chatId:currentChat,
 from:currentEmail,
 to:chatUserEmail,
 text:text,
-image:imageURL,
-seen:false,
 createdAt:Date.now()
 
 });
 
 messageInput.value="";
-imageInput.value="";
+isSending=false;
 
 };
-
-/* Close Chat */
 
 closeBtn.onclick=()=>{
 
 chatSection.style.display="none";
 
 };
-
-/* Delete Chat */
 
 deleteChatBtn.onclick=async()=>{
 

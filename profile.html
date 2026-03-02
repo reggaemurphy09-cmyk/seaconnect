@@ -252,8 +252,16 @@ if(!user){
 location.href="index.html";
 return;
 }
+
 currentUID=user.uid;
 currentEmail=user.email.toLowerCase();
+
+/* SET USER ONLINE */
+await setDoc(doc(db,"users",currentUID),{
+online:true,
+lastSeen:Date.now()
+},{merge:true});
+
 loadProfile();
 loadDocuments();
 });
@@ -387,6 +395,15 @@ alert("Photo uploaded successfully");
 alert("Upload failed");
 }
 
+});
+
+  document.addEventListener("visibilitychange", async ()=>{
+if(currentUID){
+  await setDoc(doc(db,"users",currentUID),{
+    online: !document.hidden,
+    lastSeen:Date.now()
+  },{merge:true});
+}
 });
   window.addEventListener("beforeunload", async ()=>{
   if(currentUID){

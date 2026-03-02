@@ -354,6 +354,7 @@ document.getElementById("resetBtn").onclick = ()=>{
 friendEmail.value="";
 friendStatus.innerText="";
 };
+
   function listenOnlineUsers(){
 
   onSnapshot(collection(db,"users"),(snap)=>{
@@ -367,7 +368,7 @@ friendStatus.innerText="";
       }
     });
 
-    
+    listenFriends();   // 🔥 refresh UI when status changes
 
   });
 

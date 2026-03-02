@@ -439,6 +439,7 @@ chatAvatar.src=p.photo;
 chatName.innerText=p.name;
 chatRank.innerText=p.rank;
 
+/* ONLINE INDICATOR ONLY IF ONLINE */
 chatOnline.style.display=p.online?"block":"none";
 
 chatBox.style.display="flex";
@@ -504,7 +505,6 @@ currentEmail=user.email.toLowerCase();
 loadChats();
 
 });
-
 </script>
 
 </body>

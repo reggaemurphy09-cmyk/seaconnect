@@ -294,6 +294,7 @@ if(from!==currentUserEmail && to!==currentUserEmail) continue;
 const otherEmail=from===currentUserEmail?to:from;
 const userData=await getUserByEmail(otherEmail);
 const name=userData?.name||"SeaCrew";
+const rank=userData?.rank||"";
 
 if(status==="pending" && to===currentUserEmail){
 hasIncoming=true;
@@ -304,7 +305,10 @@ incomingHTML+=`
 <img src="${userData?.photo || 'https://i.ibb.co/2kRZ7Z6/avatar.png'}">
 
 </div>
-<div style="font-weight:900;">${name}</div>
+<div>
+<div class="name">${name}</div>
+<div class="rank">${rank}</div>
+</div>
 </div>
 <div class="row">
 <button class="primary" onclick="acceptRequest('${otherEmail}')">Accept</button>
@@ -321,7 +325,10 @@ friendsList.innerHTML+=`
 <div class="avatarWrapper">
 <img src="${userData?.photo || 'https://i.ibb.co/2kRZ7Z6/avatar.png'}">
 </div>
-<div style="font-weight:900;">${name}</div>
+<div>
+<div class="name">${name}</div>
+<div class="rank">${rank}</div>
+</div>
 </div>
 <div class="row">
 <button class="primary" onclick="openChat('${otherEmail}')">Chat</button>

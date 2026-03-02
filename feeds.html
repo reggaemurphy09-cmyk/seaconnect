@@ -34,13 +34,13 @@ input,textarea{
 width:100%;
 padding:12px;
 border-radius:14px;
-border:1px solid rgba(255,255,255,0.15);
+border:1px solid #e5e7eb;
 margin-top:6px;
 box-sizing:border-box;
-background:rgba(255,255,255,0.05);
-color:#fff;
+background:#ffffff;
+color:#111;   /* black text */
 }
-
+  
 textarea{
 min-height:90px;
 }
@@ -263,6 +263,13 @@ online:true,
 lastSeen:Date.now(),
 email: currentEmail.toLowerCase()
 },{merge:true});
+
+  window.addEventListener("beforeunload",()=>{
+setDoc(doc(db,"users",currentUID),{
+online:false,
+lastSeen:Date.now()
+},{merge:true});
+});
   
 window.addEventListener("offline",()=>{
 setDoc(doc(db,"users",currentUID),{
@@ -272,15 +279,17 @@ lastSeen:Date.now()
 });
 document.addEventListener("visibilitychange",()=>{
 if(document.hidden){
-updateDoc(doc(db,"users",currentUID),{
+
+  setDoc(doc(db,"users",currentUID),{
 online:false,
 lastSeen:Date.now()
-});
+},{merge:true});
+  
 }else{
-updateDoc(doc(db,"users",currentUID),{
+setDoc(doc(db,"users",currentUID),{
 online:true,
 lastSeen:Date.now()
-});
+},{merge:true});
 }
 });
 window.addEventListener("online",()=>{

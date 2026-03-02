@@ -7,285 +7,281 @@
 
 <style>
 body{
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
-  background:#f3f4f6;
-  color:#111;
+margin:0;
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
+background:#f3f4f6;
+color:#111;
 }
 
 /* HEADER */
 .header{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:16px;
-  background:white;
-  border-bottom:1px solid #e5e7eb;
-  font-weight:900;
-  font-size:20px;
+display:flex;
+align-items:center;
+gap:10px;
+padding:16px;
+background:white;
+border-bottom:1px solid #e5e7eb;
+font-weight:900;
+font-size:20px;
 }
+
 .header button{
-  border:none;
-  background:none;
-  font-size:26px;
-  font-weight:900;
-  cursor:pointer;
-  color:#111;
+border:none;
+background:none;
+font-size:26px;
+font-weight:900;
+cursor:pointer;
+color:#111;
 }
 
 /* LIST */
-.chatList{ padding:12px; }
+
+.chatList{padding:12px;}
 
 .chatItem{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-  background:white;
-  padding:14px;
-  border-radius:14px;
-  margin-bottom:10px;
-  cursor:pointer;
-  box-shadow:0 2px 8px rgba(0,0,0,.05);
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:12px;
+background:white;
+padding:14px;
+border-radius:14px;
+margin-bottom:10px;
+cursor:pointer;
+box-shadow:0 2px 8px rgba(0,0,0,.05);
 }
+
 .chatLeftItem{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  min-width:0;
-  flex:1;
+display:flex;
+align-items:center;
+gap:12px;
+flex:1;
+min-width:0;
 }
+
 .avatar{
-  width:50px;
-  height:50px;
-  border-radius:50%;
-  object-fit:cover;
+width:50px;
+height:50px;
+border-radius:50%;
+object-fit:cover;
 }
-.avatarWrap{ position:relative; flex-shrink:0; }
+
+.avatarWrap{position:relative;}
 
 .online{
-  position:absolute;
-  bottom:2px;
-  right:2px;
-  width:12px;
-  height:12px;
-  border-radius:50%;
-  border:2px solid white;
+position:absolute;
+bottom:2px;
+right:2px;
+width:12px;
+height:12px;
+background:#22c55e;
+border-radius:50%;
+border:2px solid white;
 }
-.online.on{ background:#22c55e; }
-.online.off{ background:#9ca3af; }
 
 .name{
-  font-weight:900;
-  font-size:15px;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  max-width:60vw;
+font-weight:900;
+font-size:15px;
 }
+
 .rank{
-  font-size:12px;
-  color:#6b7280;
-  margin-top:2px;
+font-size:12px;
+color:#6b7280;
+margin-top:2px;
 }
+
 .lastLine{
-  font-size:12px;
-  color:#6b7280;
-  margin-top:4px;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  max-width:60vw;
+font-size:12px;
+color:#6b7280;
+margin-top:4px;
 }
+
 .badges{
-  display:flex;
-  gap:8px;
-  align-items:center;
-  flex-shrink:0;
+display:flex;
+align-items:center;
+gap:8px;
 }
+
 .unreadBadge{
-  font-size:12px;
-  font-weight:900;
-  color:#111;
-  background:#e5e7eb;
-  padding:4px 8px;
-  border-radius:999px;
+font-size:12px;
+font-weight:900;
+color:#111;
+background:#e5e7eb;
+padding:4px 8px;
+border-radius:999px;
 }
+
 .unreadBadge.unread{
-  background:#2563eb;
-  color:white;
+background:#2563eb;
+color:white;
 }
+
 .deleteChat{
-  font-size:18px;
-  font-weight:900;
-  color:#ef4444;
-  cursor:pointer;
-  padding:8px 10px;
-  line-height:1;
-  user-select:none;
+font-size:18px;
+font-weight:900;
+color:#ef4444;
+cursor:pointer;
+padding:8px 10px;
 }
 
 /* CHAT BOX */
+
 .chatBox{
-  position:fixed;
-  top:0; left:0; right:0; bottom:0;
-  background:white;
-  display:none;
-  flex-direction:column;
-  z-index:10;
+position:fixed;
+top:0;
+left:0;
+right:0;
+bottom:0;
+background:white;
+display:none;
+flex-direction:column;
+z-index:10;
 }
 
 /* CHAT HEADER */
+
 .chatHeader{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:14px;
-  border-bottom:1px solid #e5e7eb;
-  background:white;
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:14px;
+border-bottom:1px solid #e5e7eb;
+background:white;
 }
+
 .chatLeft{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  min-width:0;
+display:flex;
+align-items:center;
+gap:10px;
 }
-.chatHeader button{
-  border:none;
-  background:none;
-  font-size:26px;
-  font-weight:900;
-  cursor:pointer;
-  color:#111;
-}
+
 .avatarHeader{
-  position:relative;
-  width:38px;
-  height:38px;
-  flex-shrink:0;
+position:relative;
+width:38px;
+height:38px;
 }
+
 .avatarHeader img{
-  width:38px;
-  height:38px;
-  border-radius:50%;
-  object-fit:cover;
+width:38px;
+height:38px;
+border-radius:50%;
+object-fit:cover;
 }
+
 .avatarHeader .online{
-  width:10px;
-  height:10px;
-  bottom:0;
-  right:0;
+width:10px;
+height:10px;
 }
+
 .chatTitleWrap{
-  min-width:0;
+min-width:0;
 }
+
 #chatName{
-  font-weight:900;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  max-width:55vw;
+font-weight:900;
 }
+
 #chatRank{
-  font-size:12px;
-  color:#6b7280;
-  margin-top:2px;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  max-width:55vw;
+font-size:12px;
+color:#6b7280;
 }
 
 /* MESSAGES */
+
 .messages{
-  flex:1;
-  overflow:auto;
-  padding:15px;
-  background:#f3f4f6;
+flex:1;
+overflow:auto;
+padding:15px;
+background:#f3f4f6;
 }
+
 .message{
-  margin-bottom:10px;
-  display:flex;
+margin-bottom:10px;
+display:flex;
 }
-.me{ justify-content:flex-end; }
+
+.me{justify-content:flex-end;}
 
 .bubble{
-  max-width:70%;
-  background:white;
-  padding:10px 14px;
-  border-radius:16px;
-  font-size:14px;
-  box-shadow:0 1px 4px rgba(0,0,0,.05);
+max-width:70%;
+background:white;
+padding:10px 14px;
+border-radius:16px;
+font-size:14px;
+box-shadow:0 1px 4px rgba(0,0,0,.05);
 }
-.me .bubble{ background:#dbeafe; }
+
+.me .bubble{background:#dbeafe;}
 
 .chatPhoto{
-  max-width:220px;
-  border-radius:10px;
-  margin-top:6px;
-  display:block;
+max-width:220px;
+border-radius:10px;
+margin-top:6px;
+display:block;
 }
+
 .status{
-  font-size:11px;
-  color:#6b7280;
-  margin-top:6px;
-  text-align:right;
+font-size:11px;
+color:#6b7280;
+margin-top:6px;
+text-align:right;
 }
 
 /* INPUT */
+
 .inputArea{
-  padding:10px;
-  border-top:1px solid #e5e7eb;
-  background:white;
-  position:sticky;
-  bottom:0;
+padding:10px;
+border-top:1px solid #e5e7eb;
+background:white;
+position:sticky;
+bottom:0;
 }
+
 .preview{
-  max-width:120px;
-  margin-bottom:8px;
-  border-radius:8px;
-  display:none;
+max-width:120px;
+margin-bottom:8px;
+border-radius:8px;
+display:none;
 }
+
 .row{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  width:100%;
+display:flex;
+align-items:center;
+gap:8px;
 }
+
 .row button{
-  border:none;
-  background:none;
-  cursor:pointer;
-  flex-shrink:0;
+border:none;
+background:none;
+cursor:pointer;
 }
+
 #plusBtn{
-  font-size:28px;
-  font-weight:900;
-  color:#111;
-  width:40px;
-  height:40px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+font-size:28px;
+width:40px;
+height:40px;
+display:flex;
+align-items:center;
+justify-content:center;
 }
+
 .row input{
-  flex:1;
-  min-width:0;
-  padding:12px 14px;
-  border-radius:20px;
-  border:1px solid #ddd;
-  font-size:16px; /* prevents iPhone zoom */
+flex:1;
+padding:12px 14px;
+border-radius:20px;
+border:1px solid #ddd;
+font-size:16px;
 }
+
 #sendBtn{
-  width:40px;
-  height:40px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  flex-shrink:0;
-  color:#111;       /* black */
-  font-size:26px;
-  font-weight:900;
+width:40px;
+height:40px;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:26px;
+font-weight:900;
+color:#111;
 }
 </style>
 </head>
@@ -293,383 +289,222 @@ body{
 <body>
 
 <div class="header">
-  <button onclick="location.href='friends.html'">←</button>
-  Messages
+<button onclick="location.href='friends.html'">←</button>
+Messages
 </div>
 
 <div id="chatList" class="chatList"></div>
 
 <div id="chatBox" class="chatBox">
-  <div class="chatHeader">
-    <div class="chatLeft">
-      <button onclick="closeChat()">←</button>
 
-      <div class="avatarHeader">
-        <img id="chatAvatar" src="https://i.ibb.co/2kRZ7Z6/avatar.png">
-        <div id="chatOnline" class="online off"></div>
-      </div>
+<div class="chatHeader">
 
-      <div class="chatTitleWrap">
-        <div id="chatName"></div>
-        <div id="chatRank"></div>
-      </div>
-    </div>
+<div class="chatLeft">
 
-    <button onclick="startCall()">📞</button>
-  </div>
+<button onclick="closeChat()">←</button>
 
-  <div id="messages" class="messages"></div>
+<div class="avatarHeader">
+<img id="chatAvatar">
+<div id="chatOnline" class="online" style="display:none"></div>
+</div>
 
-  <div class="inputArea">
-    <img id="preview" class="preview">
-    <div class="row">
-      <button id="plusBtn" type="button">＋</button>
-      <input id="messageInput" placeholder="Type message" autocomplete="off">
-      <button id="sendBtn" type="button">↑</button>
-      <input type="file" id="fileInput" accept="image/*" style="display:none">
-    </div>
-  </div>
+<div class="chatTitleWrap">
+<div id="chatName"></div>
+<div id="chatRank"></div>
+</div>
+
+</div>
+
+<button onclick="startCall()">📞</button>
+
+</div>
+
+<div id="messages" class="messages"></div>
+
+<div class="inputArea">
+<img id="preview" class="preview">
+<div class="row">
+<button id="plusBtn">＋</button>
+<input id="messageInput" placeholder="Type message">
+<button id="sendBtn">↑</button>
+<input type="file" id="fileInput" accept="image/*" style="display:none">
+</div>
+</div>
+
 </div>
 
 <script type="module">
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import {
-  getFirestore,
-  collection,
-  addDoc,
-  onSnapshot,
-  query,
-  orderBy,
-  getDocs,
-  updateDoc,
-  doc,
-  where,
-  limit
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth,onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore,collection,addDoc,onSnapshot,query,orderBy,getDocs,updateDoc,doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey:"AIzaSyCNlodsmEHrSXxgH0gTOcx4cAXwG8qmG9w",
-  authDomain:"seaconnect-d2baa.firebaseapp.com",
-  projectId:"seaconnect-d2baa"
+const firebaseConfig={
+apiKey:"AIzaSyCNlodsmEHrSXxgH0gTOcx4cAXwG8qmG9w",
+authDomain:"seaconnect-d2baa.firebaseapp.com",
+projectId:"seaconnect-d2baa"
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
 
-const IMGBB_KEY="5b417e8de4a883f7425eeda12dc38f06";
+let currentEmail;
+let chatUser;
+let chatId;
 
-/* elements */
-const chatList = document.getElementById("chatList");
-const chatBox = document.getElementById("chatBox");
-const messagesEl = document.getElementById("messages");
-const chatAvatar = document.getElementById("chatAvatar");
-const chatName = document.getElementById("chatName");
-const chatRank = document.getElementById("chatRank");
-const chatOnline = document.getElementById("chatOnline");
-const preview = document.getElementById("preview");
-const messageInput = document.getElementById("messageInput");
-const fileInput = document.getElementById("fileInput");
-const sendBtn = document.getElementById("sendBtn");
-const plusBtn = document.getElementById("plusBtn");
+function chatKey(a,b){return[a,b].sort().join("_");}
 
-plusBtn.onclick = () => fileInput.click();
-
-let currentEmail = null;
-let chatUser = null;
-let chatId = null;
-let unsubMessages = null;
-
-/* helpers */
-function chatKey(a,b){ return [a,b].sort().join("_"); }
-
-async function getMyUserDocRefByEmail(email){
-  const q = query(collection(db,"users"), where("email","==",email), limit(1));
-  const s = await getDocs(q);
-  if(s.empty) return null;
-  return doc(db,"users", s.docs[0].id);
-}
-
-async function setOnlineStatus(state){
-  const ref = await getMyUserDocRefByEmail(currentEmail);
-  if(!ref) return;
-  await updateDoc(ref, { online: state, lastSeen: Date.now() });
-}
-
-window.addEventListener("beforeunload", ()=>{
-  if(currentEmail) setOnlineStatus(false);
-});
-
-/* user profile */
 async function getUser(email){
-  let name=email.split("@")[0];
-  let rank="";
-  let photo="https://i.ibb.co/2kRZ7Z6/avatar.png";
-  let online=false;
 
-  const snap = await getDocs(collection(db,"users"));
-  snap.forEach(d=>{
-    const u=d.data();
-    if(((u.email||"").toLowerCase())===email){
-      name=u.name||name;
-      rank=u.rank||"";
-      photo=u.photo||photo;
-      online=!!u.online;
-    }
-  });
+let name=email.split("@")[0];
+let rank="";
+let photo="https://i.ibb.co/2kRZ7Z6/avatar.png";
+let online=false;
 
-  return {name,rank,photo,online};
+const snap=await getDocs(collection(db,"users"));
+
+snap.forEach(d=>{
+const u=d.data();
+if((u.email||"").toLowerCase()===email){
+name=u.name||name;
+rank=u.rank||"";
+photo=u.photo||photo;
+online=!!u.online;
 }
-
-/* auth */
-onAuthStateChanged(auth, async (user)=>{
-  if(!user){ location.href="index.html"; return; }
-
-  currentEmail = user.email.toLowerCase();
-  await setOnlineStatus(true);
-
-  loadChats();
-
-  /* open chat if coming from friends.html: message.html?user=email */
-  const params = new URLSearchParams(window.location.search);
-  const openUser = params.get("user");
-  if(openUser){
-    openChat(openUser.toLowerCase());
-  }
 });
 
-/* CHAT LIST with unread/read + delete */
+return{name,rank,photo,online};
+}
+
 function loadChats(){
-  const q = query(collection(db,"messages"), orderBy("createdAt"));
 
-  onSnapshot(q, async (snap)=>{
-    // Map: otherEmail -> { lastMsg, unreadCount }
-    const chats = {};
+const q=query(collection(db,"messages"),orderBy("createdAt"));
 
-    snap.forEach(docSnap=>{
-      const m = docSnap.data();
+onSnapshot(q,async(snap)=>{
 
-      // ignore deleted messages
-      if(m.deleted) return;
+const map={};
 
-      if(m.from!==currentEmail && m.to!==currentEmail) return;
+snap.forEach(d=>{
+const m=d.data();
+if(m.from!==currentEmail && m.to!==currentEmail)return;
+const other=m.from===currentEmail?m.to:m.from;
+map[other]=m;
+});
 
-      const other = (m.from===currentEmail) ? m.to : m.from;
-      if(!chats[other]) chats[other] = { lastMsg: null, unread: 0 };
+chatList.innerHTML="";
 
-      // last message
-      chats[other].lastMsg = m;
+for(const email in map){
 
-      // unread count (messages TO me, not seen)
-      if(m.to===currentEmail && !m.seen){
-        chats[other].unread += 1;
-      }
-    });
+const p=await getUser(email);
 
-    chatList.innerHTML = "";
+chatList.innerHTML+=`
 
-    // render
-    for(const email in chats){
-      const info = chats[email];
-      const p = await getUser(email);
+<div class="chatItem" onclick="openChat('${email}')">
 
-      const unreadCount = info.unread || 0;
-      const readLabel = unreadCount>0 ? `Unread ${unreadCount}` : "Read";
-      const badgeClass = unreadCount>0 ? "unreadBadge unread" : "unreadBadge";
+<div class="chatLeftItem">
 
-      const lastText = (info.lastMsg?.text && info.lastMsg.text.trim())
-        ? info.lastMsg.text.trim()
-        : (info.lastMsg?.photo ? "📷 Photo" : "");
+<div class="avatarWrap">
+<img class="avatar" src="${p.photo}">
+${p.online ? '<div class="online"></div>' : ''}
+</div>
 
-      const onlineClass = p.online ? "on" : "off";
+<div>
+<div class="name">${p.name}</div>
+<div class="rank">${p.rank}</div>
+</div>
 
-      chatList.innerHTML += `
-        <div class="chatItem" data-email="${email}">
-          <div class="chatLeftItem">
-            <div class="avatarWrap">
-              <img class="avatar" src="${p.photo}">
-              <div class="online ${onlineClass}"></div>
-            </div>
+</div>
 
-            <div style="min-width:0;">
-              <div class="name">${p.name}</div>
-              <div class="rank">${p.rank}</div>
-              <div class="lastLine">${lastText}</div>
-            </div>
-          </div>
+<div class="deleteChat" onclick="event.stopPropagation();deleteChat('${email}')">✕</div>
 
-          <div class="badges">
-            <div class="${badgeClass}">${readLabel}</div>
-            <div class="deleteChat" title="Delete">✕</div>
-          </div>
-        </div>
-      `;
-    }
+</div>
 
-    // click handlers (NO inline onclick, no broken attributes)
-    document.querySelectorAll(".chatItem").forEach(item=>{
-      const email = item.getAttribute("data-email");
-      const delBtn = item.querySelector(".deleteChat");
+`;
 
-      item.addEventListener("click", ()=> openChat(email));
-
-      delBtn.addEventListener("click", (e)=>{
-        e.stopPropagation();
-        deleteChat(email);
-      });
-    });
-  });
 }
 
-/* OPEN CHAT */
-window.openChat = async function(email){
-  chatUser = email;
-  chatId = chatKey(currentEmail, email);
+});
 
-  const p = await getUser(email);
-  chatAvatar.src = p.photo;
-  chatName.innerText = p.name;
-  chatRank.innerText = p.rank;
-
-  chatOnline.className = "online " + (p.online ? "on" : "off");
-
-  chatBox.style.display = "flex";
-
-  // mark incoming as seen when opening
-  await markSeen();
-
-  // load messages live (unsubscribe old listener first)
-  if(unsubMessages) unsubMessages();
-  loadMessages();
-};
-
-window.closeChat = function(){
-  chatBox.style.display = "none";
-};
-
-/* CALL BUTTON */
-window.startCall = function(){
-  alert("Call feature coming soon");
-};
-
-/* Mark seen */
-async function markSeen(){
-  if(!chatId) return;
-
-  const snap = await getDocs(collection(db,"messages"));
-  for(const d of snap.docs){
-    const m = d.data();
-    if(m.deleted) continue;
-    if(m.chatId===chatId && m.to===currentEmail && !m.seen){
-      await updateDoc(doc(db,"messages", d.id), { seen:true });
-    }
-  }
 }
 
-/* LOAD MESSAGES */
+window.openChat=async function(email){
+
+chatUser=email;
+chatId=chatKey(currentEmail,email);
+
+const p=await getUser(email);
+
+chatAvatar.src=p.photo;
+chatName.innerText=p.name;
+chatRank.innerText=p.rank;
+
+chatOnline.style.display=p.online?"block":"none";
+
+chatBox.style.display="flex";
+
+loadMessages();
+
+};
+
+window.closeChat=function(){
+chatBox.style.display="none";
+};
+
+window.startCall=function(){
+alert("Call feature coming soon");
+};
+
 function loadMessages(){
-  const q = query(collection(db,"messages"), orderBy("createdAt"));
 
-  unsubMessages = onSnapshot(q, (snap)=>{
-    messagesEl.innerHTML = "";
+const q=query(collection(db,"messages"),orderBy("createdAt"));
 
-    snap.forEach(d=>{
-      const m = d.data();
-      if(m.deleted) return;
-      if(m.chatId!==chatId) return;
+onSnapshot(q,(snap)=>{
 
-      const me = (m.from===currentEmail);
+messages.innerHTML="";
 
-      messagesEl.innerHTML += `
-        <div class="message ${me?'me':''}">
-          <div class="bubble">
-            ${m.text ? m.text : ""}
-            ${m.photo ? `<img src="${m.photo}" class="chatPhoto">` : ""}
-            ${me ? `<div class="status">${m.seen ? "✓✓ Seen" : "✓ Sent"}</div>` : ""}
-          </div>
-        </div>
-      `;
-    });
+snap.forEach(d=>{
 
-    messagesEl.scrollTop = messagesEl.scrollHeight;
-  });
+const m=d.data();
+
+if(m.chatId!==chatId)return;
+
+const me=m.from===currentEmail;
+
+messages.innerHTML+=`
+
+<div class="message ${me?'me':''}">
+
+<div class="bubble">
+
+${m.text||""}
+
+${m.photo?`<img src="${m.photo}" class="chatPhoto">`:""}
+
+</div>
+
+</div>
+
+`;
+
+});
+
+messages.scrollTop=messages.scrollHeight;
+
+});
+
 }
 
-/* PREVIEW */
-fileInput.onchange = function(){
-  const f = this.files[0];
-  if(!f) return;
-  preview.src = URL.createObjectURL(f);
-  preview.style.display = "block";
-};
+onAuthStateChanged(auth,(user)=>{
 
-/* SEND */
-sendBtn.onclick = async ()=>{
-  const text = messageInput.value.trim();
-  const file = fileInput.files[0];
+if(!user){location.href="index.html";return;}
 
-  if(!text && !file) return;
+currentEmail=user.email.toLowerCase();
 
-  if(!chatId || !chatUser){
-    alert("Open a chat first.");
-    return;
-  }
+loadChats();
 
-  let photo = "";
-  if(file) photo = URL.createObjectURL(file);
+});
 
-  const ref = await addDoc(collection(db,"messages"),{
-    chatId,
-    from: currentEmail,
-    to: chatUser,
-    text,
-    photo,
-    seen:false,
-    deleted:false,
-    createdAt: Date.now()
-  });
-
-  messageInput.value = "";
-  preview.style.display = "none";
-  fileInput.value = "";
-
-  // upload in background
-  if(file){
-    const form = new FormData();
-    form.append("image", file);
-
-    const res = await fetch("https://api.imgbb.com/1/upload?key="+IMGBB_KEY,{
-      method:"POST",
-      body:form
-    });
-
-    const data = await res.json();
-    if(data && data.success && data.data && data.data.url){
-      await updateDoc(doc(db,"messages", ref.id), { photo: data.data.url });
-    }
-  }
-};
-
-/* DELETE CHAT (SAFE: NO onSnapshot loop) */
-window.deleteChat = async function(email){
-  if(!confirm("Delete chat?")) return;
-
-  const id = chatKey(currentEmail, email);
-
-  const snap = await getDocs(collection(db,"messages"));
-  for(const d of snap.docs){
-    const m = d.data();
-    if(m.chatId===id && !m.deleted){
-      await updateDoc(doc(db,"messages", d.id), { deleted:true });
-    }
-  }
-
-  // if you deleted the chat you are currently viewing, close it
-  if(chatId===id){
-    closeChat();
-  }
-};
 </script>
 
 </body>

@@ -174,11 +174,17 @@ margin-top:6px;
 
 /* INPUT */
 
+/* INPUT */
+
 .inputArea{
 padding:10px;
 border-top:1px solid #e5e7eb;
 background:white;
+position:sticky;
+bottom:0;
 }
+
+/* preview image */
 
 .preview{
 max-width:120px;
@@ -186,19 +192,16 @@ margin-bottom:8px;
 border-radius:8px;
 }
 
+/* row */
+
 .row{
 display:flex;
-gap:8px;
 align-items:center;
+gap:8px;
+width:100%;
 }
 
-.row input{
-flex:1;
-padding:11px 14px;
-border-radius:20px;
-border:1px solid #ddd;
-font-size:16px; /* prevents iphone zoom */
-}
+/* plus button */
 
 .row button{
 border:none;
@@ -206,9 +209,30 @@ background:none;
 font-size:26px;
 font-weight:900;
 cursor:pointer;
-color:#111;
+flex-shrink:0;
 }
 
+/* text box */
+
+.row input{
+flex:1;
+min-width:0;
+padding:12px 14px;
+border-radius:20px;
+border:1px solid #ddd;
+font-size:16px; /* prevents iPhone zoom */
+}
+
+/* send button */
+
+#sendBtn{
+width:40px;
+height:40px;
+display:flex;
+align-items:center;
+justify-content:center;
+flex-shrink:0;
+}
 </style>
 </head>
 

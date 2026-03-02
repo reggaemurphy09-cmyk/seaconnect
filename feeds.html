@@ -226,7 +226,8 @@ doc,
 getDoc,
 deleteDoc,
 updateDoc,
-where
+where,
+  setDoc
 }
 from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
@@ -256,11 +257,12 @@ return;
 
 currentUID=user.uid;
 currentEmail=user.email;
-
-await updateDoc(doc(db,"users",currentUID),{
+  
+await setDoc(doc(db,"users",currentUID),{
 online:true,
-lastSeen:Date.now()
-});
+lastSeen:Date.now(),
+email: currentEmail.toLowerCase()
+},{merge:true});
 
 loadFeeds();
 

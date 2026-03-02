@@ -253,7 +253,8 @@ listenFriends();
 });
 
 document.getElementById("sendBtn").onclick=async()=>{
-const input=friendEmail.value.trim().toLowerCase();
+
+  const input=document.getElementById("friendEmail").value.trim().toLowerCase();
 if(!input){friendStatus.innerText="Enter email.";return;}
 if(input===currentUserEmail){friendStatus.innerText="Cannot add yourself.";return;}
 

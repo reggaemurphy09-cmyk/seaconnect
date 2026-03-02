@@ -293,19 +293,16 @@ let currentUID=null;
 let currentUserEmail=null;
 let onlineUsers={};
   let lastFriendsSnap = null;
+  let myUserRef = null;
+
   async function setOnlineStatus(state){
 
-const q=query(collection(db,"users"),where("email","==",currentUserEmail));
-const snap=await getDocs(q);
+if(!myUserRef) return;
 
-if(snap.empty) return;
-
-const ref=doc(db,"users",snap.docs[0].id);
-
-await updateDoc(ref,{
+await setDoc(myUserRef,{
 online:state,
 lastSeen:Date.now()
-});
+},{merge:true});
 
 }
   const friendStatus = document.getElementById("friendStatus");
@@ -334,7 +331,8 @@ if(!user){location.href="index.html";return;}
 
 currentUID = user.uid;
 currentUserEmail = user.email.toLowerCase();
-
+myUserRef = doc(db,"users",currentUID);
+  
 await setDoc(doc(db,"users",currentUID),{
 email:currentUserEmail,
 online:true,
@@ -466,7 +464,8 @@ friendsList.innerHTML+=`
 
 <div class="avatarWrapper">
 <img src="${userData?.photo || 'https://i.ibb.co/2kRZ7Z6/avatar.png'}">
-${onlineUsers[otherEmail] ? '<div class="onlineDot"></div>' : ''}
+${(onlineUsers[otherEmail]?.online && (Date.now() - (onlineUsers[otherEmail]?.lastSeen || 0) < 15000))
+  ? '<div class="onlineDot"></div>' : ''}
 </div>
 
 <div>

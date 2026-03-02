@@ -388,14 +388,40 @@ friendStatus.innerText="";
 };
       }
     });
- if(lastFriendsSnap){
-      renderFriends(lastFriendsSnap);
-    }
+    updateOnlineDots();
 
 
   });
 
 }
+function updateOnlineDots(){
+
+  document.querySelectorAll(".avatarWrapper").forEach(wrapper=>{
+
+    const email = wrapper.dataset.email;
+    if(!email) return;
+
+    const status = onlineUsers[email];
+
+    const isOnline = status?.online &&
+      (Date.now() - (status?.lastSeen || 0) < 15000);
+
+    let dot = wrapper.querySelector(".onlineDot");
+
+    if(isOnline && !dot){
+      dot = document.createElement("div");
+      dot.className="onlineDot";
+      wrapper.appendChild(dot);
+    }
+
+    if(!isOnline && dot){
+      dot.remove();
+    }
+
+  });
+
+}
+  
 function listenFriends(){
 
 onSnapshot(collection(db,"friendRequests"),async snap=>{
@@ -433,7 +459,7 @@ incomingHTML+=`
 <div class="friendRow">
 <div class="friendInfo">
 
-<div class="avatarWrapper">
+<div class="avatarWrapper" data-email="${otherEmail}">
 <img src="${userData?.photo || 'https://i.ibb.co/2kRZ7Z6/avatar.png'}">
 ${(onlineUsers[otherEmail]?.online && (Date.now() - (onlineUsers[otherEmail]?.lastSeen || 0) < 15000))
   ? '<div class="onlineDot"></div>' : ''}

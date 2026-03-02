@@ -36,7 +36,10 @@ body{
 }
 
 /* LIST */
-.chatList{ padding:12px; }
+.chatList{
+padding:12px;
+padding-bottom:100px;
+}
 
 .chatItem{
   display:flex;
@@ -134,12 +137,15 @@ body{
 
 /* CHAT BOX */
 .chatBox{
-  position:fixed;
-  top:0; left:0; right:0; bottom:0;
-  background:white;
-  display:none;
-  flex-direction:column;
-  z-index:10;
+position:fixed;
+top:0;
+left:0;
+right:0;
+bottom:0;
+background:white;
+display:none;
+flex-direction:column;
+z-index:20;
 }
 
 /* CHAT HEADER */
@@ -205,11 +211,13 @@ body{
 
 /* MESSAGES */
 .messages{
-  flex:1;
-  overflow:auto;
-  padding:15px;
-  background:#f3f4f6;
+flex:1;
+overflow:auto;
+padding:15px;
+padding-bottom:120px;
+background:#f3f4f6;
 }
+  
 .message{
   margin-bottom:10px;
   display:flex;
@@ -294,6 +302,36 @@ body{
   font-size:26px;
   font-weight:900;
 }
+  .bottomnav{
+position:fixed;
+bottom:15px;
+left:50%;
+transform:translateX(-50%);
+width:90%;
+height:65px;
+background:#f3f4f6;
+border-radius:22px;
+display:flex;
+justify-content:space-around;
+align-items:center;
+border:1px solid #e5e7eb;
+box-shadow:0 4px 12px rgba(0,0,0,.08);
+z-index:5;
+}
+
+.bottomnav button{
+background:none;
+border:none;
+font-size:12px;
+font-weight:600;
+color:#6b7280;
+cursor:pointer;
+}
+
+.bottomnav button.active{
+color:#3b82f6;
+font-weight:800;
+}
 </style>
 </head>
 
@@ -338,6 +376,13 @@ body{
   </div>
 </div>
 
+  <div class="bottomnav">
+<button onclick="location.href='feeds.html'">📰 Feeds</button>
+<button onclick="location.href='friends.html'">👥 Friends</button>
+<button class="active">💬 Messages</button>
+<button onclick="location.href='profile.html'">👤 Profile</button>
+</div>
+  
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";

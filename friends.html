@@ -178,10 +178,12 @@ font-weight:800;
   </style>
 </head>
 <body>
+<div class="header">
+<button onclick="location.href='feeds.html'">←</button>
+Friends
+</div>
+
 <div class="container">
-
-<h2>👥 Friends</h2>
-
 <div class="card">
 <input id="friendEmail" placeholder="Enter email to add friend">
 <div class="row">
@@ -267,6 +269,11 @@ friendStatus.innerText="Request sent ✅";
 friendEmail.value="";
 };
 
+/* RESET BUTTON */
+document.getElementById("resetBtn").onclick = ()=>{
+friendEmail.value="";
+friendStatus.innerText="";
+};
 function listenFriends(){
 onSnapshot(collection(db,"friendRequests"),async snap=>{
 

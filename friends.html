@@ -175,6 +175,14 @@ color:#374151;
 color:#3b82f6;
 font-weight:800;
 }
+  input{
+width:100%;
+padding:12px;
+border-radius:10px;
+border:1px solid #e5e7eb;
+margin-bottom:10px;
+font-size:14px;
+}
   </style>
 </head>
 <body>
@@ -235,6 +243,10 @@ const db=getFirestore(app);
 let currentUserEmail=null;
 let presenceData={};
 
+  const friendStatus = document.getElementById("friendStatus");
+const friendsList = document.getElementById("friendsList");
+  const friendEmail = document.getElementById("friendEmail");
+  
 function requestIdFor(a,b){
 return [a.toLowerCase(),b.toLowerCase()].sort().join("__");
 }
@@ -254,8 +266,8 @@ listenFriends();
 
 document.getElementById("sendBtn").onclick=async()=>{
 
-  const input=document.getElementById("friendEmail").value.trim().toLowerCase();
-if(!input){friendStatus.innerText="Enter email.";return;}
+ const input=friendEmail.value.trim().toLowerCase();
+  if(!input){friendStatus.innerText="Enter email.";return;}
 if(input===currentUserEmail){friendStatus.innerText="Cannot add yourself.";return;}
 
 const rid=requestIdFor(currentUserEmail,input);

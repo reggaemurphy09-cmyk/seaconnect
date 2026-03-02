@@ -292,6 +292,7 @@ const db=getFirestore(app);
 let currentUID=null;
 let currentUserEmail=null;
 let onlineUsers={};
+  let friendsListenerStarted = false;
   
   const friendStatus = document.getElementById("friendStatus");
 const friendsList = document.getElementById("friendsList");
@@ -316,22 +317,7 @@ async function getUserByEmail(email){
 
 }
 
-onAuthStateChanged(auth,async(user)=>{
-if(!user){location.href="index.html";return;}
 
-currentUID = user.uid;
-currentUserEmail = user.email.toLowerCase();
-
-await setDoc(doc(db,"users",currentUID),{
-email:currentUserEmail,
-online:true,
-lastSeen:Date.now()
-},{merge:true});
-
-listenOnlineUsers();
-listenFriends();
-  
-});
 
 document.getElementById("sendBtn").onclick=async()=>{
 
@@ -344,7 +330,36 @@ await setDoc(doc(db,"friendRequests",rid),{
 from:currentUserEmail,
 to:input,
 status:"pending",
-createdAt:Date.now()
+cronAuthStateChanged(auth,async(user)=>{
+if(!user){location.href="index.html";return;}
+
+currentUID = user.uid;
+currentUserEmail = user.email.toLowerCase();
+
+await setDoc(doc(db,"users",currentUID),{
+email:currentUserEmail,
+online:true,
+lastSeen:Date.now()
+},{merge:true});
+
+listenOnlineUsers();
+
+if(!friendsListenerStarted){
+  listenFriends();
+  friendsListenerStarted = true;
+}
+
+/* heartbeat to keep user online */
+setInterval(()=>{
+  if(currentUID){
+    setDoc(doc(db,"users",currentUID),{
+      lastSeen:Date.now(),
+      online:true
+    },{merge:true});
+  }
+},5000);
+
+});eatedAt:Date.now()
 });
 
 friendStatus.innerText="Request sent ✅";
@@ -401,7 +416,7 @@ incomingHTML+=`
 <div class="friendInfo">
 <div class="avatarWrapper">
 <img src="${userData?.photo || 'https://i.ibb.co/2kRZ7Z6/avatar.png'}">
-${onlineUsers[otherEmail] && (Date.now() - (userData?.lastSeen || 0) < 30000) ? '<div class="onlineDot"></div>' : ''}
+${onlineUsers[otherEmail] && (Date.now() - (userData?.lastSeen || 0) < 15000) ? '<div class="onlineDot"></div>' : ''}
 
 </div>
 <div>
@@ -423,8 +438,8 @@ friendsList.innerHTML+=`
 
 <div class="avatarWrapper">
 <img src="${userData?.photo || 'https://i.ibb.co/2kRZ7Z6/avatar.png'}">
+${onlineUsers[otherEmail] && (Date.now() - (userData?.lastSeen || 0) < 15000) ? '<div class="onlineDot"></div>' : ''}
 
-${onlineUsers[otherEmail] ? '<div class="onlineDot"></div>' : ''}
 
 </div>
 <div>

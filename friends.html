@@ -292,6 +292,7 @@ const db=getFirestore(app);
 let currentUID=null;
 let currentUserEmail=null;
 let onlineUsers={};
+  let lastFriendsSnap = null;
   async function setOnlineStatus(state){
 
 const q=query(collection(db,"users"),where("email","==",currentUserEmail));
@@ -379,7 +380,9 @@ friendStatus.innerText="";
         onlineUsers[u.email.toLowerCase()] = u.online;
       }
     });
-
+ if(lastFriendsSnap){
+      renderFriends(lastFriendsSnap);
+    }
 
 
   });
@@ -388,6 +391,7 @@ friendStatus.innerText="";
 function listenFriends(){
 
 onSnapshot(collection(db,"friendRequests"),async snap=>{
+  lastFriendsSnap = snap; 
 renderFriends(snap);
 });
 

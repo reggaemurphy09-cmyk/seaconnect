@@ -407,7 +407,13 @@ async function setOnlineStatus(state){
 window.addEventListener("beforeunload", ()=>{
   if(currentEmail) setOnlineStatus(false);
 });
-
+document.addEventListener("visibilitychange", ()=>{
+  if(document.hidden){
+    setOnlineStatus(false);
+  }else{
+    setOnlineStatus(true);
+  }
+});
 /* user profile */
 async function getUser(email){
   let name=email.split("@")[0];
@@ -706,6 +712,15 @@ window.deleteChat = async function(email){
     closeChat();
   }
 };
+  window.logoutUser = async function(){
+
+  await setOnlineStatus(false);
+
+  await auth.signOut();
+
+  location.href="index.html";
+
+}  
 </script>
 
 </body>

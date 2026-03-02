@@ -35,7 +35,6 @@ background:none;
 font-size:24px;
 font-weight:900;
 cursor:pointer;
-color:#111;
 }
 
 /* LIST */
@@ -73,10 +72,12 @@ bottom:2px;
 right:2px;
 width:12px;
 height:12px;
-background:#22c55e;
 border-radius:50%;
 border:2px solid white;
 }
+
+.online.on{background:#22c55e;}
+.online.off{background:#9ca3af;}
 
 .name{
 font-weight:900;
@@ -130,9 +131,7 @@ object-fit:cover;
 border:none;
 background:none;
 font-size:24px;
-font-weight:900;
 cursor:pointer;
-color:#111;
 }
 
 /* MESSAGES */
@@ -172,6 +171,13 @@ border-radius:10px;
 margin-top:6px;
 }
 
+.status{
+font-size:11px;
+color:#6b7280;
+margin-top:4px;
+text-align:right;
+}
+
 /* INPUT */
 
 .inputArea{
@@ -197,7 +203,6 @@ flex:1;
 padding:11px 14px;
 border-radius:20px;
 border:1px solid #ddd;
-font-size:14px;
 }
 
 .row button{
@@ -206,7 +211,6 @@ background:none;
 font-size:26px;
 font-weight:900;
 cursor:pointer;
-color:#111;
 }
 
 </style>
@@ -215,11 +219,8 @@ color:#111;
 <body>
 
 <div class="header">
-
 <button onclick="location.href='friends.html'">←</button>
-
 Messages
-
 </div>
 
 <div id="chatList" class="chatList"></div>
@@ -301,31 +302,58 @@ return;
 
 currentEmail=user.email.toLowerCase();
 
+setOnlineStatus(true);
+
 loadChats();
 
 });
+
+/* ONLINE STATUS */
+
+async function setOnlineStatus(state){
+
+const users=await getDocs(collection(db,"users"));
+
+users.forEach(async d=>{
+const u=d.data();
+if(u.email===currentEmail){
+await updateDoc(doc(db,"users",d.id),{
+online:state,
+lastSeen:Date.now()
+});
+}
+});
+
+}
+
+window.addEventListener("beforeunload",()=>{
+setOnlineStatus(false);
+});
+
+/* USER */
 
 async function getUser(email){
 
 let name=email.split("@")[0];
 let rank="";
 let photo="https://i.ibb.co/2kRZ7Z6/avatar.png";
+let online=false;
 
 const snap=await getDocs(collection(db,"users"));
 
 snap.forEach(d=>{
-
 const u=d.data();
 
 if(u.email===email){
 name=u.name||name;
 rank=u.rank||"";
 photo=u.photo||photo;
+online=u.online||false;
 }
 
 });
 
-return{name,rank,photo};
+return{name,rank,photo,online};
 
 }
 
@@ -344,7 +372,6 @@ onSnapshot(q,async(snap)=>{
 const map={};
 
 snap.forEach(d=>{
-
 const m=d.data();
 
 if(m.from!==currentEmail && m.to!==currentEmail)return;
@@ -352,7 +379,6 @@ if(m.from!==currentEmail && m.to!==currentEmail)return;
 const other=m.from===currentEmail?m.to:m.from;
 
 map[other]=m;
-
 });
 
 chatList.innerHTML="";
@@ -367,7 +393,7 @@ chatList.innerHTML+=`
 
 <div class="avatarWrap">
 <img class="avatar" src="${p.photo}">
-<div class="online"></div>
+<div class="online ${p.online?'on':'off'}"></div>
 </div>
 
 <div>
@@ -376,7 +402,6 @@ chatList.innerHTML+=`
 </div>
 
 </div>
-
 `;
 
 }
@@ -400,9 +425,37 @@ chatRank.innerText=p.rank;
 
 chatBox.style.display="flex";
 
+markSeen();
+
 loadMessages();
 
 };
+
+/* MARK SEEN */
+
+async function markSeen(){
+
+const q=query(collection(db,"messages"));
+
+onSnapshot(q,(snap)=>{
+
+snap.forEach(async d=>{
+
+const m=d.data();
+
+if(m.chatId===chatId && m.to===currentEmail && !m.seen){
+
+await updateDoc(doc(db,"messages",d.id),{
+seen:true
+});
+
+}
+
+});
+
+});
+
+}
 
 /* CLOSE CHAT */
 
@@ -444,10 +497,11 @@ ${m.text||""}
 
 ${m.photo?`<img src="${m.photo}" class="chatPhoto">`:""}
 
-</div>
+${me?`<div class="status">${m.seen?'✓✓ Seen':'✓ Sent'}</div>`:''}
 
 </div>
 
+</div>
 `;
 
 });
@@ -491,6 +545,7 @@ from:currentEmail,
 to:chatUser,
 text:text,
 photo:photo,
+seen:false,
 createdAt:Date.now()
 
 });

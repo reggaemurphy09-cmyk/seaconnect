@@ -605,7 +605,33 @@ photo:data.data.url
 }
 
 };
+window.deleteChat = async function(email){
 
+if(!confirm("Delete chat?")) return;
+
+const id = chatKey(currentEmail,email);
+
+const q=query(collection(db,"messages"));
+
+onSnapshot(q,(snap)=>{
+
+snap.forEach(async d=>{
+
+const m=d.data();
+
+if(m.chatId===id){
+
+await updateDoc(doc(db,"messages",d.id),{
+deleted:true
+});
+
+}
+
+});
+
+});
+
+};
 </script>
 
 </body>

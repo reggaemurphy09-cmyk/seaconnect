@@ -3,7 +3,7 @@
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
 
 <title>SeaConnect Messages</title>
 
@@ -37,7 +37,7 @@ font-weight:900;
 cursor:pointer;
 }
 
-/* LIST */
+/* CHAT LIST */
 
 .chatList{
 padding:12px;
@@ -47,6 +47,7 @@ padding:12px;
 display:flex;
 align-items:center;
 justify-content:space-between;
+gap:12px;
 background:white;
 padding:14px;
 border-radius:14px;
@@ -54,14 +55,17 @@ margin-bottom:10px;
 box-shadow:0 2px 8px rgba(0,0,0,.05);
 }
 
-.chatLeft{
+.chatLeftItem{
 display:flex;
 align-items:center;
 gap:12px;
 cursor:pointer;
+flex:1;
 }
 
 .deleteBtn{
+border:none;
+background:none;
 font-size:18px;
 color:#ef4444;
 cursor:pointer;
@@ -105,16 +109,7 @@ color:#6b7280;
 
 .status{
 font-size:11px;
-font-weight:700;
-margin-top:3px;
-}
-
-.unread{
-color:#2563eb;
-}
-
-.read{
-color:#9ca3af;
+color:#6b7280;
 }
 
 /* CHAT BOX */
@@ -139,29 +134,26 @@ justify-content:space-between;
 align-items:center;
 padding:14px;
 border-bottom:1px solid #e5e7eb;
-background:white;
 }
 
-.chatLeftHeader{
+.chatLeft{
 display:flex;
 align-items:center;
 gap:10px;
 }
 
-.avatarHeader{
-position:relative;
-}
-
-.avatarHeader img{
+.chatHeader img{
 width:38px;
 height:38px;
 border-radius:50%;
 object-fit:cover;
 }
 
-.avatarHeader .online{
-width:10px;
-height:10px;
+.chatHeader button{
+border:none;
+background:none;
+font-size:24px;
+cursor:pointer;
 }
 
 /* MESSAGES */
@@ -201,13 +193,6 @@ border-radius:10px;
 margin-top:6px;
 }
 
-.msgStatus{
-font-size:11px;
-color:#6b7280;
-margin-top:4px;
-text-align:right;
-}
-
 /* INPUT */
 
 .inputArea{
@@ -235,26 +220,14 @@ flex:1;
 padding:12px 14px;
 border-radius:20px;
 border:1px solid #ddd;
-font-size:16px; /* prevents iphone zoom */
+font-size:16px;
 }
 
 .row button{
-width:40px;
-height:40px;
 border:none;
-background:#2563eb;
-color:white;
-border-radius:50%;
-font-size:18px;
+background:none;
+font-size:24px;
 cursor:pointer;
-display:flex;
-align-items:center;
-justify-content:center;
-}
-
-.row button:first-child{
-background:#e5e7eb;
-color:#111;
 }
 
 </style>
@@ -273,18 +246,15 @@ Messages
 
 <div class="chatHeader">
 
-<div class="chatLeftHeader">
+<div class="chatLeft">
 
 <button onclick="closeChat()">←</button>
 
-<div class="avatarHeader">
 <img id="chatAvatar">
-<div id="chatOnline" class="online"></div>
-</div>
 
 <div>
-<div id="chatName" style="font-weight:900"></div>
-<div id="chatRank" style="font-size:12px;color:#6b7280"></div>
+<div id="chatName"></div>
+<div id="chatRank" class="rank"></div>
 </div>
 
 </div>
@@ -340,47 +310,32 @@ let chatId;
 const chatList=document.getElementById("chatList");
 const messages=document.getElementById("messages");
 
-/* LOGIN */
-
 onAuthStateChanged(auth,(user)=>{
-
-if(!user){
-location.href="index.html";
-return;
-}
-
+if(!user){location.href="index.html";return;}
 currentEmail=user.email.toLowerCase();
-
 loadChats();
-
 });
 
-/* USER */
+/* GET USER */
 
 async function getUser(email){
 
 let name=email.split("@")[0];
 let rank="";
 let photo="https://i.ibb.co/2kRZ7Z6/avatar.png";
-let online=false;
 
 const snap=await getDocs(collection(db,"users"));
 
 snap.forEach(d=>{
-
 const u=d.data();
-
 if(u.email===email){
 name=u.name||name;
 rank=u.rank||"";
 photo=u.photo||photo;
-online=u.online||false;
 }
-
 });
 
-return{name,rank,photo,online};
-
+return{name,rank,photo};
 }
 
 function chatKey(a,b){
@@ -398,44 +353,43 @@ onSnapshot(q,async(snap)=>{
 const map={};
 
 snap.forEach(d=>{
-
 const m=d.data();
-
 if(m.from!==currentEmail && m.to!==currentEmail)return;
-
 const other=m.from===currentEmail?m.to:m.from;
-
 map[other]=m;
-
 });
 
 chatList.innerHTML="";
 
+if(Object.keys(map).length===0){
+chatList.innerHTML="<div style='text-align:center;margin-top:40px;color:#6b7280;'>No conversations yet</div>";
+return;
+}
+
 for(const email in map){
 
 const p=await getUser(email);
-const last=map[email];
 
 chatList.innerHTML+=`
 
 <div class="chatItem">
 
-<div class="chatLeft" onclick="openChat('${email}')">
+<div class="chatLeftItem" onclick="openChat('${email}')">
 
 <div class="avatarWrap">
 <img class="avatar" src="${p.photo}">
-<div class="online ${p.online?'on':'off'}"></div>
+<div class="online on"></div>
 </div>
 
 <div>
 <div class="name">${p.name}</div>
 <div class="rank">${p.rank}</div>
-<div class="status ${last.seen?'read':'unread'}">${last.seen?'Read':'Unread'}</div>
+<div class="status">${map[email].seen?"Read":"Unread"}</div>
 </div>
 
 </div>
 
-<div class="deleteBtn" onclick="deleteChat('${email}')">✕</div>
+<button class="deleteBtn" onclick="deleteChat('${email}')">✕</button>
 
 </div>
 
@@ -449,24 +403,16 @@ chatList.innerHTML+=`
 
 /* DELETE CHAT */
 
-window.deleteChat=function(email){
+window.deleteChat=async function(email){
 
-if(!confirm("Delete chat?")) return;
+const key=chatKey(currentEmail,email);
 
-const q=query(collection(db,"messages"));
-
-onSnapshot(q,(snap)=>{
+const snap=await getDocs(collection(db,"messages"));
 
 snap.forEach(async d=>{
-
-const m=d.data();
-
-if(chatKey(m.from,m.to)===chatKey(currentEmail,email)){
+if(d.data().chatId===key){
 await deleteDoc(doc(db,"messages",d.id));
 }
-
-});
-
 });
 
 };
@@ -484,8 +430,6 @@ chatAvatar.src=p.photo;
 chatName.innerText=p.name;
 chatRank.innerText=p.rank;
 
-chatOnline.className="online "+(p.online?'on':'off');
-
 chatBox.style.display="flex";
 
 loadMessages();
@@ -497,6 +441,8 @@ loadMessages();
 window.closeChat=function(){
 chatBox.style.display="none";
 };
+
+/* CALL */
 
 window.startCall=function(){
 alert("Call feature coming soon");
@@ -512,19 +458,13 @@ onSnapshot(q,(snap)=>{
 
 messages.innerHTML="";
 
-snap.forEach(async d=>{
+snap.forEach(d=>{
 
 const m=d.data();
 
 if(m.chatId!==chatId)return;
 
 const me=m.from===currentEmail;
-
-if(m.to===currentEmail && !m.seen){
-
-await updateDoc(doc(db,"messages",d.id),{seen:true});
-
-}
 
 messages.innerHTML+=`
 
@@ -536,7 +476,7 @@ ${m.text||""}
 
 ${m.photo?`<img src="${m.photo}" class="chatPhoto">`:""}
 
-${me?`<div class="msgStatus">${m.seen?'✓✓ Seen':'✓ Sent'}</div>`:''}
+${me?`<div style="font-size:11px;color:#6b7280;margin-top:4px;">${m.seen?'✓✓ Seen':'✓ Sent'}</div>`:''}
 
 </div>
 
@@ -557,7 +497,6 @@ messages.scrollTop=messages.scrollHeight;
 fileInput.onchange=function(){
 
 const f=this.files[0];
-
 if(!f)return;
 
 preview.src=URL.createObjectURL(f);
@@ -593,6 +532,8 @@ createdAt:Date.now()
 messageInput.value="";
 preview.style.display="none";
 fileInput.value="";
+
+/* upload background */
 
 if(file){
 

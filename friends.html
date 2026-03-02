@@ -488,7 +488,7 @@ friendsList.innerHTML+=`
 
 <div class="friendInfo">
 
-<div class="avatarWrapper">
+<div class="avatarWrapper" data-email="${otherEmail}">
 <img src="${userData?.photo || 'https://i.ibb.co/2kRZ7Z6/avatar.png'}">
 ${(onlineUsers[otherEmail]?.online && (Date.now() - (onlineUsers[otherEmail]?.lastSeen || 0) < 15000))
   ? '<div class="onlineDot"></div>' : ''}

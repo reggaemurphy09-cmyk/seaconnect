@@ -263,7 +263,32 @@ online:true,
 lastSeen:Date.now(),
 email: currentEmail.toLowerCase()
 },{merge:true});
-
+  
+window.addEventListener("offline",()=>{
+setDoc(doc(db,"users",currentUID),{
+online:false,
+lastSeen:Date.now()
+},{merge:true});
+});
+document.addEventListener("visibilitychange",()=>{
+if(document.hidden){
+updateDoc(doc(db,"users",currentUID),{
+online:false,
+lastSeen:Date.now()
+});
+}else{
+updateDoc(doc(db,"users",currentUID),{
+online:true,
+lastSeen:Date.now()
+});
+}
+});
+window.addEventListener("online",()=>{
+setDoc(doc(db,"users",currentUID),{
+online:true,
+lastSeen:Date.now()
+},{merge:true});
+});
 loadFeeds();
 
 });

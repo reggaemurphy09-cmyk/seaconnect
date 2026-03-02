@@ -343,8 +343,15 @@ lastSeen:Date.now()
 
 listenOnlineUsers();
 listenFriends();
-});
 
+/* heartbeat every 5 seconds */
+setInterval(()=>{
+  if(currentUserEmail){
+    setOnlineStatus(true);
+  }
+},5000);
+
+});
 document.getElementById("sendBtn").onclick=async()=>{
 
  const input=friendEmail.value.trim().toLowerCase();
@@ -377,7 +384,10 @@ friendStatus.innerText="";
     snap.forEach(d=>{
       const u=d.data();
       if(u.email){
-        onlineUsers[u.email.toLowerCase()] = u.online;
+       onlineUsers[u.email.toLowerCase()] = {
+  online: !!u.online,
+  lastSeen: u.lastSeen || 0
+};
       }
     });
  if(lastFriendsSnap){
@@ -427,7 +437,9 @@ incomingHTML+=`
 
 <div class="avatarWrapper">
 <img src="${userData?.photo || 'https://i.ibb.co/2kRZ7Z6/avatar.png'}">
-${onlineUsers[otherEmail] ? '<div class="onlineDot"></div>' : ''}
+${(onlineUsers[otherEmail]?.online && (Date.now() - (onlineUsers[otherEmail]?.lastSeen || 0) < 15000))
+  ? '<div class="onlineDot"></div>' : ''}
+
 </div>
 
 <div>

@@ -47,6 +47,7 @@ padding:12px;
 .chatItem{
 display:flex;
 align-items:center;
+justify-content:space-between;
 gap:12px;
 background:white;
 padding:14px;
@@ -54,6 +55,20 @@ border-radius:14px;
 margin-bottom:10px;
 cursor:pointer;
 box-shadow:0 2px 8px rgba(0,0,0,.05);
+}
+
+.chatLeftItem{
+display:flex;
+align-items:center;
+gap:12px;
+}
+
+.deleteChat{
+font-size:18px;
+font-weight:900;
+color:#ef4444;
+cursor:pointer;
+padding:6px;
 }
 
 .avatar{
@@ -410,7 +425,11 @@ const p=await getUser(email);
 
 chatList.innerHTML+=`
 
-<div class="chatItem" data-email="${email}">
+chatList.innerHTML+=`
+
+<div class="chatItem">
+
+<div class="chatLeftItem" onclick="openChat('${email}')">
 
 <div class="avatarWrap">
 <img class="avatar" src="${p.photo}">
@@ -421,6 +440,10 @@ chatList.innerHTML+=`
 <div class="name">${p.name}</div>
 <div class="rank">${p.rank}</div>
 </div>
+
+</div>
+
+<div class="deleteChat" onclick="deleteChat('${email}')">✕</div>
 
 </div>
 

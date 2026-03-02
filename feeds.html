@@ -373,21 +373,32 @@ const liked=likesArr.includes(currentUID);
 
 let online=false;
 
-try{
-const userSnap=await getDoc(doc(db,"users",d.uid));
-online=userSnap.data()?.online || false;
-}catch{}
+onSnapshot(doc(db,"users",d.uid),(userSnap)=>{
+  const u = userSnap.data();
+  const dot = document.querySelector(`[data-user="${d.uid}"] .onlineDot`);
+
+  if(!dot) return;
+
+  const isOnline = u?.online;
+
+  if(isOnline){
+    dot.style.display="block";
+  }else{
+    dot.style.display="none";
+  }
+});
 
 feedsList.innerHTML+=`
 
-<div class="card">
+<div class="card" data-user="${d.uid}">
 
 <div style="display:flex;gap:10px;align-items:center;">
 
 <div class="avatarWrap">
 <img src="${d.photoProfile || 'https://i.ibb.co/2kRZ7Z6/avatar.png'}" class="avatar">
-${online?'<div class="onlineDot"></div>':''}
+<div class="onlineDot" style="display:none"></div>
 </div>
+
 <div>
 <div style="font-weight:900">${d.name}</div>
 <div class="subText">${d.rank||""}</div>

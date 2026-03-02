@@ -267,12 +267,12 @@ createdAt:Date.now()
 });
 
 friendStatus.innerText="Request sent ✅";
-friendEmail.value="";
+document.getElementById("friendEmail").value="";
 };
 
 /* RESET BUTTON */
 document.getElementById("resetBtn").onclick = ()=>{
-friendEmail.value="";
+  document.getElementById("friendEmail").value="";
 friendStatus.innerText="";
 };
 function listenFriends(){

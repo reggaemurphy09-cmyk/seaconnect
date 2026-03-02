@@ -289,9 +289,9 @@ const app=initializeApp(firebaseConfig);
 const auth=getAuth(app);
 const db=getFirestore(app);
 
+let currentUID=null;
 let currentUserEmail=null;
 let presenceData={};
-
   const friendStatus = document.getElementById("friendStatus");
 const friendsList = document.getElementById("friendsList");
   const friendEmail = document.getElementById("friendEmail");
@@ -309,7 +309,16 @@ return null;
 
 onAuthStateChanged(auth,async(user)=>{
 if(!user){location.href="index.html";return;}
-currentUserEmail=user.email.toLowerCase();
+
+currentUID = user.uid;
+currentUserEmail = user.email.toLowerCase();
+
+await setDoc(doc(db,"users",currentUID),{
+email:currentUserEmail,
+online:true,
+lastSeen:Date.now()
+},{merge:true});
+
 listenFriends();
 });
 
@@ -428,7 +437,14 @@ await deleteDoc(doc(db,"friendRequests",rid));
 window.openChat=function(email){
 location.href="message.html?user="+encodeURIComponent(email);
 };
-
+window.addEventListener("beforeunload", async ()=>{
+  if(currentUID){
+    await setDoc(doc(db,"users",currentUID),{
+      online:false,
+      lastSeen:Date.now()
+    },{merge:true});
+  }
+});
 </script>
 
 </body>

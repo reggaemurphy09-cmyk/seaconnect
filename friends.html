@@ -305,14 +305,17 @@ function getUserByEmail(email){
 return new Promise((resolve)=>{
 const q=query(collection(db,"users"),where("email","==",email));
 
-onSnapshot(q,(snap)=>{
-if(!snap.empty){
-resolve(snap.docs[0].data());
-}else{
-resolve(null);
-}
-});
-});
+async function getUserByEmail(email){
+
+  const q = query(collection(db,"users"),where("email","==",email));
+  const snap = await getDocs(q);
+
+  if(!snap.empty){
+    return snap.docs[0].data();
+  }
+
+  return null;
+
 }
 
 onAuthStateChanged(auth,async(user)=>{
@@ -329,6 +332,7 @@ lastSeen:Date.now()
 
 listenOnlineUsers();
 listenFriends();
+  
 });
 
 document.getElementById("sendBtn").onclick=async()=>{
@@ -368,8 +372,6 @@ friendStatus.innerText="";
       }
     });
 
-    listenFriends();   // 🔥 refresh UI when status changes
-
   });
 
 }
@@ -401,8 +403,8 @@ incomingHTML+=`
 <div class="friendInfo">
 <div class="avatarWrapper">
 <img src="${userData?.photo || 'https://i.ibb.co/2kRZ7Z6/avatar.png'}">
-${onlineUsers[otherEmail] ? '<div class="onlineDot"></div>' : ''}
 
+${onlineUsers[otherEmail] && (Date.now() - (userData?.lastSeen || 0) < 30000) ? '<div class="onlineDot"></div>' : ''}
 </div>
 <div>
 <div class="name">${name}</div>

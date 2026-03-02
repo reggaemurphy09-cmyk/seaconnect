@@ -291,7 +291,8 @@ const db=getFirestore(app);
 
 let currentUID=null;
 let currentUserEmail=null;
-let presenceData={};
+let onlineUsers={};
+  
   const friendStatus = document.getElementById("friendStatus");
 const friendsList = document.getElementById("friendsList");
   const friendEmail = document.getElementById("friendEmail");
@@ -326,6 +327,7 @@ online:true,
 lastSeen:Date.now()
 },{merge:true});
 
+listenOnlineUsers();
 listenFriends();
 });
 
@@ -352,6 +354,24 @@ document.getElementById("resetBtn").onclick = ()=>{
 friendEmail.value="";
 friendStatus.innerText="";
 };
+  function listenOnlineUsers(){
+
+  onSnapshot(collection(db,"users"),(snap)=>{
+
+    onlineUsers={};
+
+    snap.forEach(d=>{
+      const u=d.data();
+      if(u.email){
+        onlineUsers[u.email.toLowerCase()] = u.online;
+      }
+    });
+
+    listenFriends(); // refresh friends UI
+
+  });
+
+}
 function listenFriends(){
 onSnapshot(collection(db,"friendRequests"),async snap=>{
 
@@ -380,7 +400,7 @@ incomingHTML+=`
 <div class="friendInfo">
 <div class="avatarWrapper">
 <img src="${userData?.photo || 'https://i.ibb.co/2kRZ7Z6/avatar.png'}">
-${userData?.online ? '<div class="onlineDot"></div>' : ''}
+${onlineUsers[otherEmail] ? '<div class="onlineDot"></div>' : ''}
 
 </div>
 <div>

@@ -292,7 +292,21 @@ const db=getFirestore(app);
 let currentUID=null;
 let currentUserEmail=null;
 let onlineUsers={};
-  
+  async function setOnlineStatus(state){
+
+const q=query(collection(db,"users"),where("email","==",currentUserEmail));
+const snap=await getDocs(q);
+
+if(snap.empty) return;
+
+const ref=doc(db,"users",snap.docs[0].id);
+
+await updateDoc(ref,{
+online:state,
+lastSeen:Date.now()
+});
+
+}
   const friendStatus = document.getElementById("friendStatus");
 const friendsList = document.getElementById("friendsList");
   const friendEmail = document.getElementById("friendEmail");
@@ -467,13 +481,18 @@ await deleteDoc(doc(db,"friendRequests",rid));
 window.openChat=function(email){
 location.href="message.html?user="+encodeURIComponent(email);
 };
-window.addEventListener("beforeunload", async ()=>{
-  if(currentUID){
-    await setDoc(doc(db,"users",currentUID),{
-      online:false,
-      lastSeen:Date.now()
-    },{merge:true});
-  }
+window.addEventListener("beforeunload", ()=>{
+if(currentUserEmail){
+setOnlineStatus(false);
+}
+});
+
+document.addEventListener("visibilitychange", ()=>{
+if(document.hidden){
+setOnlineStatus(false);
+}else{
+setOnlineStatus(true);
+}
 });
 </script>
 

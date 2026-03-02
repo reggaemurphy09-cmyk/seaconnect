@@ -3,7 +3,7 @@
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
 
 <title>SeaConnect Messages</title>
 
@@ -127,11 +127,13 @@ border-radius:50%;
 object-fit:cover;
 }
 
-.chatHeader button{
-border:none;
-background:none;
-font-size:24px;
-cursor:pointer;
+.avatarHeader{
+position:relative;
+}
+
+.avatarHeader .online{
+width:10px;
+height:10px;
 }
 
 /* MESSAGES */
@@ -171,19 +173,14 @@ border-radius:10px;
 margin-top:6px;
 }
 
-.status{
-font-size:11px;
-color:#6b7280;
-margin-top:4px;
-text-align:right;
-}
-
 /* INPUT */
 
 .inputArea{
 padding:10px;
 border-top:1px solid #e5e7eb;
 background:white;
+position:sticky;
+bottom:0;
 }
 
 .preview{
@@ -200,9 +197,10 @@ align-items:center;
 
 .row input{
 flex:1;
-padding:11px 14px;
+padding:12px 14px;
 border-radius:20px;
 border:1px solid #ddd;
+font-size:16px; /* prevents iphone zoom */
 }
 
 .row button{
@@ -233,7 +231,10 @@ Messages
 
 <button onclick="closeChat()">←</button>
 
+<div class="avatarHeader">
 <img id="chatAvatar">
+<div id="chatOnline" class="online"></div>
+</div>
 
 <div>
 <div id="chatName" style="font-weight:900"></div>
@@ -302,35 +303,9 @@ return;
 
 currentEmail=user.email.toLowerCase();
 
-setOnlineStatus(true);
-
 loadChats();
 
 });
-
-/* ONLINE STATUS */
-
-async function setOnlineStatus(state){
-
-const users=await getDocs(collection(db,"users"));
-
-users.forEach(async d=>{
-const u=d.data();
-if(u.email===currentEmail){
-await updateDoc(doc(db,"users",d.id),{
-online:state,
-lastSeen:Date.now()
-});
-}
-});
-
-}
-
-window.addEventListener("beforeunload",()=>{
-setOnlineStatus(false);
-});
-
-/* USER */
 
 async function getUser(email){
 
@@ -342,6 +317,7 @@ let online=false;
 const snap=await getDocs(collection(db,"users"));
 
 snap.forEach(d=>{
+
 const u=d.data();
 
 if(u.email===email){
@@ -372,6 +348,7 @@ onSnapshot(q,async(snap)=>{
 const map={};
 
 snap.forEach(d=>{
+
 const m=d.data();
 
 if(m.from!==currentEmail && m.to!==currentEmail)return;
@@ -379,6 +356,7 @@ if(m.from!==currentEmail && m.to!==currentEmail)return;
 const other=m.from===currentEmail?m.to:m.from;
 
 map[other]=m;
+
 });
 
 chatList.innerHTML="";
@@ -402,6 +380,7 @@ chatList.innerHTML+=`
 </div>
 
 </div>
+
 `;
 
 }
@@ -423,47 +402,17 @@ chatAvatar.src=p.photo;
 chatName.innerText=p.name;
 chatRank.innerText=p.rank;
 
-chatBox.style.display="flex";
+chatOnline.className="online "+(p.online?'on':'off');
 
-markSeen();
+chatBox.style.display="flex";
 
 loadMessages();
 
 };
 
-/* MARK SEEN */
-
-async function markSeen(){
-
-const q=query(collection(db,"messages"));
-
-onSnapshot(q,(snap)=>{
-
-snap.forEach(async d=>{
-
-const m=d.data();
-
-if(m.chatId===chatId && m.to===currentEmail && !m.seen){
-
-await updateDoc(doc(db,"messages",d.id),{
-seen:true
-});
-
-}
-
-});
-
-});
-
-}
-
-/* CLOSE CHAT */
-
 window.closeChat=function(){
 chatBox.style.display="none";
 };
-
-/* CALL BUTTON */
 
 window.startCall=function(){
 alert("Call feature coming soon");
@@ -497,11 +446,10 @@ ${m.text||""}
 
 ${m.photo?`<img src="${m.photo}" class="chatPhoto">`:""}
 
-${me?`<div class="status">${m.seen?'✓✓ Seen':'✓ Sent'}</div>`:''}
-
 </div>
 
 </div>
+
 `;
 
 });
@@ -545,7 +493,6 @@ from:currentEmail,
 to:chatUser,
 text:text,
 photo:photo,
-seen:false,
 createdAt:Date.now()
 
 });
@@ -553,8 +500,6 @@ createdAt:Date.now()
 messageInput.value="";
 preview.style.display="none";
 fileInput.value="";
-
-/* background upload */
 
 if(file){
 

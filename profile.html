@@ -388,10 +388,31 @@ alert("Upload failed");
 }
 
 });
+  window.addEventListener("beforeunload", async ()=>{
+  if(currentUID){
+    await setDoc(doc(db,"users",currentUID),{
+      online:false,
+      lastSeen:Date.now()
+    },{merge:true});
+  }
+});
+window.logout = async function(){
 
-window.logout=async function(){
-await signOut(auth);
-location.href="index.html";
+  try{
+
+    await setDoc(doc(db,"users",currentUID),{
+      online:false,
+      lastSeen:Date.now()
+    },{merge:true});
+
+    await signOut(auth);
+
+    location.href="index.html";
+
+  }catch(e){
+    console.log(e);
+  }
+
 };
 
 </script>

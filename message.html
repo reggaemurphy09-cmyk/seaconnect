@@ -414,12 +414,26 @@ document.addEventListener("visibilitychange", ()=>{
     setOnlineStatus(true);
   }
 });
+/* INTERNET CONNECTION DETECTION */
+
+window.addEventListener("offline", ()=>{
+  console.log("Internet lost");
+  setOnlineStatus(false);
+});
+
+window.addEventListener("online", ()=>{
+  console.log("Internet restored");
+  setOnlineStatus(true);
+});
+  
 /* user profile */
+
 async function getUser(email){
   let name=email.split("@")[0];
   let rank="";
   let photo="https://i.ibb.co/2kRZ7Z6/avatar.png";
   let online=false;
+  let lastSeen=0;
 
   const snap = await getDocs(collection(db,"users"));
   snap.forEach(d=>{
@@ -429,19 +443,24 @@ async function getUser(email){
       rank=u.rank||"";
       photo=u.photo||photo;
       online=!!u.online;
+      lastSeen=u.lastSeen || 0;
     }
   });
 
-  return {name,rank,photo,online};
+  return {name,rank,photo,online,lastSeen};
 }
-
 /* auth */
 onAuthStateChanged(auth, async (user)=>{
   if(!user){ location.href="index.html"; return; }
 
   currentEmail = user.email.toLowerCase();
   await setOnlineStatus(true);
-
+/* heartbeat */
+setInterval(()=>{
+  if(currentEmail){
+    setOnlineStatus(true);
+  }
+},15000);
   loadChats();
 
   /* open chat if coming from friends.html: message.html?user=email */
@@ -496,7 +515,8 @@ const lastText = (info.lastMsg?.text && info.lastMsg.text.trim())
   ? info.lastMsg.text.trim()
   : (info.lastMsg?.photo ? "📷 Photo" : "");
 
-const onlineClass = p.online ? "on" : "off";
+const isOnline = p.online && (Date.now() - (p.lastSeen || 0) < 15000);
+const onlineClass = isOnline ? "on" : "off";
 
 /* WATCH USER ONLINE REALTIME */
 const qUser = query(collection(db,"users"), where("email","==",email), limit(1));
@@ -506,7 +526,9 @@ onSnapshot(qUser,(snap)=>{
     const u = snap.docs[0].data();
     const dot = document.querySelector(`.chatItem[data-email="${email}"] .online`);
     if(dot){
-      dot.className = "online " + (u.online ? "on" : "off");
+const isOnline = u.online && (Date.now() - (u.lastSeen || 0) < 15000);
+
+dot.className = "online " + (isOnline ? "on" : "off");
     }
   }
 });
@@ -568,11 +590,9 @@ window.openChat = async function(email){
       chatName.innerText = u.name || email.split("@")[0];
       chatRank.innerText = u.rank || "";
 
-      if(u.online){
-        chatOnline.className = "online on";
-      }else{
-        chatOnline.className = "online off";
-      }
+      const isOnline = u.online && (Date.now() - (u.lastSeen || 0) < 15000);
+
+chatOnline.className = "online " + (isOnline ? "on" : "off");
 
     }
 

@@ -395,6 +395,7 @@ friendsList.innerHTML+=`
 
 <div class="avatarWrapper">
 <img src="${userData?.photo || 'https://i.ibb.co/2kRZ7Z6/avatar.png'}">
+${userData?.online ? '<div class="onlineDot"></div>' : ''}
 </div>
 <div>
 <div class="name">${name}</div>

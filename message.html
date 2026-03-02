@@ -479,17 +479,32 @@ function loadChats(){
     // render
     for(const email in chats){
       const info = chats[email];
-      const p = await getUser(email);
 
-      const unreadCount = info.unread || 0;
-      const readLabel = unreadCount>0 ? `Unread ${unreadCount}` : "Read";
-      const badgeClass = unreadCount>0 ? "unreadBadge unread" : "unreadBadge";
+const p = await getUser(email);
 
-      const lastText = (info.lastMsg?.text && info.lastMsg.text.trim())
-        ? info.lastMsg.text.trim()
-        : (info.lastMsg?.photo ? "📷 Photo" : "");
+const unreadCount = info.unread || 0;
+const readLabel = unreadCount>0 ? `Unread ${unreadCount}` : "Read";
+const badgeClass = unreadCount>0 ? "unreadBadge unread" : "unreadBadge";
 
-      const onlineClass = p.online ? "on" : "off";
+const lastText = (info.lastMsg?.text && info.lastMsg.text.trim())
+  ? info.lastMsg.text.trim()
+  : (info.lastMsg?.photo ? "📷 Photo" : "");
+
+const onlineClass = p.online ? "on" : "off";
+
+/* WATCH USER ONLINE REALTIME */
+const qUser = query(collection(db,"users"), where("email","==",email), limit(1));
+
+onSnapshot(qUser,(snap)=>{
+  if(!snap.empty){
+    const u = snap.docs[0].data();
+    const dot = document.querySelector(`.chatItem[data-email="${email}"] .online`);
+    if(dot){
+      dot.className = "online " + (u.online ? "on" : "off");
+    }
+  }
+});
+      
 
       chatList.innerHTML += `
         <div class="chatItem" data-email="${email}">
@@ -531,22 +546,36 @@ function loadChats(){
 
 /* OPEN CHAT */
 window.openChat = async function(email){
+
   chatUser = email;
   chatId = chatKey(currentEmail, email);
 
-  const p = await getUser(email);
-  chatAvatar.src = p.photo;
-  chatName.innerText = p.name;
-  chatRank.innerText = p.rank;
+  const q = query(collection(db,"users"), where("email","==",email), limit(1));
 
-  chatOnline.className = "online " + (p.online ? "on" : "off");
+  onSnapshot(q,(snap)=>{
+
+    if(!snap.empty){
+
+      const u = snap.docs[0].data();
+
+      chatAvatar.src = u.photo || "https://i.ibb.co/2kRZ7Z6/avatar.png";
+      chatName.innerText = u.name || email.split("@")[0];
+      chatRank.innerText = u.rank || "";
+
+      if(u.online){
+        chatOnline.className = "online on";
+      }else{
+        chatOnline.className = "online off";
+      }
+
+    }
+
+  });
 
   chatBox.style.display = "flex";
 
-  // mark incoming as seen when opening
   await markSeen();
 
-  // load messages live (unsubscribe old listener first)
   if(unsubMessages) unsubMessages();
   loadMessages();
 };

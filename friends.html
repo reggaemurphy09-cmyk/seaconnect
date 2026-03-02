@@ -23,7 +23,7 @@ padding:16px;
 background:white;
 border-bottom:1px solid #e5e7eb;
 font-weight:700;
-font-size:18px;
+font-size:20px;
 }
 .header button{
 border:none;
@@ -93,10 +93,15 @@ display:flex;
 justify-content:space-between;
 align-items:center;
 background:white;
-padding:12px;
-border-radius:14px;
-margin-bottom:10px;
-box-shadow:0 2px 6px rgba(0,0,0,.06);
+padding:14px;
+border-radius:16px;
+margin-bottom:12px;
+box-shadow:0 4px 12px rgba(0,0,0,.06);
+transition:transform .1s;
+}
+
+.friendRow:hover{
+transform:scale(1.01);
 }
 
 .friendInfo{
@@ -106,13 +111,23 @@ gap:12px;
 }
 
 .avatarWrapper{
+position:relative;
 width:50px;
 height:50px;
 border-radius:50%;
 overflow:hidden;
 box-shadow:0 2px 6px rgba(0,0,0,.2);
 }
-
+.onlineDot{
+position:absolute;
+bottom:2px;
+right:2px;
+width:12px;
+height:12px;
+background:#22c55e;
+border-radius:50%;
+border:2px solid white;
+}
 .avatarWrapper img{
 width:100%;
 height:100%;
@@ -151,25 +166,7 @@ color:#111;
 background:#ef4444;
 color:white;
 }
-  .primary{
-background:#2563eb;
-color:white;
-border:none;
-padding:7px 12px;
-border-radius:10px;
-font-size:12px;
-font-weight:600;
-}
-
-.danger{
-background:#ef4444;
-color:white;
-border:none;
-padding:7px 12px;
-border-radius:10px;
-font-size:12px;
-font-weight:600;
-}
+  
 
 .primary:hover{
 background:#1d4ed8;
@@ -178,7 +175,27 @@ background:#1d4ed8;
 .danger:hover{
 background:#dc2626;
 }
+.primary{
+background:#2563eb;
+color:white;
+border:none;
+padding:7px 14px;
+border-radius:12px;
+font-size:12px;
+font-weight:600;
+cursor:pointer;
+}
 
+.danger{
+background:#ef4444;
+color:white;
+border:none;
+padding:7px 14px;
+border-radius:12px;
+font-size:12px;
+font-weight:600;
+cursor:pointer;
+}
 .bottomnav{
 position:fixed;
 bottom:15px;
@@ -208,11 +225,12 @@ font-weight:800;
 }
   input{
 width:100%;
-padding:12px;
-border-radius:10px;
+padding:12px 14px;
+border-radius:12px;
 border:1px solid #e5e7eb;
-margin-bottom:10px;
+margin-bottom:12px;
 font-size:14px;
+background:#fafafa;
 }
   </style>
 </head>
@@ -346,6 +364,7 @@ incomingHTML+=`
 <div class="friendInfo">
 <div class="avatarWrapper">
 <img src="${userData?.photo || 'https://i.ibb.co/2kRZ7Z6/avatar.png'}">
+${userData?.online ? '<div class="onlineDot"></div>' : ''}
 
 </div>
 <div>

@@ -118,13 +118,13 @@ left:50%;
 transform:translateX(-50%);
 width:90%;
 height:65px;
-background:rgba(15,23,42,0.9);
-backdrop-filter:blur(10px);
+background:#f3f4f6;
 border-radius:22px;
 display:flex;
 justify-content:space-around;
 align-items:center;
-box-shadow:0 10px 40px rgba(0,0,0,.6);
+border:1px solid #e5e7eb;
+box-shadow:0 4px 12px rgba(0,0,0,.08);
 }
 
 .bottomnav button{
@@ -132,7 +132,7 @@ background:none;
 border:none;
 font-size:12px;
 font-weight:600;
-color:#94a3b8;
+color:#6b7280;
 cursor:pointer;
 }
 
@@ -147,11 +147,22 @@ height:40px;
 border-radius:50%;
 object-fit:cover;
 }
-
-.avatar.online{
-border:3px solid #22c55e;
-box-shadow:0 0 10px #22c55e;
+.avatarWrap{
+position:relative;
+display:inline-block;
 }
+
+.onlineDot{
+position:absolute;
+bottom:2px;
+right:2px;
+width:10px;
+height:10px;
+background:#22c55e;
+border-radius:50%;
+border:2px solid #0f172a;
+}
+
 
 </style>
 </head>
@@ -336,9 +347,10 @@ feedsList.innerHTML+=`
 
 <div style="display:flex;gap:10px;align-items:center;">
 
-<img src="${d.photoProfile || 'https://i.ibb.co/2kRZ7Z6/avatar.png'}"
-class="avatar ${online?'online':''}">
-
+<div class="avatarWrap">
+<img src="${d.photoProfile || 'https://i.ibb.co/2kRZ7Z6/avatar.png'}" class="avatar">
+${online?'<div class="onlineDot"></div>':''}
+</div>
 <div>
 <div style="font-weight:900">${d.name}</div>
 <div class="subText">${d.rank||""}</div>

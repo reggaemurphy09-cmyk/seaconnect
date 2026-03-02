@@ -301,10 +301,8 @@ function requestIdFor(a,b){
 return [a.toLowerCase(),b.toLowerCase()].sort().join("__");
 }
 
-function getUserByEmail(email){
-return new Promise((resolve)=>{
-const q=query(collection(db,"users"),where("email","==",email));
 
+  
 async function getUserByEmail(email){
 
   const q = query(collection(db,"users"),where("email","==",email));
@@ -403,8 +401,8 @@ incomingHTML+=`
 <div class="friendInfo">
 <div class="avatarWrapper">
 <img src="${userData?.photo || 'https://i.ibb.co/2kRZ7Z6/avatar.png'}">
-
 ${onlineUsers[otherEmail] && (Date.now() - (userData?.lastSeen || 0) < 30000) ? '<div class="onlineDot"></div>' : ''}
+
 </div>
 <div>
 <div class="name">${name}</div>

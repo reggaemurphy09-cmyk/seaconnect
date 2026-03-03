@@ -69,13 +69,11 @@ margin-bottom:10px;
 </head>
 
 <body>
-<div class="card">
-  <div class="title">Change Feeds Background</div>
 
-  <input type="file" id="bgUpload" accept="image/*">
 
-  <button onclick="uploadBackground()">Save Background</button>
-</div>
+ 
+
+ 
 <div class="appHeader">
   <button class="backBtn" onclick="location.href='feeds.html'">←</button>
   Settings
@@ -83,7 +81,7 @@ margin-bottom:10px;
 
 <div class="page">
 
-<div class="page">
+
 
   <div class="card">
     <div class="title">Change Feeds Background</div>
@@ -144,6 +142,10 @@ onAuthStateChanged(auth,(user)=>{
 
 window.uploadBackground = async function(){
 
+if(!currentUID){
+  alert("User not logged in");
+  return;
+}
   const file=document.getElementById("bgUpload").files[0];
   if(!file) return alert("Select image first");
 

@@ -69,7 +69,13 @@ margin-bottom:10px;
 </head>
 
 <body>
+<div class="card">
+  <div class="title">Change Feeds Background</div>
 
+  <input type="file" id="bgUpload" accept="image/*">
+
+  <button onclick="uploadBackground()">Save Background</button>
+</div>
 <div class="appHeader">
   <button class="backBtn" onclick="location.href='feeds.html'">←</button>
   Settings
@@ -93,6 +99,62 @@ margin-bottom:10px;
   </div>
 
 </div>
+<script type="module">
 
+import { initializeApp } 
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+
+import { getAuth, onAuthStateChanged }
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+import { getFirestore, doc, updateDoc }
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig={
+apiKey:"AIzaSyCNlodsmEHrSXxgH0gTOcx4cAXwG8qmG9w",
+authDomain:"seaconnect-d2baa.firebaseapp.com",
+projectId:"seaconnect-d2baa"
+};
+
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+
+const IMGBB_KEY="5b417e8de4a883f7425eeda12dc38f06";
+
+let currentUID=null;
+
+onAuthStateChanged(auth,(user)=>{
+  if(user){
+    currentUID=user.uid;
+  }
+});
+
+window.uploadBackground = async function(){
+
+  const file=document.getElementById("bgUpload").files[0];
+  if(!file) return alert("Select image first");
+
+  const formData=new FormData();
+  formData.append("image",file);
+
+  const res=await fetch(
+  "https://api.imgbb.com/1/upload?key="+IMGBB_KEY,
+  {method:"POST",body:formData}
+  );
+
+  const data=await res.json();
+
+  if(data.success){
+    await updateDoc(doc(db,"users",currentUID),{
+      feedBackground:data.data.url
+    });
+
+    alert("Background Updated 🔥");
+  }
+
+};
+
+</script>
 </body>
 </html>

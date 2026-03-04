@@ -7,6 +7,11 @@
 
 <style>
 
+textarea:focus,input:focus{
+outline:none;
+border-color:#3b82f6;
+}
+
 /* Composer */
 .composerCard{
   background:#ffffff;
@@ -125,7 +130,7 @@ letter-spacing:1px;
 border-bottom:1px solid #e5e7eb;
 
 z-index:1000;
-transition: transform 0.3s ease;
+transition: transform 0.40s ease;
 }
 
 .navAvatar{
@@ -243,24 +248,25 @@ color:#94a3b8;
 /* 🔥 IPHONE PERFECT BOTTOM NAV */
 .bottomnav{
 position:fixed;
-left:0;
-right:0;
-bottom:0;
-height:50px; 
 
-background:#ffffff;
-border-top:1px solid #e5e7eb;
+left:20px;
+right:20px;
+bottom:20px;
+
+height:60px;
+
+background:#e5e7eb;
+border-radius:22px;
 
 display:flex;
 align-items:center;
 justify-content:space-around;
 
-padding-bottom:env(safe-area-inset-bottom);
-padding-top:8px;
+box-shadow:0 10px 30px rgba(0,0,0,0.15);
 
 z-index:999;
 
-transition: transform 0.3s ease;
+transition: transform 0.40s ease;
 }
 
 /* NAV BUTTON */
@@ -421,17 +427,15 @@ style="width:100%;margin-top:10px;border-radius:16px;display:none;">
 
 </div>
 
+
 <div class="bottomnav">
 
-<button class="active" onclick="location.href='feeds.html'">
+<button onclick="location.href='feeds.html'">
   <svg class="navIcon" viewBox="0 0 24 24" fill="none"
   stroke="currentColor" stroke-width="2"
   stroke-linecap="round" stroke-linejoin="round">
-    <!-- top line -->
     <line x1="4" y1="6" x2="20" y2="6"></line>
-    <!-- middle line -->
     <line x1="4" y1="12" x2="20" y2="12"></line>
-    <!-- bottom line -->
     <line x1="4" y1="18" x2="14" y2="18"></line>
   </svg>
 </button>
@@ -440,11 +444,8 @@ style="width:100%;margin-top:10px;border-radius:16px;display:none;">
   <svg class="navIcon" viewBox="0 0 24 24" fill="none"
   stroke="currentColor" stroke-width="2"
   stroke-linecap="round" stroke-linejoin="round">
-    <!-- head 1 -->
     <circle cx="9" cy="8" r="3"></circle>
-    <!-- head 2 -->
     <circle cx="17" cy="8" r="3"></circle>
-    <!-- body -->
     <path d="M4 19c0-3 3-5 5-5s5 2 5 5"></path>
     <path d="M12 19c0-3 3-5 5-5"></path>
   </svg>
@@ -459,12 +460,14 @@ stroke-linecap="round" stroke-linejoin="round">
 </svg>
 </button>
 
-<button onclick="location.href='profile.html'">
-<img id="navAvatar" src="https://i.ibb.co/2kRZ7Z6/avatar.png" class="navAvatar">
-
+<button class="active" onclick="location.href='profile.html'">
+<img id="navAvatar"
+src="https://i.ibb.co/2kRZ7Z6/avatar.png"
+class="navAvatar">
 </button>
 
 </div>
+
 <script type="module">
 
 import { initializeApp }
@@ -576,13 +579,12 @@ loadFeeds();
 });
 
 window.createFeed=async function(){
-
 const text=document.getElementById("feedInput").value.trim();
 const file=document.getElementById("feedPhoto").files[0];
 
-let previewURL="";
-if(file){
-previewURL=URL.createObjectURL(file);
+if(!text && !file){
+alert("Write something or add photo");
+return;
 }
 
 const userSnap=await getDoc(doc(db,"users",currentUID));
@@ -829,36 +831,35 @@ document.getElementById("photoBtn").addEventListener("click", () => {
 });
 
 let lastScrollTop = 0;
-let scrollDistance = 0;
 
 const header = document.querySelector(".appHeader");
 const bottomNav = document.querySelector(".bottomnav");
 
-window.addEventListener("scroll", () => {
+window.addEventListener("scroll", function () {
 
-  let currentScroll = window.pageYOffset || document.documentElement.scrollTop;
-  let delta = currentScroll - lastScrollTop;
+  const currentScroll = document.documentElement.scrollTop;
 
-  scrollDistance += delta;
-
-  // 🔽 HIDE when scrolling down 20px
-  if (scrollDistance > 20) {
-    header.style.transform = "translateY(-100%)";
-    bottomNav.style.transform = "translateY(100%)";
-    scrollDistance = 0;
-  }
-
-  // 🔼 SHOW when scrolling up 60px (more sensitive control)
-  if (scrollDistance < -60) {
+  // 🔥 If near top, always show nav
+  if (currentScroll < 50) {
     header.style.transform = "translateY(0)";
     bottomNav.style.transform = "translateY(0)";
-    scrollDistance = 0;
+    return;
   }
 
-  lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+  if (currentScroll > lastScrollTop + 20) {
+    // scrolling down
+    header.style.transform = "translateY(-100%)";
+    bottomNav.style.transform = "translateY(120%)";
+  } 
+  else if (currentScroll < lastScrollTop - 20) {
+    // scrolling up
+    header.style.transform = "translateY(0)";
+    bottomNav.style.transform = "translateY(0)";
+  }
+
+  lastScrollTop = currentScroll;
 
 });
-
 </script>
 
 </body>

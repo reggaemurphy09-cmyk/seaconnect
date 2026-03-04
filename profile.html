@@ -6,6 +6,21 @@ background:#f3f4f6;
 color:#111;
 }
 
+.navIcon{
+width:26px;
+height:26px;
+}
+
+.navAvatar{
+width:30px;
+height:30px;
+border-radius:50%;
+object-fit:cover;
+margin-bottom:4px;
+}
+
+
+ 
 /* HEADER (same as messages) */
 .header{
 display:flex;
@@ -268,26 +283,47 @@ color:#6b7280;
 </div>
 
 <!-- NAVIGATION (UPDATED ONLY) -->
+
 <div class="bottomnav">
 
 <button onclick="location.href='feeds.html'">
-📰 Feeds
+  <svg class="navIcon" viewBox="0 0 24 24" fill="none"
+  stroke="currentColor" stroke-width="2"
+  stroke-linecap="round" stroke-linejoin="round">
+    <line x1="4" y1="6" x2="20" y2="6"></line>
+    <line x1="4" y1="12" x2="20" y2="12"></line>
+    <line x1="4" y1="18" x2="14" y2="18"></line>
+  </svg>
 </button>
 
 <button onclick="location.href='friends.html'">
-👥 Friends
+  <svg class="navIcon" viewBox="0 0 24 24" fill="none"
+  stroke="currentColor" stroke-width="2"
+  stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="9" cy="8" r="3"></circle>
+    <circle cx="17" cy="8" r="3"></circle>
+    <path d="M4 19c0-3 3-5 5-5s5 2 5 5"></path>
+    <path d="M12 19c0-3 3-5 5-5"></path>
+  </svg>
 </button>
 
 <button onclick="location.href='message.html'">
-💬 Messages
+<svg width="26" height="26" viewBox="0 0 24 24" fill="none"
+stroke="currentColor" stroke-width="2"
+stroke-linecap="round" stroke-linejoin="round">
+  <rect x="3" y="6" width="18" height="12" rx="3"></rect>
+  <path d="M3 8L12 14L21 8"/>
+</svg>
 </button>
 
 <button class="active" onclick="location.href='profile.html'">
-👤 Profile
+<img id="navAvatar"
+src="https://i.ibb.co/2kRZ7Z6/avatar.png"
+class="navAvatar">
 </button>
 
 </div>
-
+ 
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -350,13 +386,19 @@ lastSeen:Date.now()
 },{merge:true});
 
 loadProfile();
+
 loadDocuments();
 });
 
 async function loadProfile(){
 const snap=await getDoc(doc(db,"users",currentUID));
 const d=snap.data()||{};
-if(d.photo){profilePhoto.src=d.photo;}
+
+if(d.photo){
+profilePhoto.src=d.photo;
+document.getElementById("navAvatar").src=d.photo;
+}
+ 
 profileName.innerText=d.name||"";
 profileRank.innerText=d.rank||"";
 profileEmail.innerText=d.email||"";

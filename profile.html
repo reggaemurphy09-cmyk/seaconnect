@@ -1,321 +1,344 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>SeaConnect</title><style>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SeaConnect - Profile</title>
+
+<style>
+*{ box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+
 body{
-margin:0;
-font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
-background:#f3f4f6;
-color:#111;
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
+  background:#f3f4f6;
+  color:#111;
+  overflow-y:scroll;
 }
 
-.navIcon{
-width:26px;
-height:26px;
+/* ✅ HEADER LIKE FEEDS */
+.profileHeader{
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  background:#fff;
+  border-bottom:1px solid #e5e7eb;
+  padding:14px 16px;
+  z-index:1000;
+  transition: transform 0.3s ease;
 }
 
-.navAvatar{
-width:30px;
-height:30px;
-border-radius:50%;
-object-fit:cover;
-margin-bottom:4px;
+.profileHeaderContent{
+  display:flex;
+  align-items:center;
+  gap:12px;
 }
 
-
- 
-/* HEADER (same as messages) */
-.header{
-display:flex;
-align-items:center;
-justify-content:space-between;
-padding:16px;
-background:white;
-border-bottom:1px solid #e5e7eb;
-font-weight:900;
-font-size:20px;
+.profileHeader img{
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  object-fit:cover;
 }
 
-.header button{
-border:none;
-background:none;
-font-size:16px;
-font-weight:900;
-cursor:pointer;
-color:#ef4444;
+.headerText{ flex:1; }
+.headerName{ font-weight:900; font-size:16px; }
+.headerRank{ font-size:12px; color:#6b7280; margin-top:2px; }
+
+.logoutBtn{
+  background:none;
+  border:none;
+  color:#ef4444;
+  font-weight:900;
+  cursor:pointer;
 }
 
-/* PAGE */
+/* ✅ PAGE */
 .page{
-padding:12px;
-padding-bottom:95px;
+  padding:78px 12px 110px 12px;
+  min-height:200vh;
 }
 
-/* CARD (same style as message list) */
+/* ✅ CARDS */
 .card{
-background:white;
-padding:16px;
-border-radius:14px;
-margin-bottom:12px;
-box-shadow:0 2px 8px rgba(0,0,0,.05);
+  background:#fff;
+  padding:16px;
+  border-radius:14px;
+  margin-bottom:12px;
+  box-shadow:0 2px 8px rgba(0,0,0,.05);
 }
 
-input{
-width:100%;
-padding:12px;
-border-radius:12px;
-border:1px solid #ddd;
-margin-top:6px;
-box-sizing:border-box;
-background:white;
-color:#111;
-}
-
-/* BUTTONS */
-
-button{
-padding:10px 14px;
-border:none;
-border-radius:12px;
-font-weight:700;
-cursor:pointer;
-}
-
-.primary{
-background:#2563eb;
-color:white;
-}
-
-.danger{
-background:#ef4444;
-color:white;
-}
-
-.light{
-background:#e5e7eb;
-color:#111;
-}
-
-/* PROFILE IMAGE */
-
-.profileWrapper{
-display:inline-block;
-}
-.profileWrapper img{
-width:120px;
-height:120px;
-border-radius:50%;
-object-fit:cover;
-}
-
-/* TEXT */
 .subText{
-font-size:13px;
-color:#6b7280;
-margin-top:8px;
+  font-size:13px;
+  color:#94a3b8;
+  margin-top:8px;
 }
 
 .row{
-display:flex;
-gap:10px;
-margin-top:12px;
+  display:flex;
+  gap:10px;
+  margin-top:12px;
+}
+.row button{ flex:1; }
+
+input{
+  width:100%;
+  padding:12px;
+  border-radius:12px;
+  border:1px solid #ddd;
+  margin-top:6px;
+  background:#fff;
+  color:#111;
 }
 
-.row button{
-flex:1;
+/* ✅ BUTTONS */
+button{
+  padding:10px 14px;
+  border:none;
+  border-radius:12px;
+  font-weight:700;
+  cursor:pointer;
 }
-.subText{font-size:13px;color:#94a3b8;}
+.primary{ background:#2563eb; color:#fff; }
+.danger{ background:#ef4444; color:#fff; }
+.light{ background:#e5e7eb; color:#111; }
+
+/* ✅ BOTTOM NAV (CENTERED CORRECTLY) */
+.navIcon{ width:26px; height:26px; }
+
+.settingsIcon{
+  width:20px;
+  height:20px;
+stroke:#000;
+}
+
+.navAvatar{
+  width:26px;
+  height:26px;
+  border-radius:50%;
+  object-fit:cover;
+  display:block;
+  margin:0;
+flex-shrink:0;
+}
+
 .bottomnav{
+  position:fixed;
+  bottom:15px;
+  left:50%;
+  margin-left:-45%;
+
+ /* ✅ correct */
+  width:90%;
+  height:65px;
+  background:#e5e7eb;
+  border-radius:22px;
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+  box-shadow:0 4px 10px rgba(0,0,0,.08);
+  z-index:999;
+  transition: transform 0.45s ease;
+padding:0 10px; 
+}
+
+.bottomnav button{
+  background:none;
+  border:none;
+  font-size:12px;
+  font-weight:700;
+  color:#000;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+width:40px;
+  height:40px;
+padding:0;
+}
+
+
+
+.bottomnav button.active{
+  color:#3b82f6;
+  font-weight:900;
+}
+
+
+#profilePhoto{
+  box-shadow:0 0 20px rgba(59,130,246,.35);
+}
+
+#feedBackgroundLayer{
 position:fixed;
-bottom:15px;
-left:50%;
-transform:translateX(-50%);
-width:90%;
-height:65px;
-background:#e5e7eb;
-border-radius:22px;
-display:flex;
-justify-content:space-around;
-align-items:center;
-box-shadow:0 4px 10px rgba(0,0,0,.08);
+top:0;
+left:0;
+width:100%;
+height:100vh;
+z-index:-1;
+
+background-position:center;
+background-repeat:no-repeat;
+background-size:cover;
 }
- .bottomnav button{
-background:none;
-border:none;
-font-size:12px;
-font-weight:600;
-color:#6b7280;
-}
-  .bottomnav button.active{color:#3b82f6;font-weight:800;}
-#profilePhoto{box-shadow:0 0 30px rgba(59,130,246,.5);}
+</style>
+</head>
 
-/* NEW: GREEN ONLINE RING */
+<body>
 
-</style></head><body>
+<div id="feedBackgroundLayer"></div>
 
-<!-- FEEDS PLACEHOLDER -->
-
-<!-- PROFILE -->
-<div id="profilePage" class="page" style="display:block;">
-
-<div class="header">
-<div>Profile</div>
-<button onclick="logout()">Logout</button>
+<!-- ✅ FIXED HEADER -->
+<div class="profileHeader">
+  <div class="profileHeaderContent">
+    <img id="profilePhoto" src="https://i.ibb.co/2kRZ7Z6/avatar.png">
+    <div class="headerText">
+      <div id="profileName" class="headerName"></div>
+      <div id="profileRank" class="headerRank"></div>
+    </div>
+    <button class="logoutBtn" onclick="logout()">Logout</button>
+  </div>
 </div>
 
-<div class="card" style="text-align:center">
+<!-- ✅ PAGE CONTENT -->
+<div id="profilePage" class="page">
 
-<!-- UPDATED PHOTO WITH GREEN RING -->
-<div class="profileWrapper">
-<img id="profilePhoto" src="https://i.ibb.co/2kRZ7Z6/avatar.png">
-</div>
 
-<br><br>
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <div style="font-weight:900">Professional Information</div>
+      <button class="light" onclick="toggleInfo()" id="infoBtn">Show</button>
+    </div>
 
-<input type="file" id="photoInput" accept="image/*" style="display:none">
+    <div id="infoSection" style="display:none;margin-top:12px">
+      <div class="subText">Email</div><div id="profileEmail"></div>
+      <div class="subText">Company</div><div id="profileCompany"></div>
+      <div class="subText">Vessel</div><div id="profileVessel"></div>
+      <div class="subText">Experience</div><div id="profileExperience"></div>
+      <div class="subText">Phone</div><div id="profilePhone"></div>
+      <div class="subText">Address</div><div id="profileAddress"></div>
+    </div>
+  </div>
 
-<button class="primary"onclick="document.getElementById('photoInput').click()">Upload Photo</button>
 
-<br><br>
 
-<div id="profileName"style="font-size:24px;font-weight:900"></div>
-<div id="profileRank"style="color:#6b7280"></div>
+    <div id="editSection" style="display:none;margin-top:20px">
+      <label>Full Name</label><input id="nameInput">
+      <label>Rank</label><input id="rankInput">
+      <label>Company</label><input id="companyInput">
+      <label>Vessel</label><input id="vesselInput">
+      <label>Experience</label><input id="experienceInput">
+      <label>Phone</label><input id="phoneInput">
+      <label>Address</label><input id="addressInput">
 
-</div>
+      <div class="row">
+        <button class="primary" onclick="saveProfile()">Save</button>
+        <button class="light" onclick="toggleEdit()">Cancel</button>
+      </div>
+    </div>
+  </div>
 
-<!-- PROFESSIONAL INFO -->
-<div class="card">
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <div style="font-weight:900">📄 My Documents</div>
+      <button class="primary" onclick="toggleDocForm()">Add</button>
+    </div>
 
-<div style="display:flex;justify-content:space-between;">
-<div style="font-weight:900">Professional Information</div>
-<button class="light" onclick="toggleInfo()" id="infoBtn">Show</button>
-</div>
+    <div id="docFormSection" style="display:none;margin-top:20px">
+      <label>Document Type</label><input id="docTypeInput">
+      <label>Document Number</label><input id="docNumberInput">
+      <label>Issue Date</label><input type="date" id="docIssueInput">
+      <label>Expiry Date</label><input type="date" id="docExpiryInput">
 
-<div id="infoSection" style="display:none;margin-top:12px">
+      <div class="row">
+        <button class="primary" onclick="addDocument()">Save</button>
+        <button class="light" onclick="toggleDocForm()">Cancel</button>
+      </div>
+    </div>
+  </div>
 
-<div class="subText">Email</div>
-<div id="profileEmail"></div>
-
-<div class="subText">Company</div>
-<div id="profileCompany"></div>
-
-<div class="subText">Vessel</div>
-<div id="profileVessel"></div>
-
-<div class="subText">Experience</div>
-<div id="profileExperience"></div>
-
-<div class="subText">Phone</div>
-<div id="profilePhone"></div>
-
-<div class="subText">Address</div>
-<div id="profileAddress"></div>
-
-</div>
-</div>
-
-<!-- EDIT PROFILE -->
-<div class="card">
-
-<button class="primary" onclick="toggleEdit()">Edit Profile</button>
-
-<div id="editSection" style="display:none;margin-top:20px">
-
-<label>Full Name</label>
-<input id="nameInput">
-
-<label>Rank</label>
-<input id="rankInput">
-
-<label>Company</label>
-<input id="companyInput">
-
-<label>Vessel</label>
-<input id="vesselInput">
-
-<label>Experience</label>
-<input id="experienceInput">
-
-<label>Phone</label>
-<input id="phoneInput">
-
-<label>Address</label>
-<input id="addressInput">
-
-<div class="row">
-<button class="primary" onclick="saveProfile()">Save</button>
-<button class="light" onclick="toggleEdit()">Cancel</button>
-</div>
-
-</div>
-</div>
-
-<!-- DOCUMENTS -->
-<div class="card">
-
-<div style="display:flex;justify-content:space-between;">
-<div style="font-weight:900">📄 My Documents</div>
-<button class="primary" onclick="toggleDocForm()">Add</button>
-</div>
-
-<div id="docFormSection" style="display:none;margin-top:20px">
-
-<label>Document Type</label>
-<input id="docTypeInput">
-
-<label>Document Number</label>
-<input id="docNumberInput">
-
-<label>Issue Date</label>
-<input type="date" id="docIssueInput">
-
-<label>Expiry Date</label>
-<input type="date" id="docExpiryInput">
-
-<div class="row">
-<button class="primary" onclick="addDocument()">Save</button>
-<button class="light" onclick="toggleDocForm()">Cancel</button>
-</div>
+  <div id="documentsList"></div>
 
 </div>
 
-</div>
-
-<div id="documentsList"></div>
-
-</div>
-
-<!-- NAVIGATION (UPDATED ONLY) -->
-
+<!-- ✅ BOTTOM NAV -->
 <div class="bottomnav">
-
 <button onclick="location.href='feeds.html'">
-  <svg class="navIcon" viewBox="0 0 24 24" fill="none"
-  stroke="currentColor" stroke-width="2"
-  stroke-linecap="round" stroke-linejoin="round">
-    <line x1="4" y1="6" x2="20" y2="6"></line>
-    <line x1="4" y1="12" x2="20" y2="12"></line>
-    <line x1="4" y1="18" x2="14" y2="18"></line>
-  </svg>
-</button>
-
-<button onclick="location.href='friends.html'">
-  <svg class="navIcon" viewBox="0 0 24 24" fill="none"
-  stroke="currentColor" stroke-width="2"
-  stroke-linecap="round" stroke-linejoin="round">
-    <circle cx="9" cy="8" r="3"></circle>
-    <circle cx="17" cy="8" r="3"></circle>
-    <path d="M4 19c0-3 3-5 5-5s5 2 5 5"></path>
-    <path d="M12 19c0-3 3-5 5-5"></path>
-  </svg>
-</button>
-
-<button onclick="location.href='message.html'">
-<svg width="26" height="26" viewBox="0 0 24 24" fill="none"
+<svg class="navIcon" viewBox="0 0 24 24" fill="none"
 stroke="currentColor" stroke-width="2"
 stroke-linecap="round" stroke-linejoin="round">
-  <rect x="3" y="6" width="18" height="12" rx="3"></rect>
-  <path d="M3 8L12 14L21 8"/>
+
+<line x1="4" y1="6" x2="20" y2="6"></line>
+<line x1="4" y1="12" x2="20" y2="12"></line>
+<line x1="4" y1="18" x2="14" y2="18"></line>
 </svg>
 </button>
 
+
+<button onclick="location.href='friends.html'">
+<svg class="navIcon" viewBox="0 0 24 24" fill="none"
+stroke="currentColor" stroke-width="2"
+stroke-linecap="round" stroke-linejoin="round">
+<circle cx="9" cy="8" r="3"></circle>
+<circle cx="17" cy="8" r="3"></circle>
+<path d="M4 19c0-3 3-5 5-5s5 2 5 5"></path>
+<path d="M12 19c0-3 3-5 5-5"></path>
+</svg>
+</button>
+
+<button onclick="location.href='message.html'">
+<svg class="navIcon" viewBox="0 0 24 24" fill="none"
+stroke="currentColor" stroke-width="2"
+stroke-linecap="round" stroke-linejoin="round">
+<rect x="3" y="6" width="18" height="12" rx="3"></rect>
+<path d="M3 8L12 14L21 8"></path>
+</svg>
+</button>
+
+<!-- SETTINGS -->
+<!-- SETTINGS -->
+<button onclick="location.href='settings.html'">
+<svg class="navIcon settingsIcon" viewBox="0 0 24 24" fill="none"
+stroke="currentColor" stroke-width="2"
+stroke-linecap="round" stroke-linejoin="round">
+
+<circle cx="12" cy="12" r="3"></circle>
+
+<path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06
+a2 2 0 0 1 0 2.83
+2 2 0 0 1-2.83 0l-.06-.06
+a1.65 1.65 0 0 0-1.82-.33
+1.65 1.65 0 0 0-1 1.51V21
+a2 2 0 0 1-4 0v-.09
+a1.65 1.65 0 0 0-1-1.51
+1.65 1.65 0 0 0-1.82.33l-.06.06
+a2 2 0 0 1-2.83 0
+2 2 0 0 1 0-2.83l.06-.06
+a1.65 1.65 0 0 0 .33-1.82
+1.65 1.65 0 0 0-1.51-1H3
+a2 2 0 0 1 0-4h.09
+a1.65 1.65 0 0 0 1.51-1
+1.65 1.65 0 0 0-.33-1.82l-.06-.06
+a2 2 0 0 1 0-2.83
+2 2 0 0 1 2.83 0l.06.06
+a1.65 1.65 0 0 0 1.82.33
+1.65 1.65 0 0 0 1-1.51V3
+a2 2 0 0 1 4 0v.09
+a1.65 1.65 0 0 0 1 1.51
+1.65 1.65 0 0 0 1.82-.33l.06-.06
+a2 2 0 0 1 2.83 0
+2 2 0 0 1 0 2.83l-.06.06
+a1.65 1.65 0 0 0-.33 1.82
+1.65 1.65 0 0 0 1.51 1H21
+a2 2 0 0 1 0 4h-.09
+a1.65 1.65 0 0 0-1.51 1z"></path>
+
+</svg>
+</button>
+
+
+<!-- PROFILE -->
 <button class="active" onclick="location.href='profile.html'">
 <img id="navAvatar"
 src="https://i.ibb.co/2kRZ7Z6/avatar.png"
@@ -323,17 +346,16 @@ class="navAvatar">
 </button>
 
 </div>
- 
-<script type="module">
 
+<script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import {getAuth,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import {getFirestore,doc,getDoc,setDoc,collection,addDoc,query,where,onSnapshot,deleteDoc} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, collection, addDoc, query, where, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig={
-apiKey:"AIzaSyCNlodsmEHrSXxgH0gTOcx4cAXwG8qmG9w",
-authDomain:"seaconnect-d2baa.firebaseapp.com",
-projectId:"seaconnect-d2baa"
+  apiKey:"AIzaSyCNlodsmEHrSXxgH0gTOcx4cAXwG8qmG9w",
+  authDomain:"seaconnect-d2baa.firebaseapp.com",
+  projectId:"seaconnect-d2baa"
 };
 
 const app=initializeApp(firebaseConfig);
@@ -345,111 +367,107 @@ let currentEmail=null;
 
 const IMGBB_KEY="5b417e8de4a883f7425eeda12dc38f06";
 
-window.showPage=function(id,btn){
-document.querySelectorAll(".page").forEach(p=>p.style.display="none");
-document.querySelectorAll(".bottomnav button").forEach(b=>b.classList.remove("active"));
-document.getElementById(id).style.display="block";
-btn.classList.add("active");
-};
-
 window.toggleInfo=function(){
-const sec=document.getElementById("infoSection");
-const btn=document.getElementById("infoBtn");
-const show=sec.style.display==="none";
-sec.style.display=show?"block":"none";
-btn.innerText=show?"Hide":"Show";
+  const sec=document.getElementById("infoSection");
+  const btn=document.getElementById("infoBtn");
+  const show=sec.style.display==="none" || sec.style.display==="";
+  sec.style.display=show?"block":"none";
+  btn.innerText=show?"Hide":"Show";
 };
 
 window.toggleEdit=function(){
-const s=document.getElementById("editSection");
-s.style.display=(s.style.display==="none"||s.style.display==="")?"block":"none";
+  const s=document.getElementById("editSection");
+  s.style.display=(s.style.display==="none"||s.style.display==="")?"block":"none";
 };
 
 window.toggleDocForm=function(){
-const s=document.getElementById("docFormSection");
-s.style.display=(s.style.display==="none"||s.style.display==="")?"block":"none";
+  const s=document.getElementById("docFormSection");
+  s.style.display=(s.style.display==="none"||s.style.display==="")?"block":"none";
 };
 
 onAuthStateChanged(auth,async(user)=>{
-if(!user){
-location.href="index.html";
-return;
-}
+  if(!user){ location.href="index.html"; return; }
 
-currentUID=user.uid;
-currentEmail=user.email.toLowerCase();
+  currentUID=user.uid;
+  currentEmail=user.email.toLowerCase();
 
-/* SET USER ONLINE */
-await setDoc(doc(db,"users",currentUID),{
-online:true,
-lastSeen:Date.now()
-},{merge:true});
+  await setDoc(doc(db,"users",currentUID),{
+    online:true,
+    lastSeen:Date.now()
+  },{merge:true});
 
-loadProfile();
-
-loadDocuments();
+  loadProfile();
+  loadDocuments();
 });
 
 async function loadProfile(){
-const snap=await getDoc(doc(db,"users",currentUID));
-const d=snap.data()||{};
+  const snap=await getDoc(doc(db,"users",currentUID));
+  const d=snap.data()||{};
 
-if(d.photo){
-profilePhoto.src=d.photo;
-document.getElementById("navAvatar").src=d.photo;
+if(d.feedBackground){
+  const bgLayer = document.getElementById("feedBackgroundLayer");
+  bgLayer.style.backgroundImage = `url(${d.feedBackground})`;
 }
- 
-profileName.innerText=d.name||"";
-profileRank.innerText=d.rank||"";
-profileEmail.innerText=d.email||"";
-profileCompany.innerText=d.company||"-";
-profileVessel.innerText=d.vessel||"-";
-profileExperience.innerText=d.experience||"-";
-profilePhone.innerText=d.phone||"-";
-profileAddress.innerText=d.address||"-";
-nameInput.value=d.name||"";
-rankInput.value=d.rank||"";
-companyInput.value=d.company||"";
-vesselInput.value=d.vessel||"";
-experienceInput.value=d.experience||"";
-phoneInput.value=d.phone||"";
-addressInput.value=d.address||"";
+
+  if(d.photo){
+    document.getElementById("profilePhoto").src=d.photo;
+    document.getElementById("navAvatar").src=d.photo;
+  }
+
+  document.getElementById("profileName").innerText=d.name||"";
+  document.getElementById("profileRank").innerText=d.rank||"";
+
+  document.getElementById("profileEmail").innerText=d.email||"";
+  document.getElementById("profileCompany").innerText=d.company||"-";
+  document.getElementById("profileVessel").innerText=d.vessel||"-";
+  document.getElementById("profileExperience").innerText=d.experience||"-";
+  document.getElementById("profilePhone").innerText=d.phone||"-";
+  document.getElementById("profileAddress").innerText=d.address||"-";
+
+  document.getElementById("nameInput").value=d.name||"";
+  document.getElementById("rankInput").value=d.rank||"";
+  document.getElementById("companyInput").value=d.company||"";
+  document.getElementById("vesselInput").value=d.vessel||"";
+  document.getElementById("experienceInput").value=d.experience||"";
+  document.getElementById("phoneInput").value=d.phone||"";
+  document.getElementById("addressInput").value=d.address||"";
 }
 
 window.saveProfile=async function(){
-await setDoc(doc(db,"users",currentUID),{
-email:currentEmail,
-name:nameInput.value,
-rank:rankInput.value,
-company:companyInput.value,
-vessel:vesselInput.value,
-experience:experienceInput.value,
-phone:phoneInput.value,
-address:addressInput.value
-},{merge:true});
-alert("Profile saved");
-toggleEdit();
-loadProfile();
+  await setDoc(doc(db,"users",currentUID),{
+    email:currentEmail,
+    name:document.getElementById("nameInput").value,
+    rank:document.getElementById("rankInput").value,
+    company:document.getElementById("companyInput").value,
+    vessel:document.getElementById("vesselInput").value,
+    experience:document.getElementById("experienceInput").value,
+    phone:document.getElementById("phoneInput").value,
+    address:document.getElementById("addressInput").value
+  },{merge:true});
+
+  alert("Profile saved");
+  toggleEdit();
+  loadProfile();
 };
 
 window.addDocument=async function(){
-const type=docTypeInput.value.trim();
-if(!type)return alert("Enter document type");
+  const type=document.getElementById("docTypeInput").value.trim();
+  if(!type) return alert("Enter document type");
 
-await addDoc(collection(db,"documents"),{
-uid:currentUID,
-type:type,
-number:docNumberInput.value,
-issue:docIssueInput.value,
-expiry:docExpiryInput.value,
-createdAt:Date.now()
-});
+  await addDoc(collection(db,"documents"),{
+    uid:currentUID,
+    type:type,
+    number:document.getElementById("docNumberInput").value,
+    issue:document.getElementById("docIssueInput").value,
+    expiry:document.getElementById("docExpiryInput").value,
+    createdAt:Date.now()
+  });
 
-docTypeInput.value="";
-docNumberInput.value="";
-docIssueInput.value="";
-docExpiryInput.value="";
-toggleDocForm();
+  document.getElementById("docTypeInput").value="";
+  document.getElementById("docNumberInput").value="";
+  document.getElementById("docIssueInput").value="";
+  document.getElementById("docExpiryInput").value="";
+  toggleDocForm();
 };
 
 function loadDocuments(){
@@ -458,6 +476,7 @@ const q=query(collection(db,"documents"),where("uid","==",currentUID));
 
 onSnapshot(q,(snap)=>{
 documentsList.innerHTML="";
+
 snap.forEach(docSnap=>{
 const d=docSnap.data();
 const id=docSnap.id;
@@ -466,101 +485,99 @@ let status="";
 let color="#111";
 
 if(d.expiry){
+
 const diff=Math.ceil((new Date(d.expiry)-new Date())/(1000*60*60*24));
-if(diff<0){status="❌ Expired";color="#ef4444";}
-else if(diff<=30){status="⚠️ "+diff+" days left";color="#f59e0b";}
-else{status="✅ "+diff+" days left";color="#16a34a";}
+
+if(diff < 0){
+status="❌ Expired";
+color="#ef4444";
+}
+else if(diff <= 30){
+status="⚠️ "+diff+" days left";
+color="#f59e0b";
+}
+else{
+status="✅ "+diff+" days left";
+color="#16a34a";
+}
+
 }
 
 documentsList.innerHTML+=`
 <div class="card">
+
 <div style="font-weight:900">${d.type}</div>
-<div class="subText">Number</div>${d.number||"-"}
-<div class="subText">Expiry</div>${d.expiry||"-"}
-<span style="color:${color}">${status}</span>
-<br><br>
-<button class="danger" onclick="deleteDocument('${id}')">Delete</button>
+
+<div class="subText">Number</div>
+${d.number || "-"}
+
+<div class="subText">Expiry</div>
+${d.expiry || "-"}
+
+<div style="margin-top:6px;color:${color};font-weight:700">
+${status}
+</div>
+
+<br>
+
+<button class="danger" onclick="deleteDocument('${id}')">
+Delete
+</button>
+
 </div>`;
 });
+
 });
 
 }
-
 window.deleteDocument=async function(id){
-await deleteDoc(doc(db,"documents",id));
+  await deleteDoc(doc(db,"documents",id));
 };
 
-document.getElementById("photoInput").addEventListener("change",async function(){
 
-const file=this.files[0];
-if(!file) return;
 
-const reader=new FileReader();
-
-reader.onload=function(e){
-profilePhoto.src=e.target.result;
-};
-
-reader.readAsDataURL(file);
-
-const formData=new FormData();
-formData.append("image",file);
-
-try{
-
-const res=await fetch("https://api.imgbb.com/1/upload?key="+IMGBB_KEY,{
-method:"POST",
-body:formData
-});
-
-const data=await res.json();
-const imageUrl=data.data.url;
-
-await setDoc(doc(db,"users",currentUID),{photo:imageUrl},{merge:true});
-
-alert("Photo uploaded successfully");
-
-}catch(e){
-alert("Upload failed");
-}
-
-});
-
-  document.addEventListener("visibilitychange", async ()=>{
-if(currentUID){
-  await setDoc(doc(db,"users",currentUID),{
-    online: !document.hidden,
-    lastSeen:Date.now()
-  },{merge:true});
-}
-});
-  window.addEventListener("beforeunload", async ()=>{
-  if(currentUID){
-    await setDoc(doc(db,"users",currentUID),{
-      online:false,
-      lastSeen:Date.now()
-    },{merge:true});
-  }
-});
 window.logout = async function(){
-
   try{
-
-    await setDoc(doc(db,"users",currentUID),{
-      online:false,
-      lastSeen:Date.now()
-    },{merge:true});
-
+    await setDoc(doc(db,"users",currentUID),{ online:false, lastSeen:Date.now() },{merge:true});
     await signOut(auth);
-
     location.href="index.html";
-
   }catch(e){
     console.log(e);
   }
-
 };
 
+/* ✅ ONE SCROLL SYSTEM ONLY */
+let lastScrollTop = 0;
+let scrollDistance = 0;
+
+const headerEl = document.querySelector(".profileHeader");
+const navEl = document.querySelector(".bottomnav");
+
+window.addEventListener("scroll", () => {
+
+const currentScroll = window.scrollY || document.documentElement.scrollTop;
+const delta = currentScroll - lastScrollTop;
+
+scrollDistance += delta;
+
+/* hide when scrolling down */
+if(scrollDistance > 10){
+  headerEl.style.transform = "translateY(-100%)";
+navEl.style.transform = "translateY(150%)";
+  scrollDistance = 0;
+}
+
+/* show when scrolling up (slower) */
+if(scrollDistance < -40){
+  headerEl.style.transform = "translateY(0)";
+  navEl.style.transform = "translateY(0)";
+  scrollDistance = 0;
+}
+
+lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+
+});
 </script>
 
-</body></html>
+</body>
+</html>

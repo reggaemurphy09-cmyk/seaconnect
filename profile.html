@@ -1,582 +1,1586 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>SeaConnect - Profile</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Murphy Sabando | Sea Connect</title>
 
 <style>
-*{ box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
-
-body{
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
-  background:#f3f4f6;
-  color:#111;
-  overflow-y:scroll;
+/* Theme Variables - Same as Settings */
+:root {
+    --bg-primary: #f8fafc;
+    --bg-secondary: #ffffff;
+    --text-primary: #0b1e33;
+    --text-secondary: #5f6c80;
+    --card-bg: #ffffff;
+    --header-bg: #ffffff;
+    --icon-bg: #f1f5f9;
+    --input-bg: #f8fafc;
+    --nav-bg: #ffffff;
+    --modal-bg: #ffffff;
+    --badge-bg: #f0f9ff;
+    --danger-bg: #fee2e2;
+    --blue-primary: #0a4b7a;
+    --blue-secondary: #1e6b9e;
+    --border-subtle: rgba(0,0,0,0.05);
 }
 
-/* ✅ HEADER LIKE FEEDS */
-.profileHeader{
-  position:fixed;
-  top:0;
-  left:0;
-  right:0;
-  background:#fff;
-  border-bottom:1px solid #e5e7eb;
-  padding:14px 16px;
-  z-index:1000;
-  transition: transform 0.3s ease;
+[data-theme="dark"] {
+    --bg-primary: #000000;
+    --bg-secondary: #111111;
+    --text-primary: #ffffff;
+    --text-secondary: #888888;
+    --card-bg: #111111;
+    --header-bg: #111111;
+    --icon-bg: #222222;
+    --input-bg: #222222;
+    --nav-bg: #111111;
+    --modal-bg: #111111;
+    --badge-bg: #1a1a1a;
+    --danger-bg: #2a0000;
+    --blue-primary: #3b82f6;
+    --blue-secondary: #1e3a8a;
+    --border-subtle: rgba(255,255,255,0.05);
 }
 
-.profileHeaderContent{
-  display:flex;
-  align-items:center;
-  gap:12px;
+/* Disable system menus */
+* {
+    -webkit-touch-callout: none !important;
+    -webkit-user-select: none !important;
+    user-select: none !important;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
 }
 
-.profileHeader img{
-  width:44px;
-  height:44px;
-  border-radius:50%;
-  object-fit:cover;
+input, textarea {
+    -webkit-user-select: auto !important;
+    user-select: auto !important;
 }
 
-.headerText{ flex:1; }
-.headerName{ font-weight:900; font-size:16px; }
-.headerRank{ font-size:12px; color:#6b7280; margin-top:2px; }
-
-.logoutBtn{
-  background:none;
-  border:none;
-  color:#ef4444;
-  font-weight:900;
-  cursor:pointer;
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    transition: background-color 0.3s, color 0.3s;
 }
 
-/* ✅ PAGE */
-.page{
-  padding:78px 12px 110px 12px;
-  min-height:200vh;
+/* PULL REFRESH */
+#pullLoader {
+    position: fixed;
+    top: -60px;
+    left: 0;
+    right: 0;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    transition: top 0.25s ease;
 }
 
-/* ✅ CARDS */
-.card{
-  background:#fff;
-  padding:16px;
-  border-radius:14px;
-  margin-bottom:12px;
-  box-shadow:0 2px 8px rgba(0,0,0,.05);
+.loader {
+    width: 26px;
+    height: 26px;
+    border: 3px solid var(--border-subtle);
+    border-top: 3px solid var(--blue-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
 }
 
-.subText{
-  font-size:13px;
-  color:#94a3b8;
-  margin-top:8px;
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
-.row{
-  display:flex;
-  gap:10px;
-  margin-top:12px;
-}
-.row button{ flex:1; }
-
-input{
-  width:100%;
-  padding:12px;
-  border-radius:12px;
-  border:1px solid #ddd;
-  margin-top:6px;
-  background:#fff;
-  color:#111;
-}
-
-/* ✅ BUTTONS */
-button{
-  padding:10px 14px;
-  border:none;
-  border-radius:12px;
-  font-weight:700;
-  cursor:pointer;
-}
-.primary{ background:#2563eb; color:#fff; }
-.danger{ background:#ef4444; color:#fff; }
-.light{ background:#e5e7eb; color:#111; }
-
-/* ✅ BOTTOM NAV (CENTERED CORRECTLY) */
-.navIcon{ width:26px; height:26px; }
-
-.settingsIcon{
-  width:20px;
-  height:20px;
-stroke:#000;
+/* HEADER */
+.appHeader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: var(--header-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid var(--bg-primary);
+    z-index: 1000;
+    transition: transform 0.35s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.navAvatar{
-  width:26px;
-  height:26px;
-  border-radius:50%;
-  object-fit:cover;
-  display:block;
-  margin:0;
-flex-shrink:0;
+.appHeader.hidden {
+    transform: translateY(-100%);
 }
 
-.bottomnav{
-  position:fixed;
-  bottom:15px;
-  left:50%;
-  margin-left:-45%;
-
- /* ✅ correct */
-  width:90%;
-  height:65px;
-  background:#e5e7eb;
-  border-radius:22px;
-  display:flex;
-  justify-content:space-around;
-  align-items:center;
-  box-shadow:0 4px 10px rgba(0,0,0,.08);
-  z-index:999;
-  transition: transform 0.45s ease;
-padding:0 10px; 
+.fileBtn {
+    position: absolute;
+    left: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text-primary);
 }
 
-.bottomnav button{
-  background:none;
-  border:none;
-  font-size:12px;
-  font-weight:700;
-  color:#000;
-  cursor:pointer;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-width:40px;
-  height:40px;
-padding:0;
+.settingsBtn {
+    position: absolute;
+    right: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text-primary);
 }
 
-
-
-.bottomnav button.active{
-  color:#3b82f6;
-  font-weight:900;
+.headerIcon {
+    width: 20px;
+    height: 20px;
+    margin-bottom: 2px;
+    stroke: var(--text-primary);
+    stroke-width: 2;
 }
 
-
-#profilePhoto{
-  box-shadow:0 0 20px rgba(59,130,246,.35);
+.logo {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--blue-primary);
 }
 
-#feedBackgroundLayer{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100vh;
-z-index:-1;
+/* PAGE */
+.page {
+    padding: 80px 16px 100px 16px;
+    min-height: 100vh;
+}
 
-background-position:center;
-background-repeat:no-repeat;
-background-size:cover;
+/* PROFILE CARD */
+.profileCard {
+    background: var(--card-bg);
+    padding: 28px 20px 20px;
+    border-radius: 24px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    margin-bottom: 16px;
+    position: relative;
+}
+
+/* Avatar Container with Camera Icon */
+.avatarContainer {
+    position: relative;
+    width: 110px;
+    height: 110px;
+    margin: 0 auto 10px;
+}
+
+.profilePhoto {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--bg-primary);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+}
+
+/* Camera Icon - Positioned at Bottom Right */
+.cameraIcon {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    width: 32px;
+    height: 32px;
+    background: var(--blue-primary);
+    border: 2px solid var(--bg-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    z-index: 10;
+    transition: all 0.2s;
+}
+
+.cameraIcon:hover {
+    transform: scale(1.1);
+}
+
+.cameraIcon svg {
+    width: 16px;
+    height: 16px;
+    stroke: white;
+}
+
+/* Hidden file input */
+#imageUpload {
+    display: none;
+}
+
+.profileName {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 2px;
+    cursor: pointer;
+    padding: 5px;
+    color: var(--text-primary);
+    letter-spacing: -0.3px;
+}
+
+.profileRank {
+    font-size: 16px;
+    color: var(--blue-primary);
+    font-weight: 500;
+    margin-bottom: 8px;
+    cursor: pointer;
+    padding: 4px 16px;
+    background: var(--badge-bg);
+    display: inline-block;
+    border-radius: 20px;
+}
+
+.badgeContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.verifiedBadge {
+    display: inline-flex;
+    align-items: center;
+    background: var(--badge-bg);
+    color: var(--blue-primary);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 20px;
+}
+
+.verifiedBadge::before {
+    content: "✓";
+    margin-right: 4px;
+    font-weight: bold;
+    color: var(--blue-primary);
+}
+
+.profileStatus {
+    display: inline-flex;
+    align-items: center;
+    background: #dff9e6;
+    color: #0b5e42;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+[data-theme="dark"] .profileStatus {
+    background: #1a2e1a;
+    color: #4ade80;
+}
+
+.profileStatus.atSea {
+    background: #fef3c7;
+    color: #b45309;
+}
+
+[data-theme="dark"] .profileStatus.atSea {
+    background: #332200;
+    color: #fbbf24;
+}
+
+.profileStatus.inPort {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+[data-theme="dark"] .profileStatus.inPort {
+    background: #001933;
+    color: #60a5fa;
+}
+
+.profileStatus.onLeave {
+    background: #f3e8ff;
+    color: #6b21a8;
+}
+
+[data-theme="dark"] .profileStatus.onLeave {
+    background: #1a0033;
+    color: #c084fc;
+}
+
+.profileStatus.offline {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+[data-theme="dark"] .profileStatus.offline {
+    background: #222222;
+    color: #888888;
+}
+
+.profileStatus.online {
+    background: #dff9e6;
+    color: #0b5e42;
+}
+
+[data-theme="dark"] .profileStatus.online {
+    background: #1a2e1a;
+    color: #4ade80;
+}
+
+.profileStatus.atSea::before,
+.profileStatus.inPort::before,
+.profileStatus.onLeave::before,
+.profileStatus.offline::before,
+.profileStatus.online::before {
+    margin-right: 4px;
+    font-size: 14px;
+}
+
+.profileStatus.atSea::before {
+    content: "⚓";
+}
+
+.profileStatus.inPort::before {
+    content: "📍";
+}
+
+.profileStatus.onLeave::before {
+    content: "🏝️";
+}
+
+.profileStatus.offline::before {
+    content: "⚪";
+}
+
+.profileStatus.online::before {
+    content: "●";
+}
+
+/* STATUS SELECTOR MODAL */
+.statusModalOverlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(4px);
+    z-index: 3000;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.statusModalOverlay.active {
+    display: flex;
+}
+
+.statusModalContent {
+    background: var(--modal-bg);
+    width: 100%;
+    max-width: 400px;
+    border-radius: 30px 30px 0 0;
+    padding: 24px 20px;
+    padding-bottom: max(24px, env(safe-area-inset-bottom, 24px));
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+.statusModalTitle {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.statusOptions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.statusOption {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.3s;
+    border: 2px solid transparent;
+}
+
+.statusOption:hover {
+    transform: scale(1.02);
+}
+
+.statusOption.selected {
+    border-color: var(--blue-primary);
+    background: var(--badge-bg);
+}
+
+.statusOption.atSea {
+    background: #fef3c7;
+}
+
+[data-theme="dark"] .statusOption.atSea {
+    background: #332200;
+}
+
+.statusOption.inPort {
+    background: #dbeafe;
+}
+
+[data-theme="dark"] .statusOption.inPort {
+    background: #001933;
+}
+
+.statusOption.onLeave {
+    background: #f3e8ff;
+}
+
+[data-theme="dark"] .statusOption.onLeave {
+    background: #1a0033;
+}
+
+.statusOption.offline {
+    background: #f1f5f9;
+}
+
+[data-theme="dark"] .statusOption.offline {
+    background: #222222;
+}
+
+.statusOption.online {
+    background: #dff9e6;
+}
+
+[data-theme="dark"] .statusOption.online {
+    background: #1a2e1a;
+}
+
+.statusIcon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    margin-right: 16px;
+}
+
+.statusIcon.atSea {
+    background: #f59e0b;
+    color: white;
+}
+
+.statusIcon.inPort {
+    background: #3b82f6;
+    color: white;
+}
+
+.statusIcon.onLeave {
+    background: #8b5cf6;
+    color: white;
+}
+
+.statusIcon.offline {
+    background: #94a3b8;
+    color: white;
+}
+
+.statusIcon.online {
+    background: #10b981;
+    color: white;
+}
+
+.statusText {
+    flex: 1;
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--text-primary);
+}
+
+.statusText small {
+    display: block;
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--text-secondary);
+    margin-top: 2px;
+}
+
+.statusCheck {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--blue-primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    opacity: 0;
+}
+
+.statusOption.selected .statusCheck {
+    opacity: 1;
+}
+
+.statusModalClose {
+    width: 100%;
+    padding: 16px;
+    background: var(--icon-bg);
+    border: none;
+    border-radius: 40px;
+    font-weight: 600;
+    color: var(--text-primary);
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.statusModalClose:active {
+    background: var(--text-secondary);
+    color: white;
+}
+
+/* SECTION CARDS */
+.sectionCard {
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.sectionTitle {
+    font-weight: 600;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--blue-primary);
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    font-size: 13px;
+}
+
+.sectionTitle span {
+    font-size: 16px;
+}
+
+.infoRow {
+    display: flex;
+    margin-bottom: 14px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border-subtle);
+    cursor: pointer;
+    transition: background 0.2s;
+    border-radius: 8px;
+    padding: 8px;
+    margin: -8px;
+}
+
+.infoRow:hover {
+    background: var(--icon-bg);
+}
+
+.infoRow:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 8px;
+}
+
+.infoLabel {
+    width: 100px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+.infoValue {
+    flex: 1;
+    color: var(--text-primary);
+    font-weight: 500;
+    font-size: 14px;
+}
+
+/* STATS SECTION */
+.statsSection {
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.statsGrid {
+    display: flex;
+    justify-content: space-around;
+    text-align: center;
+}
+
+.statItem {
+    flex: 1;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 12px;
+    transition: background 0.2s;
+}
+
+.statItem:hover {
+    background: var(--icon-bg);
+}
+
+.statNumber {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--blue-primary);
+    margin-bottom: 4px;
+}
+
+.statLabel {
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    letter-spacing: 0.3px;
+}
+
+/* NAVIGATION */
+.navIcon {
+    width: 22px;
+    height: 22px;
+    margin-bottom: 3px;
+    stroke: var(--text-secondary);
+    stroke-width: 1.8;
+}
+
+.navAvatar {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 3px;
+    border: 2px solid var(--blue-primary);
+}
+
+.bottomnav {
+    position: fixed;
+    left: 20px;
+    right: 20px;
+    bottom: 20px;
+    height: 64px;
+    background: var(--nav-bg);
+    border-radius: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    z-index: 999;
+    transition: transform 0.35s ease;
+    padding: 0 8px;
+}
+
+.bottomnav button {
+    flex: 1;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    transition: all 0.2s;
+    padding: 8px 0;
+    border-radius: 24px;
+}
+
+.bottomnav button.active {
+    color: var(--blue-primary);
+}
+
+.bottomnav button.active .navIcon {
+    stroke: var(--blue-primary);
+}
+
+/* EDIT MODAL */
+.modalOverlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(4px);
+    z-index: 2001;
+    align-items: center;
+    justify-content: center;
+}
+
+.modalOverlay.active {
+    display: flex;
+}
+
+.modalContent {
+    background: var(--modal-bg);
+    width: 320px;
+    border-radius: 28px;
+    padding: 24px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.modalTitle {
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: var(--text-primary);
+    font-size: 18px;
+}
+
+.modalInput {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 16px;
+    font-size: 15px;
+    margin-bottom: 20px;
+    background: var(--input-bg);
+    color: var(--text-primary);
+}
+
+.modalInput:focus {
+    outline: 2px solid var(--blue-primary);
+}
+
+.modalButtons {
+    display: flex;
+    gap: 12px;
+}
+
+.modalSave {
+    flex: 1;
+    background: var(--blue-primary);
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 40px;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.modalCancel {
+    flex: 1;
+    background: var(--icon-bg);
+    color: var(--text-primary);
+    border: none;
+    padding: 14px;
+    border-radius: 40px;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+/* TOAST NOTIFICATION */
+.toast {
+    position: fixed;
+    bottom: 100px;
+    left: 20px;
+    right: 20px;
+    background: var(--text-primary);
+    color: var(--bg-primary);
+    padding: 16px;
+    border-radius: 30px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 3000;
+    display: none;
+    animation: slideUp 0.3s ease;
+}
+
+.toast.show {
+    display: block;
+}
+
+/* SPACING */
+.divider {
+    height: 1px;
+    background: var(--border-subtle);
+    margin: 20px 0;
 }
 </style>
 </head>
 
-<body>
+<body data-theme="light">
 
-<div id="feedBackgroundLayer"></div>
-
-<!-- ✅ FIXED HEADER -->
-<div class="profileHeader">
-  <div class="profileHeaderContent">
-    <img id="profilePhoto" src="https://i.ibb.co/2kRZ7Z6/avatar.png">
-    <div class="headerText">
-      <div id="profileName" class="headerName"></div>
-      <div id="profileRank" class="headerRank"></div>
-    </div>
-    <button class="logoutBtn" onclick="logout()">Logout</button>
-  </div>
+<div id="pullLoader">
+<div class="loader"></div>
 </div>
 
-<!-- ✅ PAGE CONTENT -->
-<div id="profilePage" class="page">
+<div class="appHeader">
 
-
-  <div class="card">
-    <div style="display:flex;justify-content:space-between;align-items:center;">
-      <div style="font-weight:900">Professional Information</div>
-      <button class="light" onclick="toggleInfo()" id="infoBtn">Show</button>
-    </div>
-
-    <div id="infoSection" style="display:none;margin-top:12px">
-      <div class="subText">Email</div><div id="profileEmail"></div>
-      <div class="subText">Company</div><div id="profileCompany"></div>
-      <div class="subText">Vessel</div><div id="profileVessel"></div>
-      <div class="subText">Experience</div><div id="profileExperience"></div>
-      <div class="subText">Phone</div><div id="profilePhone"></div>
-      <div class="subText">Address</div><div id="profileAddress"></div>
-    </div>
-  </div>
-
-
-
-    <div id="editSection" style="display:none;margin-top:20px">
-      <label>Full Name</label><input id="nameInput">
-      <label>Rank</label><input id="rankInput">
-      <label>Company</label><input id="companyInput">
-      <label>Vessel</label><input id="vesselInput">
-      <label>Experience</label><input id="experienceInput">
-      <label>Phone</label><input id="phoneInput">
-      <label>Address</label><input id="addressInput">
-
-      <div class="row">
-        <button class="primary" onclick="saveProfile()">Save</button>
-        <button class="light" onclick="toggleEdit()">Cancel</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div style="display:flex;justify-content:space-between;align-items:center;">
-      <div style="font-weight:900">📄 My Documents</div>
-      <button class="primary" onclick="toggleDocForm()">Add</button>
-    </div>
-
-    <div id="docFormSection" style="display:none;margin-top:20px">
-      <label>Document Type</label><input id="docTypeInput">
-      <label>Document Number</label><input id="docNumberInput">
-      <label>Issue Date</label><input type="date" id="docIssueInput">
-      <label>Expiry Date</label><input type="date" id="docExpiryInput">
-
-      <div class="row">
-        <button class="primary" onclick="addDocument()">Save</button>
-        <button class="light" onclick="toggleDocForm()">Cancel</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="documentsList"></div>
-
-</div>
-
-<!-- ✅ BOTTOM NAV -->
-<div class="bottomnav">
-<button onclick="location.href='feeds.html'">
-<svg class="navIcon" viewBox="0 0 24 24" fill="none"
-stroke="currentColor" stroke-width="2"
-stroke-linecap="round" stroke-linejoin="round">
-
-<line x1="4" y1="6" x2="20" y2="6"></line>
-<line x1="4" y1="12" x2="20" y2="12"></line>
-<line x1="4" y1="18" x2="14" y2="18"></line>
+<button class="fileBtn" onclick="openFiles()">
+<svg class="headerIcon" viewBox="0 0 24 24" fill="none" stroke-width="2">
+<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+<polyline points="14 2 14 8 20 8"/>
 </svg>
+Files
 </button>
 
+<div class="logo">SEA CONNECT</div>
 
-<button onclick="location.href='friends.html'">
-<svg class="navIcon" viewBox="0 0 24 24" fill="none"
-stroke="currentColor" stroke-width="2"
-stroke-linecap="round" stroke-linejoin="round">
-<circle cx="9" cy="8" r="3"></circle>
-<circle cx="17" cy="8" r="3"></circle>
-<path d="M4 19c0-3 3-5 5-5s5 2 5 5"></path>
-<path d="M12 19c0-3 3-5 5-5"></path>
-</svg>
-</button>
-
-<button onclick="location.href='message.html'">
-<svg class="navIcon" viewBox="0 0 24 24" fill="none"
-stroke="currentColor" stroke-width="2"
-stroke-linecap="round" stroke-linejoin="round">
-<rect x="3" y="6" width="18" height="12" rx="3"></rect>
-<path d="M3 8L12 14L21 8"></path>
-</svg>
-</button>
-
-<!-- SETTINGS -->
-<!-- SETTINGS -->
-<button onclick="location.href='settings.html'">
-<svg class="navIcon settingsIcon" viewBox="0 0 24 24" fill="none"
-stroke="currentColor" stroke-width="2"
-stroke-linecap="round" stroke-linejoin="round">
-
+<button class="settingsBtn" onclick="openSettings()">
+<svg class="headerIcon" viewBox="0 0 24 24" fill="none" stroke-width="2">
 <circle cx="12" cy="12" r="3"></circle>
-
-<path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06
-a2 2 0 0 1 0 2.83
-2 2 0 0 1-2.83 0l-.06-.06
-a1.65 1.65 0 0 0-1.82-.33
+<path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82
+l.06.06a2 2 0 1 1-2.83 2.83
+l-.06-.06a1.65 1.65 0 0 0-1.82-.33
 1.65 1.65 0 0 0-1 1.51V21
-a2 2 0 0 1-4 0v-.09
+a2 2 0 1 1-4 0v-.09
 a1.65 1.65 0 0 0-1-1.51
-1.65 1.65 0 0 0-1.82.33l-.06.06
-a2 2 0 0 1-2.83 0
-2 2 0 0 1 0-2.83l.06-.06
-a1.65 1.65 0 0 0 .33-1.82
+1.65 1.65 0 0 0-1.82.33
+l-.06.06a2 2 0 1 1-2.83-2.83
+l.06-.06a1.65 1.65 0 0 0 .33-1.82
 1.65 1.65 0 0 0-1.51-1H3
-a2 2 0 0 1 0-4h.09
+a2 2 0 1 1 0-4h.09
 a1.65 1.65 0 0 0 1.51-1
-1.65 1.65 0 0 0-.33-1.82l-.06-.06
-a2 2 0 0 1 0-2.83
-2 2 0 0 1 2.83 0l.06.06
-a1.65 1.65 0 0 0 1.82.33
-1.65 1.65 0 0 0 1-1.51V3
-a2 2 0 0 1 4 0v.09
+1.65 1.65 0 0 0-.33-1.82
+l-.06-.06a2 2 0 1 1 2.83-2.83
+l.06.06a1.65 1.65 0 0 0 1.82.33H9
+a1.65 1.65 0 0 0 1-1.51V3
+a2 2 0 1 1 4 0v.09
 a1.65 1.65 0 0 0 1 1.51
-1.65 1.65 0 0 0 1.82-.33l.06-.06
-a2 2 0 0 1 2.83 0
-2 2 0 0 1 0 2.83l-.06.06
-a1.65 1.65 0 0 0-.33 1.82
-1.65 1.65 0 0 0 1.51 1H21
-a2 2 0 0 1 0 4h-.09
-a1.65 1.65 0 0 0-1.51 1z"></path>
-
+1.65 1.65 0 0 0 1.82-.33
+l.06-.06a2 2 0 1 1 2.83 2.83
+l-.06.06a1.65 1.65 0 0 0-.33 1.82V9
+c0 .66.39 1.26 1 1.51H21
+a2 2 0 1 1 0 4h-.09
+c-.66 0-1.26.39-1.51 1z"/>
 </svg>
-</button>
-
-
-<!-- PROFILE -->
-<button class="active" onclick="location.href='profile.html'">
-<img id="navAvatar"
-src="https://i.ibb.co/2kRZ7Z6/avatar.png"
-class="navAvatar">
+Settings
 </button>
 
 </div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, collection, addDoc, query, where, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+<div class="page">
 
-const firebaseConfig={
-  apiKey:"AIzaSyCNlodsmEHrSXxgH0gTOcx4cAXwG8qmG9w",
-  authDomain:"seaconnect-d2baa.firebaseapp.com",
-  projectId:"seaconnect-d2baa"
-};
-
-const app=initializeApp(firebaseConfig);
-const auth=getAuth(app);
-const db=getFirestore(app);
-
-let currentUID=null;
-let currentEmail=null;
-
-const IMGBB_KEY="5b417e8de4a883f7425eeda12dc38f06";
-
-window.toggleInfo=function(){
-  const sec=document.getElementById("infoSection");
-  const btn=document.getElementById("infoBtn");
-  const show=sec.style.display==="none" || sec.style.display==="";
-  sec.style.display=show?"block":"none";
-  btn.innerText=show?"Hide":"Show";
-};
-
-window.toggleEdit=function(){
-  const s=document.getElementById("editSection");
-  s.style.display=(s.style.display==="none"||s.style.display==="")?"block":"none";
-};
-
-window.toggleDocForm=function(){
-  const s=document.getElementById("docFormSection");
-  s.style.display=(s.style.display==="none"||s.style.display==="")?"block":"none";
-};
-
-onAuthStateChanged(auth,async(user)=>{
-  if(!user){ location.href="index.html"; return; }
-
-  currentUID=user.uid;
-  currentEmail=user.email.toLowerCase();
-
-  await setDoc(doc(db,"users",currentUID),{
-    online:true,
-    lastSeen:Date.now()
-  },{merge:true});
-
-  loadProfile();
-  loadDocuments();
-});
-
-async function loadProfile(){
-  const snap=await getDoc(doc(db,"users",currentUID));
-  const d=snap.data()||{};
-
-if(d.feedBackground){
-  const bgLayer = document.getElementById("feedBackgroundLayer");
-  bgLayer.style.backgroundImage = `url(${d.feedBackground})`;
-}
-
-  if(d.photo){
-    document.getElementById("profilePhoto").src=d.photo;
-    document.getElementById("navAvatar").src=d.photo;
-  }
-
-  document.getElementById("profileName").innerText=d.name||"";
-  document.getElementById("profileRank").innerText=d.rank||"";
-
-  document.getElementById("profileEmail").innerText=d.email||"";
-  document.getElementById("profileCompany").innerText=d.company||"-";
-  document.getElementById("profileVessel").innerText=d.vessel||"-";
-  document.getElementById("profileExperience").innerText=d.experience||"-";
-  document.getElementById("profilePhone").innerText=d.phone||"-";
-  document.getElementById("profileAddress").innerText=d.address||"-";
-
-  document.getElementById("nameInput").value=d.name||"";
-  document.getElementById("rankInput").value=d.rank||"";
-  document.getElementById("companyInput").value=d.company||"";
-  document.getElementById("vesselInput").value=d.vessel||"";
-  document.getElementById("experienceInput").value=d.experience||"";
-  document.getElementById("phoneInput").value=d.phone||"";
-  document.getElementById("addressInput").value=d.address||"";
-}
-
-window.saveProfile=async function(){
-  await setDoc(doc(db,"users",currentUID),{
-    email:currentEmail,
-    name:document.getElementById("nameInput").value,
-    rank:document.getElementById("rankInput").value,
-    company:document.getElementById("companyInput").value,
-    vessel:document.getElementById("vesselInput").value,
-    experience:document.getElementById("experienceInput").value,
-    phone:document.getElementById("phoneInput").value,
-    address:document.getElementById("addressInput").value
-  },{merge:true});
-
-  alert("Profile saved");
-  toggleEdit();
-  loadProfile();
-};
-
-window.addDocument=async function(){
-  const type=document.getElementById("docTypeInput").value.trim();
-  if(!type) return alert("Enter document type");
-
-  await addDoc(collection(db,"documents"),{
-    uid:currentUID,
-    type:type,
-    number:document.getElementById("docNumberInput").value,
-    issue:document.getElementById("docIssueInput").value,
-    expiry:document.getElementById("docExpiryInput").value,
-    createdAt:Date.now()
-  });
-
-  document.getElementById("docTypeInput").value="";
-  document.getElementById("docNumberInput").value="";
-  document.getElementById("docIssueInput").value="";
-  document.getElementById("docExpiryInput").value="";
-  toggleDocForm();
-};
-
-function loadDocuments(){
-
-const q=query(collection(db,"documents"),where("uid","==",currentUID));
-
-onSnapshot(q,(snap)=>{
-documentsList.innerHTML="";
-
-snap.forEach(docSnap=>{
-const d=docSnap.data();
-const id=docSnap.id;
-
-let status="";
-let color="#111";
-
-if(d.expiry){
-
-const diff=Math.ceil((new Date(d.expiry)-new Date())/(1000*60*60*24));
-
-if(diff < 0){
-status="❌ Expired";
-color="#ef4444";
-}
-else if(diff <= 30){
-status="⚠️ "+diff+" days left";
-color="#f59e0b";
-}
-else{
-status="✅ "+diff+" days left";
-color="#16a34a";
-}
-
-}
-
-documentsList.innerHTML+=`
-<div class="card">
-
-<div style="font-weight:900">${d.type}</div>
-
-<div class="subText">Number</div>
-${d.number || "-"}
-
-<div class="subText">Expiry</div>
-${d.expiry || "-"}
-
-<div style="margin-top:6px;color:${color};font-weight:700">
-${status}
+<!-- PROFILE CARD WITH CAMERA ICON -->
+<div class="profileCard">
+    <!-- Avatar Container with Camera Icon -->
+    <div class="avatarContainer">
+        <img src="https://i.ibb.co/2kRZ7Z6/avatar.png" class="profilePhoto" id="profilePhoto" alt="Profile Photo">
+        <!-- Camera Icon at Bottom Right -->
+        <div class="cameraIcon" onclick="uploadPhoto()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                <circle cx="12" cy="13" r="4"/>
+            </svg>
+        </div>
+    </div>
+    
+    <!-- Hidden File Input -->
+    <input type="file" id="imageUpload" accept="image/*" onchange="handleImageUpload(event)">
+    
+    <div class="profileName" onclick="editField('name', 'profileNameText', document.getElementById('profileNameText').innerText)">
+        <span id="profileNameText">Murphy Sabando</span>
+    </div>
+    
+    <div class="profileRank" onclick="editField('rank', 'profileRankText', document.getElementById('profileRankText').innerText)">
+        <span id="profileRankText">3rd Engineer</span>
+    </div>
+    
+    <div class="badgeContainer">
+        <span class="verifiedBadge">Verified Seafarer</span>
+        <span class="profileStatus online" id="statusText" onclick="openStatusSelector()">Online</span>
+    </div>
 </div>
 
-<br>
+<!-- PROFESSIONAL INFORMATION -->
+<div class="sectionCard">
+    <div class="sectionTitle">
+        <span>⚓</span> PROFESSIONAL
+    </div>
+    
+    <div class="infoRow" onclick="editField('company', 'companyValue', document.getElementById('companyValue').innerText)">
+        <span class="infoLabel">Company</span>
+        <span class="infoValue" id="companyValue">Royal Caribbean</span>
+    </div>
+    
+    <div class="infoRow" onclick="editField('vessel', 'vesselValue', document.getElementById('vesselValue').innerText)">
+        <span class="infoLabel">Vessel</span>
+        <span class="infoValue" id="vesselValue">Symphony of the Seas</span>
+    </div>
+    
+    <div class="infoRow" onclick="editField('position', 'positionValue', document.getElementById('positionValue').innerText)">
+        <span class="infoLabel">Position</span>
+        <span class="infoValue" id="positionValue">3rd Engineer</span>
+    </div>
+    
+    <div class="infoRow" onclick="editField('experience', 'experienceValue', document.getElementById('experienceValue').innerText)">
+        <span class="infoLabel">Experience</span>
+        <span class="infoValue" id="experienceValue">8 years at sea</span>
+    </div>
+    
+    <div class="infoRow" onclick="editField('license', 'licenseValue', document.getElementById('licenseValue').innerText)">
+        <span class="infoLabel">License</span>
+        <span class="infoValue" id="licenseValue">Unlimited (IMO)</span>
+    </div>
+</div>
 
-<button class="danger" onclick="deleteDocument('${id}')">
-Delete
+<!-- MARITIME DOCUMENTS -->
+<div class="sectionCard">
+    <div class="sectionTitle">
+        <span>📄</span> DOCUMENTS
+    </div>
+    
+    <div class="infoRow" onclick="editField('passport', 'passportValue', document.getElementById('passportValue').innerText)">
+        <span class="infoLabel">Passport</span>
+        <span class="infoValue" id="passportValue">Valid until 2028</span>
+    </div>
+    
+    <div class="infoRow" onclick="editField('seaman', 'seamanValue', document.getElementById('seamanValue').innerText)">
+        <span class="infoLabel">Seaman's Book</span>
+        <span class="infoValue" id="seamanValue">Valid until 2027</span>
+    </div>
+    
+    <div class="infoRow" onclick="editField('coc', 'cocValue', document.getElementById('cocValue').innerText)">
+        <span class="infoLabel">COC</span>
+        <span class="infoValue" id="cocValue">Class 3 Engineer</span>
+    </div>
+    
+    <div class="infoRow" onclick="editField('stcw', 'stcwValue', document.getElementById('stcwValue').innerText)">
+        <span class="infoLabel">STCW</span>
+        <span class="infoValue" id="stcwValue">Updated 2025</span>
+    </div>
+    
+    <div class="infoRow" onclick="editField('medical', 'medicalValue', document.getElementById('medicalValue').innerText)">
+        <span class="infoLabel">Medical</span>
+        <span class="infoValue" id="medicalValue">Valid until 2026</span>
+    </div>
+</div>
+
+<!-- CONTACT INFORMATION -->
+<div class="sectionCard">
+    <div class="sectionTitle">
+        <span>📞</span> CONTACT
+    </div>
+    
+    <div class="infoRow" onclick="editField('email', 'emailValue', document.getElementById('emailValue').innerText)">
+        <span class="infoLabel">Email</span>
+        <span class="infoValue" id="emailValue">murphy.sabando@seaconnect.com</span>
+    </div>
+    
+    <div class="infoRow" onclick="editField('satellite', 'satelliteValue', document.getElementById('satelliteValue').innerText)">
+        <span class="infoLabel">Satellite</span>
+        <span class="infoValue" id="satelliteValue">+870 773 123 456</span>
+    </div>
+    
+    <div class="infoRow" onclick="editField('currentPort', 'currentPortValue', document.getElementById('currentPortValue').innerText)">
+        <span class="infoLabel">Current Port</span>
+        <span class="infoValue" id="currentPortValue">Singapore (ETA 3 days)</span>
+    </div>
+    
+    <div class="infoRow" onclick="editField('nextPort', 'nextPortValue', document.getElementById('nextPortValue').innerText)">
+        <span class="infoLabel">Next Port</span>
+        <span class="infoValue" id="nextPortValue">Hong Kong</span>
+    </div>
+</div>
+
+<!-- EMERGENCY CONTACT -->
+<div class="sectionCard">
+    <div class="sectionTitle">
+        <span>🆘</span> EMERGENCY
+    </div>
+    
+    <div class="infoRow" onclick="editField('emergencyName', 'emergencyNameValue', document.getElementById('emergencyNameValue').innerText)">
+        <span class="infoLabel">Name</span>
+        <span class="infoValue" id="emergencyNameValue">Maria Sabando</span>
+    </div>
+    
+    <div class="infoRow" onclick="editField('emergencyRelation', 'emergencyRelationValue', document.getElementById('emergencyRelationValue').innerText)">
+        <span class="infoLabel">Relation</span>
+        <span class="infoValue" id="emergencyRelationValue">Spouse</span>
+    </div>
+    
+    <div class="infoRow" onclick="editField('emergencyPhone', 'emergencyPhoneValue', document.getElementById('emergencyPhoneValue').innerText)">
+        <span class="infoLabel">Phone</span>
+        <span class="infoValue" id="emergencyPhoneValue">+63 917 555 1234</span>
+    </div>
+    
+    <div class="infoRow" onclick="editField('emergencyEmail', 'emergencyEmailValue', document.getElementById('emergencyEmailValue').innerText)">
+        <span class="infoLabel">Email</span>
+        <span class="infoValue" id="emergencyEmailValue">maria.s@email.com</span>
+    </div>
+</div>
+
+<!-- STATS -->
+<div class="statsSection">
+    <div class="statsGrid">
+        <div class="statItem" onclick="editStat('voyagesStat', document.getElementById('voyagesStat').innerText)">
+            <div class="statNumber" id="voyagesStat">12</div>
+            <div class="statLabel">VOYAGES</div>
+        </div>
+        <div class="statItem" onclick="editStat('crewStat', document.getElementById('crewStat').innerText)">
+            <div class="statNumber" id="crewStat">28</div>
+            <div class="statLabel">CREW</div>
+        </div>
+        <div class="statItem" onclick="editStat('documentsStat', document.getElementById('documentsStat').innerText)">
+            <div class="statNumber" id="documentsStat">15</div>
+            <div class="statLabel">DOCUMENTS</div>
+        </div>
+    </div>
+</div>
+
+</div>
+
+<div class="bottomnav">
+
+<button onclick="location.href='feeds.html'" id="navFeeds">
+<svg class="navIcon" viewBox="0 0 24 24" fill="none" stroke-width="2">
+<rect x="3" y="3" width="7" height="7"></rect>
+<rect x="14" y="3" width="7" height="7"></rect>
+<rect x="14" y="14" width="7" height="7"></rect>
+<rect x="3" y="14" width="7" height="7"></rect>
+</svg>
+Feeds
 </button>
 
-</div>`;
-});
+<button onclick="location.href='friends.html'" id="navFriends">
+<svg class="navIcon" viewBox="0 0 24 24" fill="none" stroke-width="2">
+<circle cx="12" cy="7" r="4"></circle>
+<path d="M5.5 21a6.5 6.5 0 0 1 13 0"></path>
+</svg>
+Friends
+</button>
 
-});
+<button onclick="location.href='messages.html'" id="navMessages">
+<svg class="navIcon" viewBox="0 0 24 24" fill="none" stroke-width="2">
+<path d="M21 15a4 4 0 0 1-4 4H7l-4 4V5a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"></path>
+</svg>
+Messages
+</button>
 
-}
-window.deleteDocument=async function(id){
-  await deleteDoc(doc(db,"documents",id));
+<button onclick="location.href='profile.html'" id="navProfile">
+<img src="https://i.ibb.co/2kRZ7Z6/avatar.png" class="navAvatar" id="navAvatar">
+Profile
+</button>
+
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modalOverlay" id="editModal">
+    <div class="modalContent">
+        <div class="modalTitle" id="modalTitle">Edit</div>
+        <input type="text" class="modalInput" id="modalInput" placeholder="Enter new value">
+        <div class="modalButtons">
+            <button class="modalSave" onclick="saveEdit()">Save</button>
+            <button class="modalCancel" onclick="closeModal()">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- STATUS SELECTOR MODAL -->
+<div class="statusModalOverlay" id="statusModal">
+    <div class="statusModalContent">
+        <div class="statusModalTitle">Select Your Status</div>
+        
+        <div class="statusOptions">
+            <!-- Online Option -->
+            <div class="statusOption online" id="statusOnline" onclick="selectStatus('online')">
+                <div class="statusIcon online">●</div>
+                <div class="statusText">
+                    Online
+                    <small>Active on the app</small>
+                </div>
+                <div class="statusCheck">✓</div>
+            </div>
+            
+            <!-- At Sea Option -->
+            <div class="statusOption atSea" id="statusAtSea" onclick="selectStatus('atSea')">
+                <div class="statusIcon atSea">⚓</div>
+                <div class="statusText">
+                    At Sea
+                    <small>Currently sailing</small>
+                </div>
+                <div class="statusCheck">✓</div>
+            </div>
+            
+            <!-- In Port Option -->
+            <div class="statusOption inPort" id="statusInPort" onclick="selectStatus('inPort')">
+                <div class="statusIcon inPort">📍</div>
+                <div class="statusText">
+                    In Port
+                    <small>Docked at port</small>
+                </div>
+                <div class="statusCheck">✓</div>
+            </div>
+            
+            <!-- On Leave Option -->
+            <div class="statusOption onLeave" id="statusOnLeave" onclick="selectStatus('onLeave')">
+                <div class="statusIcon onLeave">🏝️</div>
+                <div class="statusText">
+                    On Leave
+                    <small>Vacation / Rest day</small>
+                </div>
+                <div class="statusCheck">✓</div>
+            </div>
+            
+            <!-- Offline Option -->
+            <div class="statusOption offline" id="statusOffline" onclick="selectStatus('offline')">
+                <div class="statusIcon offline">⚪</div>
+                <div class="statusText">
+                    Offline
+                    <small>Not active</small>
+                </div>
+                <div class="statusCheck">✓</div>
+            </div>
+        </div>
+        
+        <button class="statusModalClose" onclick="closeStatusSelector()">Cancel</button>
+    </div>
+</div>
+
+<!-- TOAST NOTIFICATION -->
+<div class="toast" id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+<script>
+// Firebase config
+const firebaseConfig = {
+    apiKey: "AIzaSyCNlodsmEHrSXxgH0gTOcx4cAXwG8qmG9w",
+    authDomain: "seaconnect-d2baa.firebaseapp.com",
+    projectId: "seaconnect-d2baa",
+    storageBucket: "seaconnect-d2baa.appspot.com",
+    messagingSenderId: "402383997556",
+    appId: "1:402383997556:web:d4b5894b25545ecaef9f21"
 };
 
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
 
+// Your ImgBB API Key
+const IMGBB_API_KEY = '7a6b8c43b67ce45e354763c86371b2e1';
 
-window.logout = async function(){
-  try{
-    await setDoc(doc(db,"users",currentUID),{ online:false, lastSeen:Date.now() },{merge:true});
-    await signOut(auth);
-    location.href="index.html";
-  }catch(e){
-    console.log(e);
-  }
-};
+let currentUser = null;
+let currentStatus = 'online';
 
-/* ✅ ONE SCROLL SYSTEM ONLY */
-let lastScrollTop = 0;
-let scrollDistance = 0;
-
-const headerEl = document.querySelector(".profileHeader");
-const navEl = document.querySelector(".bottomnav");
-
-window.addEventListener("scroll", () => {
-
-const currentScroll = window.scrollY || document.documentElement.scrollTop;
-const delta = currentScroll - lastScrollTop;
-
-scrollDistance += delta;
-
-/* hide when scrolling down */
-if(scrollDistance > 10){
-  headerEl.style.transform = "translateY(-100%)";
-navEl.style.transform = "translateY(150%)";
-  scrollDistance = 0;
-}
-
-/* show when scrolling up (slower) */
-if(scrollDistance < -40){
-  headerEl.style.transform = "translateY(0)";
-  navEl.style.transform = "translateY(0)";
-  scrollDistance = 0;
-}
-
-lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
-
+// Check auth state and load user data
+auth.onAuthStateChanged((user) => {
+    if (!user) {
+        window.location.href = 'login.html';
+        return;
+    }
+    
+    currentUser = user;
+    loadUserData(user);
+    
+    // Also load theme from user settings
+    loadUserTheme(user);
 });
+
+// Load user data from Firestore
+function loadUserData(user) {
+    db.collection('users').doc(user.uid).get().then((doc) => {
+        if (doc.exists) {
+            const data = doc.data();
+            
+            // Update profile fields
+            document.getElementById('profileNameText').innerText = data.name || user.email.split('@')[0];
+            document.getElementById('profileRankText').innerText = data.rank || '3rd Engineer';
+            
+            // Set status
+            if (data.status) {
+                updateStatusDisplay(data.status);
+                currentStatus = data.status;
+            }
+            
+            document.getElementById('companyValue').innerText = data.company || 'Royal Caribbean';
+            document.getElementById('vesselValue').innerText = data.vessel || 'Symphony of the Seas';
+            document.getElementById('positionValue').innerText = data.position || '3rd Engineer';
+            document.getElementById('experienceValue').innerText = data.experience || '8 years at sea';
+            document.getElementById('licenseValue').innerText = data.license || 'Unlimited (IMO)';
+            document.getElementById('passportValue').innerText = data.passport || 'Valid until 2028';
+            document.getElementById('seamanValue').innerText = data.seamanBook || 'Valid until 2027';
+            document.getElementById('cocValue').innerText = data.coc || 'Class 3 Engineer';
+            document.getElementById('stcwValue').innerText = data.stcw || 'Updated 2025';
+            document.getElementById('medicalValue').innerText = data.medical || 'Valid until 2026';
+            document.getElementById('emailValue').innerText = data.email || user.email;
+            document.getElementById('satelliteValue').innerText = data.satellite || '+870 773 123 456';
+            document.getElementById('currentPortValue').innerText = data.currentPort || 'Singapore (ETA 3 days)';
+            document.getElementById('nextPortValue').innerText = data.nextPort || 'Hong Kong';
+            document.getElementById('emergencyNameValue').innerText = data.emergencyName || 'Maria Sabando';
+            document.getElementById('emergencyRelationValue').innerText = data.emergencyRelation || 'Spouse';
+            document.getElementById('emergencyPhoneValue').innerText = data.emergencyPhone || '+63 917 555 1234';
+            document.getElementById('emergencyEmailValue').innerText = data.emergencyEmail || 'maria.s@email.com';
+            document.getElementById('voyagesStat').innerText = data.voyages || '12';
+            document.getElementById('crewStat').innerText = data.crew || '28';
+            document.getElementById('documentsStat').innerText = data.documents || '15';
+            
+            // Update profile photo if exists
+            if (data.photoURL) {
+                document.getElementById('profilePhoto').src = data.photoURL;
+                document.getElementById('navAvatar').src = data.photoURL;
+            }
+        }
+    }).catch(error => {
+        console.error('Error loading user:', error);
+    });
+}
+
+// Load user theme
+function loadUserTheme(user) {
+    db.collection('users').doc(user.uid).get().then((doc) => {
+        if (doc.exists) {
+            const data = doc.data();
+            if (data.appearance && data.appearance.theme) {
+                if (data.appearance.theme === 'Dark') {
+                    document.body.setAttribute('data-theme', 'dark');
+                } else {
+                    document.body.setAttribute('data-theme', 'light');
+                }
+            }
+        }
+    });
+}
+
+// Update status display
+function updateStatusDisplay(status) {
+    const statusEl = document.getElementById('statusText');
+    
+    // Remove all status classes
+    statusEl.classList.remove('online', 'atSea', 'inPort', 'onLeave', 'offline');
+    
+    // Add appropriate class and text
+    if (status === 'online') {
+        statusEl.classList.add('online');
+        statusEl.innerHTML = 'Online';
+    } else if (status === 'atSea') {
+        statusEl.classList.add('atSea');
+        statusEl.innerHTML = 'At Sea';
+    } else if (status === 'inPort') {
+        statusEl.classList.add('inPort');
+        statusEl.innerHTML = 'In Port';
+    } else if (status === 'onLeave') {
+        statusEl.classList.add('onLeave');
+        statusEl.innerHTML = 'On Leave';
+    } else if (status === 'offline') {
+        statusEl.classList.add('offline');
+        statusEl.innerHTML = 'Offline';
+    }
+}
+
+// Save data to Firestore
+function saveToFirestore(updates) {
+    if (!currentUser) return;
+    
+    db.collection('users').doc(currentUser.uid).update(updates)
+        .then(() => {
+            console.log('Saved to Firestore:', updates);
+            showToast('✅ Saved');
+        })
+        .catch(error => {
+            console.error('Error saving:', error);
+            showToast('❌ Error saving');
+        });
+}
+
+function openFiles(){
+    location.href = "files.html";
+}
+
+function openSettings(){
+    location.href = "settings.html";
+}
+
+/* HIDE HEADER + NAV */
+let lastScroll = 0;
+const header = document.querySelector(".appHeader");
+const nav = document.querySelector(".bottomnav");
+
+window.addEventListener("scroll", function(){
+    const currentScroll = window.pageYOffset;
+    if (currentScroll < 50) {
+        header.style.transform = "translateY(0)";
+        nav.style.transform = "translateY(0)";
+        return;
+    }
+    if (currentScroll > lastScroll) {
+        header.style.transform = "translateY(-100%)";
+        nav.style.transform = "translateY(120%)";
+    } else {
+        header.style.transform = "translateY(0)";
+        nav.style.transform = "translateY(0)";
+    }
+    lastScroll = currentScroll;
+});
+
+/* PULL TO REFRESH */
+let startY = 0;
+let pulling = false;
+const loader = document.getElementById("pullLoader");
+
+window.addEventListener("touchstart", (e) => {
+    if (window.scrollY === 0) {
+        pulling = true;
+        startY = e.touches[0].clientY;
+    }
+});
+
+window.addEventListener("touchmove", (e) => {
+    if (!pulling) return;
+    let distance = e.touches[0].clientY - startY;
+    if (distance > 0) {
+        loader.style.top = Math.min(distance - 60, 20) + "px";
+    }
+});
+
+window.addEventListener("touchend", () => {
+    if (!pulling) return;
+    let top = parseInt(loader.style.top);
+    if (top > 10) {
+        loader.style.top = "10px";
+        setTimeout(() => { location.reload(); }, 400);
+    } else {
+        loader.style.top = "-60px";
+    }
+    pulling = false;
+});
+
+/* EDIT FUNCTIONALITY */
+let currentEditElement = null;
+let currentEditId = null;
+
+function editField(fieldId, elementId, currentValue) {
+    currentEditId = fieldId;
+    currentEditElement = elementId;
+    document.getElementById('modalTitle').innerText = 'Edit ' + fieldId.charAt(0).toUpperCase() + fieldId.slice(1);
+    document.getElementById('modalInput').value = currentValue;
+    document.getElementById('editModal').classList.add('active');
+}
+
+function editStat(elementId, currentValue) {
+    currentEditId = 'stat';
+    currentEditElement = elementId;
+    document.getElementById('modalTitle').innerText = 'Edit Value';
+    document.getElementById('modalInput').value = currentValue;
+    document.getElementById('editModal').classList.add('active');
+}
+
+// PHOTO UPLOAD FUNCTION
+function uploadPhoto() {
+    document.getElementById('imageUpload').click();
+}
+
+function handleImageUpload(event) {
+    const file = event.target.files[0];
+    
+    if (!file) return;
+    
+    showToast('⏳ Uploading photo...');
+    
+    const formData = new FormData();
+    formData.append('image', file);
+    
+    fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            const imageUrl = result.data.url;
+            
+            // Update profile photo
+            document.getElementById('profilePhoto').src = imageUrl;
+            document.getElementById('navAvatar').src = imageUrl;
+            
+            // SAVE TO FIRESTORE - THIS MAKES IT PERMANENT
+            saveToFirestore({ photoURL: imageUrl });
+            
+            showToast('✅ Photo uploaded and saved!');
+        } else {
+            showToast('❌ Upload failed');
+        }
+    })
+    .catch(error => {
+        console.error('Upload error:', error);
+        showToast('❌ Error uploading photo');
+    });
+}
+
+// STATUS SELECTOR FUNCTIONS
+function openStatusSelector() {
+    // Highlight current status
+    document.querySelectorAll('.statusOption').forEach(opt => opt.classList.remove('selected'));
+    
+    if (currentStatus === 'online') document.getElementById('statusOnline').classList.add('selected');
+    else if (currentStatus === 'atSea') document.getElementById('statusAtSea').classList.add('selected');
+    else if (currentStatus === 'inPort') document.getElementById('statusInPort').classList.add('selected');
+    else if (currentStatus === 'onLeave') document.getElementById('statusOnLeave').classList.add('selected');
+    else if (currentStatus === 'offline') document.getElementById('statusOffline').classList.add('selected');
+    
+    document.getElementById('statusModal').classList.add('active');
+}
+
+function selectStatus(status) {
+    let statusText = '';
+    let statusValue = '';
+    
+    if (status === 'online') {
+        statusText = 'Online';
+        statusValue = 'online';
+    } else if (status === 'atSea') {
+        statusText = 'At Sea';
+        statusValue = 'atSea';
+    } else if (status === 'inPort') {
+        statusText = 'In Port';
+        statusValue = 'inPort';
+    } else if (status === 'onLeave') {
+        statusText = 'On Leave';
+        statusValue = 'onLeave';
+    } else if (status === 'offline') {
+        statusText = 'Offline';
+        statusValue = 'offline';
+    }
+    
+    // Update current status
+    currentStatus = statusValue;
+    
+    // Update display
+    updateStatusDisplay(statusValue);
+    
+    // Save to Firestore
+    saveToFirestore({ status: statusValue });
+    
+    // Show toast
+    showToast(`⚓ Status updated to ${statusText}`);
+    
+    // Close modal
+    closeStatusSelector();
+}
+
+function closeStatusSelector() {
+    document.getElementById('statusModal').classList.remove('active');
+}
+
+function saveEdit() {
+    let newValue = document.getElementById('modalInput').value;
+    
+    if (!newValue.trim()) {
+        showToast('❌ Value cannot be empty');
+        return;
+    }
+    
+    // Update UI
+    document.getElementById(currentEditElement).innerText = newValue;
+    
+    // Save to Firestore based on field
+    let updateObj = {};
+    
+    if (currentEditId === 'name') {
+        updateObj.name = newValue;
+    } else if (currentEditId === 'rank') {
+        updateObj.rank = newValue;
+    } else if (currentEditId === 'company') {
+        updateObj.company = newValue;
+    } else if (currentEditId === 'vessel') {
+        updateObj.vessel = newValue;
+    } else if (currentEditId === 'position') {
+        updateObj.position = newValue;
+    } else if (currentEditId === 'experience') {
+        updateObj.experience = newValue;
+    } else if (currentEditId === 'license') {
+        updateObj.license = newValue;
+    } else if (currentEditId === 'passport') {
+        updateObj.passport = newValue;
+    } else if (currentEditId === 'seaman') {
+        updateObj.seamanBook = newValue;
+    } else if (currentEditId === 'coc') {
+        updateObj.coc = newValue;
+    } else if (currentEditId === 'stcw') {
+        updateObj.stcw = newValue;
+    } else if (currentEditId === 'medical') {
+        updateObj.medical = newValue;
+    } else if (currentEditId === 'email') {
+        updateObj.email = newValue;
+    } else if (currentEditId === 'satellite') {
+        updateObj.satellite = newValue;
+    } else if (currentEditId === 'currentPort') {
+        updateObj.currentPort = newValue;
+    } else if (currentEditId === 'nextPort') {
+        updateObj.nextPort = newValue;
+    } else if (currentEditId === 'emergencyName') {
+        updateObj.emergencyName = newValue;
+    } else if (currentEditId === 'emergencyRelation') {
+        updateObj.emergencyRelation = newValue;
+    } else if (currentEditId === 'emergencyPhone') {
+        updateObj.emergencyPhone = newValue;
+    } else if (currentEditId === 'emergencyEmail') {
+        updateObj.emergencyEmail = newValue;
+    } else if (currentEditId === 'stat') {
+        // For stats, we need to map element ID to field name
+        if (currentEditElement === 'voyagesStat') {
+            updateObj.voyages = newValue;
+        } else if (currentEditElement === 'crewStat') {
+            updateObj.crew = newValue;
+        } else if (currentEditElement === 'documentsStat') {
+            updateObj.documents = newValue;
+        }
+    }
+    
+    saveToFirestore(updateObj);
+    
+    showToast(`✅ Updated`);
+    closeModal();
+}
+
+function closeModal() {
+    document.getElementById('editModal').classList.remove('active');
+}
+
+// Toast function
+function showToast(message) {
+    const toast = document.getElementById('toast');
+    toast.innerText = message;
+    toast.classList.add('show');
+    
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 3000);
+}
+
+/* SET ACTIVE NAV ITEM */
+document.getElementById('navProfile').classList.add('active');
+
 </script>
 
 </body>

@@ -1,791 +1,2155 @@
-
-
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-<title>SeaConnect Messages</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+<title>Messages | Sea Connect</title>
 
 <style>
-body{
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
-  background:#f3f4f6;
-  color:#111;
+/* Theme Variables */
+:root {
+    --bg-primary: #f8fafc;
+    --bg-secondary: #ffffff;
+    --text-primary: #0b1e33;
+    --text-secondary: #5f6c80;
+    --card-bg: #ffffff;
+    --header-bg: #ffffff;
+    --icon-bg: #f1f5f9;
+    --input-bg: #f8fafc;
+    --nav-bg: #ffffff;
+    --modal-bg: #ffffff;
+    --badge-bg: #f0f9ff;
+    --border-subtle: rgba(0,0,0,0.05);
+    --blue-primary: #0a4b7a;
+    --blue-secondary: #1e6b9e;
+    --delete-color: #ef4444;
+}
+
+[data-theme="dark"] {
+    --bg-primary: #000000;
+    --bg-secondary: #111111;
+    --text-primary: #ffffff;
+    --text-secondary: #888888;
+    --card-bg: #111111;
+    --header-bg: #111111;
+    --icon-bg: #222222;
+    --input-bg: #222222;
+    --nav-bg: #111111;
+    --modal-bg: #111111;
+    --badge-bg: #1a1a1a;
+    --border-subtle: rgba(255,255,255,0.05);
+    --blue-primary: #3b82f6;
+    --blue-secondary: #1e3a8a;
+    --delete-color: #ef4444;
+}
+
+/* Disable system menus */
+* {
+    -webkit-touch-callout: none !important;
+    -webkit-user-select: none !important;
+    user-select: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+    box-sizing: border-box;
+}
+
+/* Allow typing in input */
+input, textarea {
+    -webkit-user-select: auto !important;
+    user-select: auto !important;
+    -webkit-touch-callout: default !important;
+}
+
+/* PULL REFRESH */
+#pullLoader {
+    position: fixed;
+    top: -60px;
+    left: 0;
+    right: 0;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    transition: top 0.25s ease;
+}
+
+.loader {
+    width: 26px;
+    height: 26px;
+    border: 3px solid var(--border-subtle);
+    border-top: 3px solid var(--blue-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Delete animation */
+@keyframes fadeOut {
+    from { opacity: 1; transform: translateX(0); }
+    to { opacity: 0; transform: translateX(100px); }
+}
+
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    transition: background-color 0.3s, color 0.3s;
 }
 
 /* HEADER */
-.header{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:16px;
-  background:white;
-  border-bottom:1px solid #e5e7eb;
-  font-weight:900;
-  font-size:20px;
-}
-.header button{
-  border:none;
-  background:none;
-  font-size:26px;
-  font-weight:900;
-  cursor:pointer;
-  color:#111;
+.appHeader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: var(--header-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid var(--bg-primary);
+    z-index: 1000;
+    transition: transform 0.35s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
-/* LIST */
-.chatList{
-padding:12px;
-padding-bottom:100px;
+.appHeader.hidden {
+    transform: translateY(-100%);
 }
 
-.chatItem{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-  background:white;
-  padding:14px;
-  border-radius:14px;
-  margin-bottom:10px;
-  cursor:pointer;
-  box-shadow:0 2px 8px rgba(0,0,0,.05);
-}
-.chatLeftItem{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  min-width:0;
-  flex:1;
-}
-.avatar{
-  width:50px;
-  height:50px;
-  border-radius:50%;
-  object-fit:cover;
-}
-.avatarWrap{ position:relative; flex-shrink:0; }
-
-.online{
-  position:absolute;
-  bottom:2px;
-  right:2px;
-  width:12px;
-  height:12px;
-  border-radius:50%;
-  border:2px solid white;
+.fileBtn {
+    position: absolute;
+    left: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text-primary);
 }
 
-.online.on{
-  background:#22c55e;
+.settingsBtn {
+    position: absolute;
+    right: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text-primary);
 }
 
-.online.off{
-  display:none;
-}
-.name{
-  font-weight:900;
-  font-size:15px;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  max-width:60vw;
-}
-.rank{
-  font-size:12px;
-  color:#6b7280;
-  margin-top:2px;
-}
-.lastLine{
-  font-size:12px;
-  color:#6b7280;
-  margin-top:4px;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  max-width:60vw;
-}
-.badges{
-  display:flex;
-  gap:8px;
-  align-items:center;
-  flex-shrink:0;
-}
-.unreadBadge{
-  font-size:12px;
-  font-weight:900;
-  color:#111;
-  background:#e5e7eb;
-  padding:4px 8px;
-  border-radius:999px;
-}
-.unreadBadge.unread{
-  background:#2563eb;
-  color:white;
-}
-.deleteChat{
-  font-size:18px;
-  font-weight:900;
-  color:#ef4444;
-  cursor:pointer;
-  padding:8px 10px;
-  line-height:1;
-  user-select:none;
+.headerIcon {
+    width: 20px;
+    height: 20px;
+    margin-bottom: 2px;
+    stroke: var(--text-primary);
+    stroke-width: 2;
 }
 
-/* CHAT BOX */
-.chatBox{
-position:fixed;
-top:0;
-left:0;
-right:0;
-bottom:0;
-background:white;
-display:none;
-flex-direction:column;
-z-index:20;
+.logo {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--blue-primary);
 }
 
-/* CHAT HEADER */
-.chatHeader{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:14px;
-  border-bottom:1px solid #e5e7eb;
-  background:white;
-}
-.chatLeft{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  min-width:0;
-}
-.chatHeader button{
-  border:none;
-  background:none;
-  font-size:26px;
-  font-weight:900;
-  cursor:pointer;
-  color:#111;
-}
-.avatarHeader{
-  position:relative;
-  width:38px;
-  height:38px;
-  flex-shrink:0;
-}
-.avatarHeader img{
-  width:38px;
-  height:38px;
-  border-radius:50%;
-  object-fit:cover;
-}
-.avatarHeader .online{
-  width:10px;
-  height:10px;
-  bottom:0;
-  right:0;
-}
-.chatTitleWrap{
-  min-width:0;
-}
-#chatName{
-  font-weight:900;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  max-width:55vw;
-}
-#chatRank{
-  font-size:12px;
-  color:#6b7280;
-  margin-top:2px;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  max-width:55vw;
+/* PAGE */
+.page {
+    padding: 80px 16px 100px 16px;
+    min-height: 100vh;
 }
 
-/* MESSAGES */
-.messages{
-flex:1;
-overflow:auto;
-padding:15px;
-padding-bottom:120px;
-background:#f3f4f6;
-}
-  
-.message{
-  margin-bottom:10px;
-  display:flex;
-}
-.me{ justify-content:flex-end; }
-
-.bubble{
-  max-width:70%;
-  background:white;
-  padding:10px 14px;
-  border-radius:16px;
-  font-size:14px;
-  box-shadow:0 1px 4px rgba(0,0,0,.05);
-}
-.me .bubble{ background:#dbeafe; }
-
-.chatPhoto{
-  max-width:220px;
-  border-radius:10px;
-  margin-top:6px;
-  display:block;
-}
-.status{
-  font-size:11px;
-  color:#6b7280;
-  margin-top:6px;
-  text-align:right;
+/* SEARCH BAR */
+.searchBar {
+    background: var(--card-bg);
+    border-radius: 40px;
+    padding: 8px 16px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid var(--border-subtle);
+    transition: all 0.3s ease;
 }
 
-/* INPUT */
-.inputArea{
-  padding:10px;
-  border-top:1px solid #e5e7eb;
-  background:white;
-  position:sticky;
-  bottom:0;
-}
-.preview{
-  max-width:120px;
-  margin-bottom:8px;
-  border-radius:8px;
-  display:none;
-}
-.row{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  width:100%;
-}
-.row button{
-  border:none;
-  background:none;
-  cursor:pointer;
-  flex-shrink:0;
-}
-#plusBtn{
-  font-size:28px;
-  font-weight:900;
-  color:#111;
-  width:40px;
-  height:40px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-.row input{
-  flex:1;
-  min-width:0;
-  padding:12px 14px;
-  border-radius:20px;
-  border:1px solid #ddd;
-  font-size:16px; /* prevents iPhone zoom */
-}
-#sendBtn{
-  width:40px;
-  height:40px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  flex-shrink:0;
-  color:#111;       /* black */
-  font-size:26px;
-  font-weight:900;
-}
-  .bottomnav{
-position:fixed;
-bottom:15px;
-left:50%;
-transform:translateX(-50%);
-width:90%;
-height:65px;
-background:#f3f4f6;
-border-radius:22px;
-display:flex;
-justify-content:space-around;
-align-items:center;
-border:1px solid #e5e7eb;
-box-shadow:0 4px 12px rgba(0,0,0,.08);
-z-index:5;
+.searchBar:focus-within {
+    border-color: var(--blue-primary);
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
 }
 
-.bottomnav button{
-background:none;
-border:none;
-font-size:12px;
-font-weight:600;
-color:#6b7280;
-cursor:pointer;
+.searchIcon {
+    color: var(--text-secondary);
+    font-size: 16px;
 }
 
-.bottomnav button.active{
-color:#3b82f6;
-font-weight:800;
+.searchBar input {
+    flex: 1;
+    border: none;
+    padding: 8px 0;
+    font-size: 15px;
+    outline: none;
+    background: transparent;
+    color: var(--text-primary);
+}
+
+.searchBar input::placeholder {
+    color: var(--text-secondary);
+}
+
+/* CHAT LIST */
+.chatList {
+    background: var(--card-bg);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* CHAT ITEM WITH SWIPE */
+.chat-item-wrapper {
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.chat-item-wrapper:last-child {
+    border-bottom: none;
+}
+
+.delete-overlay {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 80px;
+    height: 100%;
+    background: var(--delete-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    cursor: pointer;
+    z-index: 5;
+}
+
+.delete-overlay.active {
+    transform: translateX(0);
+}
+
+.delete-overlay span {
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.chatItem {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    background: var(--card-bg);
+    cursor: pointer;
+    position: relative;
+    z-index: 10;
+    transition: transform 0.3s ease;
+    width: 100%;
+}
+
+.chatItem.swiped {
+    transform: translateX(-80px);
+}
+
+.chatAvatarWrapper {
+    position: relative;
+    width: 56px;
+    height: 56px;
+    margin-right: 14px;
+    flex-shrink: 0;
+}
+
+.chatAvatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--bg-primary);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.chatStatusDot {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid var(--bg-primary);
+    z-index: 10;
+}
+
+.statusOnline { background: #10b981; }
+.statusAtSea { background: #f59e0b; }
+.statusInPort { background: #3b82f6; }
+.statusOffline { background: #94a3b8; }
+
+.chatInfo {
+    flex: 1;
+    min-width: 0;
+}
+
+.chatHeader {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+}
+
+.chatName {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.verifiedBadge {
+    display: inline-flex;
+    align-items: center;
+    background: var(--badge-bg);
+    color: var(--blue-primary);
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 30px;
+}
+
+.verifiedBadge::before {
+    content: "✓";
+    margin-right: 2px;
+    font-weight: bold;
+}
+
+.chatTime {
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+.chatPreview {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+}
+
+.previewText {
+    font-size: 13px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.unreadBadge {
+    background: var(--blue-primary);
+    color: white;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 30px;
+    min-width: 20px;
+    text-align: center;
+    flex-shrink: 0;
+    display: none; /* Hidden by default */
+}
+
+.unreadBadge.show {
+    display: block;
+}
+
+/* FULL SCREEN CHAT VIEW */
+.chatView {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--bg-primary);
+    z-index: 2000;
+    display: none;
+    flex-direction: column;
+}
+
+.chatView.active {
+    display: flex;
+}
+
+.chatViewHeader {
+    padding: 16px;
+    padding-top: env(safe-area-inset-top, 16px);
+    border-bottom: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--card-bg);
+    flex-shrink: 0;
+}
+
+.backButton {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--text-primary);
+    padding: 8px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chatHeaderAvatarWrapper {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+}
+
+.chatHeaderAvatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--bg-primary);
+}
+
+.chatHeaderStatusDot {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid var(--bg-primary);
+}
+
+.chatHeaderInfo {
+    flex: 1;
+}
+
+.chatHeaderName {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 16px;
+    margin-bottom: 4px;
+}
+
+.chatHeaderStatus {
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--text-secondary);
+}
+
+/* MESSAGES CONTAINER */
+.messagesContainer {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: var(--bg-primary);
+}
+
+.messageWrapper {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 16px;
+}
+
+.messageWrapper.sent {
+    align-items: flex-end;
+}
+
+.messageWrapper.received {
+    align-items: flex-start;
+}
+
+.messageBubble {
+    max-width: 75%;
+    padding: 12px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    line-height: 1.4;
+    word-wrap: break-word;
+}
+
+.messageBubble.sent {
+    background: var(--blue-primary);
+    color: white;
+    border-bottom-right-radius: 4px;
+}
+
+.messageBubble.received {
+    background: var(--card-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--border-subtle);
+    border-bottom-left-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.emojiReactions {
+    display: flex;
+    gap: 4px;
+    margin-top: 4px;
+    flex-wrap: wrap;
+}
+
+.sent .emojiReactions {
+    justify-content: flex-end;
+}
+
+.received .emojiReactions {
+    justify-content: flex-start;
+}
+
+.emojiReaction {
+    background: var(--card-bg);
+    border-radius: 30px;
+    padding: 4px 10px;
+    font-size: 14px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border: 1px solid var(--border-subtle);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+}
+
+.emojiReaction.sent {
+    background: rgba(255,255,255,0.2);
+}
+
+.emojiReaction .count {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-left: 2px;
+}
+
+.messageImage {
+    max-width: 200px;
+    border-radius: 12px;
+    margin-top: 4px;
+    cursor: pointer;
+}
+
+.messageTime {
+    font-size: 10px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+    margin-left: 8px;
+    margin-right: 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    justify-content: flex-end;
+}
+
+.sent .messageTime {
+    text-align: right;
+}
+
+.seenIndicator {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-left: 4px;
+}
+
+.seenIndicator.seen {
+    color: var(--blue-primary);
+}
+
+/* MESSAGE OPTIONS MODAL */
+.messageOptionsModal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.8);
+    z-index: 3500;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.messageOptionsModal.active {
+    display: flex;
+}
+
+.messageOptionsContent {
+    background: var(--modal-bg);
+    border-radius: 30px 30px 0 0;
+    width: 100%;
+    padding: 24px 20px;
+    padding-bottom: max(24px, env(safe-area-inset-bottom, 24px));
+}
+
+.messageOptionsTitle {
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.emojiRow {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin: 20px 0;
+    padding: 10px 0;
+    border-top: 1px solid var(--border-subtle);
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.emojiOption {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--icon-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.messageOption {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    border-bottom: 1px solid var(--border-subtle);
+    cursor: pointer;
+    color: var(--text-primary);
+}
+
+.messageOption:last-child {
+    border-bottom: none;
+}
+
+.messageOption.copy {
+    color: var(--blue-primary);
+}
+
+.messageOption.delete {
+    color: var(--delete-color);
+}
+
+/* IMAGE OPTIONS MODAL */
+.imageOptionsModal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.8);
+    z-index: 3500;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.imageOptionsModal.active {
+    display: flex;
+}
+
+.imageOptionsContent {
+    background: var(--modal-bg);
+    border-radius: 30px 30px 0 0;
+    width: 100%;
+    padding: 24px 20px;
+    padding-bottom: max(24px, env(safe-area-inset-bottom, 24px));
+}
+
+.imageOptionsTitle {
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.imageOptionsModal .emojiRow {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin: 20px 0;
+    padding: 10px 0;
+    border-top: 1px solid var(--border-subtle);
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.imageOptionsModal .emojiOption {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--icon-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.imageOption {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    border-bottom: 1px solid var(--border-subtle);
+    cursor: pointer;
+    color: var(--text-primary);
+}
+
+.imageOption:last-child {
+    border-bottom: none;
+}
+
+.imageOption.share {
+    color: var(--blue-primary);
+}
+
+.imageOption.save {
+    color: #10b981;
+}
+
+.imageOption.copy {
+    color: var(--blue-primary);
+}
+
+/* INPUT AREA */
+.inputArea {
+    padding: 12px 16px;
+    padding-bottom: max(12px, env(safe-area-inset-bottom, 12px));
+    background: var(--card-bg);
+    border-top: 1px solid var(--border-subtle);
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.attachButton {
+    background: var(--icon-bg);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    color: var(--text-primary);
+    flex-shrink: 0;
+}
+
+.messageInput {
+    flex: 1;
+    height: 40px;
+    padding: 0 16px;
+    border: 1px solid var(--border-subtle);
+    border-radius: 20px;
+    font-size: 14px;
+    outline: none;
+    background: var(--input-bg);
+    color: var(--text-primary);
+}
+
+.messageInput:focus {
+    border-color: var(--blue-primary);
+    background: var(--card-bg);
+}
+
+.sendButton {
+    background: var(--blue-primary);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: white;
+    flex-shrink: 0;
+}
+
+.sendButton svg {
+    width: 18px;
+    height: 18px;
+    stroke: white;
+    fill: none;
+}
+
+/* IMAGE PREVIEW BAR */
+.imagePreviewBar {
+    padding: 8px 16px;
+    background: var(--card-bg);
+    border-top: 1px solid var(--border-subtle);
+    display: none;
+    align-items: center;
+    gap: 12px;
+    animation: slideUp 0.2s ease;
+}
+
+.imagePreviewBar.active {
+    display: flex;
+}
+
+.previewContainer {
+    position: relative;
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.previewContainer img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.removeImageBtn {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--delete-color);
+    border: 2px solid var(--card-bg);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.previewFilename {
+    flex: 1;
+    font-size: 13px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* NAVIGATION */
+.navIcon {
+    width: 22px;
+    height: 22px;
+    margin-bottom: 3px;
+    stroke: var(--text-secondary);
+    stroke-width: 1.8;
+}
+
+.navAvatar {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 3px;
+    border: 2px solid var(--blue-primary);
+}
+
+.bottomnav {
+    position: fixed;
+    left: 20px;
+    right: 20px;
+    bottom: 20px;
+    height: 64px;
+    background: var(--nav-bg);
+    border-radius: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    z-index: 999;
+    transition: transform 0.35s ease;
+    padding: 0 8px;
+}
+
+.bottomnav button {
+    flex: 1;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    transition: all 0.2s;
+    padding: 8px 0;
+    border-radius: 24px;
+}
+
+.bottomnav button.active {
+    color: var(--blue-primary);
+}
+
+.bottomnav button.active .navIcon {
+    stroke: var(--blue-primary);
+}
+
+/* TOAST */
+.toast {
+    position: fixed;
+    bottom: 100px;
+    left: 20px;
+    right: 20px;
+    background: var(--text-primary);
+    color: var(--bg-primary);
+    padding: 16px;
+    border-radius: 30px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 4000;
+    display: none;
+}
+
+.toast.show {
+    display: block;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* LOADING */
+.loadingContainer {
+    display: flex;
+    justify-content: center;
+    padding: 40px;
+}
+
+.emptyState {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-secondary);
+}
+
+.emptyState .emoji {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+}
+
+.emptyState h3 {
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+}
+
+.emptyState p {
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.emptyBtn {
+    background: var(--icon-bg);
+    border: none;
+    padding: 12px 30px;
+    border-radius: 40px;
+    font-weight: 500;
+    color: var(--text-primary);
+    cursor: pointer;
 }
 </style>
 </head>
 
-<body>
+<body data-theme="light">
 
-<div class="header">
-  <button onclick="location.href='friends.html'">←</button>
-  Messages
+<div id="pullLoader">
+<div class="loader"></div>
 </div>
 
-<div id="chatList" class="chatList"></div>
+<div class="appHeader">
 
-<div id="chatBox" class="chatBox">
-  <div class="chatHeader">
-    <div class="chatLeft">
-      <button onclick="closeChat()">←</button>
+<button class="fileBtn" onclick="openFiles()">
+<svg class="headerIcon" viewBox="0 0 24 24" fill="none" stroke-width="2">
+<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+<polyline points="14 2 14 8 20 8"/>
+</svg>
+Files
+</button>
 
-      <div class="avatarHeader">
-        <img id="chatAvatar" src="https://i.ibb.co/2kRZ7Z6/avatar.png">
-        <div id="chatOnline" class="online off"></div>
-      </div>
+<div class="logo">SEA CONNECT</div>
 
-      <div class="chatTitleWrap">
-        <div id="chatName"></div>
-        <div id="chatRank"></div>
-      </div>
+<button class="settingsBtn" onclick="openSettings()">
+<svg class="headerIcon" viewBox="0 0 24 24" fill="none" stroke-width="2">
+<circle cx="12" cy="12" r="3"></circle>
+<path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82
+l.06.06a2 2 0 1 1-2.83 2.83
+l-.06-.06a1.65 1.65 0 0 0-1.82-.33
+1.65 1.65 0 0 0-1 1.51V21
+a2 2 0 1 1-4 0v-.09
+a1.65 1.65 0 0 0-1-1.51
+1.65 1.65 0 0 0-1.82.33
+l-.06.06a2 2 0 1 1-2.83-2.83
+l.06-.06a1.65 1.65 0 0 0 .33-1.82
+1.65 1.65 0 0 0-1.51-1H3
+a2 2 0 1 1 0-4h.09
+a1.65 1.65 0 0 0 1.51-1
+1.65 1.65 0 0 0-.33-1.82
+l-.06-.06a2 2 0 1 1 2.83-2.83
+l.06.06a1.65 1.65 0 0 0 1.82.33H9
+a1.65 1.65 0 0 0 1-1.51V3
+a2 2 0 1 1 4 0v.09
+a1.65 1.65 0 0 0 1 1.51
+1.65 1.65 0 0 0 1.82-.33
+l.06-.06a2 2 0 1 1 2.83 2.83
+l-.06.06a1.65 1.65 0 0 0-.33 1.82V9
+c0 .66.39 1.26 1 1.51H21
+a2 2 0 1 1 0 4h-.09
+c-.66 0-1.26.39-1.51 1z"/>
+</svg>
+Settings
+</button>
+
+</div>
+
+<div class="page">
+
+<!-- SEARCH BAR -->
+<div class="searchBar" id="searchBar">
+    <span class="searchIcon">🔍</span>
+    <input type="text" id="searchInput" placeholder="Search conversations..." onkeyup="searchChats()">
+</div>
+
+<!-- CHAT LIST VIEW -->
+<div id="chatListView">
+    <div class="chatList" id="chatList">
+        <div class="loadingContainer" id="chatsLoading">
+            <div class="loader"></div>
+        </div>
+    </div>
+</div>
+
+<!-- CHAT VIEW -->
+<div id="chatView" class="chatView">
+    <div class="chatViewHeader">
+        <button class="backButton" onclick="closeChat()">←</button>
+        <div class="chatHeaderAvatarWrapper" id="chatHeaderAvatarWrapper">
+            <img src="https://i.ibb.co/2kRZ7Z6/avatar.png" class="chatHeaderAvatar" id="chatHeaderAvatar">
+            <span class="chatHeaderStatusDot" id="chatHeaderStatusDot"></span>
+        </div>
+        <div class="chatHeaderInfo">
+            <div class="chatHeaderName" id="chatHeaderName">Loading...</div>
+            <div class="chatHeaderStatus" id="chatHeaderStatus"></div>
+        </div>
     </div>
 
-    <button onclick="startCall()">📞</button>
-  </div>
+    <div class="messagesContainer" id="messagesContainer"></div>
 
-  <div id="messages" class="messages"></div>
-
-  <div class="inputArea">
-    <img id="preview" class="preview">
-    <div class="row">
-      <button id="plusBtn" type="button">＋</button>
-      <input id="messageInput" placeholder="Type message" autocomplete="off">
-      <button id="sendBtn" type="button">↑</button>
-      <input type="file" id="fileInput" accept="image/*" style="display:none">
+    <!-- Image Preview Bar -->
+    <div class="imagePreviewBar" id="imagePreviewBar">
+        <div class="previewContainer">
+            <img id="previewImage" src="" alt="Preview">
+            <span class="removeImageBtn" onclick="removeSelectedImage()">✕</span>
+        </div>
+        <div class="previewFilename" id="previewFilename"></div>
     </div>
-  </div>
+
+    <div class="inputArea">
+        <button class="attachButton" onclick="attachFile()" id="attachBtn">📎</button>
+        <input type="text" class="messageInput" id="messageInput" placeholder="Type a message...">
+        <button class="sendButton" onclick="sendMessage()" id="sendBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+        </button>
+    </div>
 </div>
 
-  <div class="bottomnav">
-<button onclick="location.href='feeds.html'">📰 Feeds</button>
-<button onclick="location.href='friends.html'">👥 Friends</button>
-<button class="active">💬 Messages</button>
-<button onclick="location.href='profile.html'">👤 Profile</button>
 </div>
-  
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import {
-  getFirestore,
-  collection,
-  addDoc,
-  onSnapshot,
-  query,
-  orderBy,
-  getDocs,
-  updateDoc,
-  doc,
-  where,
-  limit
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
+<div class="bottomnav">
+
+<button onclick="location.href='feeds.html'" id="navFeeds">
+<svg class="navIcon" viewBox="0 0 24 24" fill="none" stroke-width="2">
+<rect x="3" y="3" width="7" height="7"></rect>
+<rect x="14" y="3" width="7" height="7"></rect>
+<rect x="14" y="14" width="7" height="7"></rect>
+<rect x="3" y="14" width="7" height="7"></rect>
+</svg>
+Feeds
+</button>
+
+<button onclick="location.href='friends.html'" id="navFriends">
+<svg class="navIcon" viewBox="0 0 24 24" fill="none" stroke-width="2">
+<circle cx="12" cy="7" r="4"></circle>
+<path d="M5.5 21a6.5 6.5 0 0 1 13 0"></path>
+</svg>
+Friends
+</button>
+
+<button onclick="location.href='messages.html'" id="navMessages" class="active">
+<svg class="navIcon" viewBox="0 0 24 24" fill="none" stroke-width="2">
+<path d="M21 15a4 4 0 0 1-4 4H7l-4 4V5a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"></path>
+</svg>
+Messages
+</button>
+
+<button onclick="location.href='profile.html'" id="navProfile">
+<div class="navAvatarContainer">
+    <img src="https://i.ibb.co/2kRZ7Z6/avatar.png" class="navAvatar" id="navAvatar">
+</div>
+Profile
+</button>
+
+</div>
+
+<!-- MESSAGE OPTIONS MODAL -->
+<div class="messageOptionsModal" id="messageOptionsModal">
+    <div class="messageOptionsContent">
+        <div class="messageOptionsTitle">Message Options</div>
+        <div class="emojiRow">
+            <div class="emojiOption" onclick="reactToMessage('👍')">👍</div>
+            <div class="emojiOption" onclick="reactToMessage('❤️')">❤️</div>
+            <div class="emojiOption" onclick="reactToMessage('😂')">😂</div>
+            <div class="emojiOption" onclick="reactToMessage('😮')">😮</div>
+            <div class="emojiOption" onclick="reactToMessage('⚓')">⚓</div>
+        </div>
+        <div class="messageOption copy" onclick="copyMessage()">
+            <span>📋</span>
+            <span>Copy Text</span>
+        </div>
+        <div class="messageOption delete" onclick="deleteMessage()" id="deleteOption">
+            <span>🗑️</span>
+            <span>Delete Message</span>
+        </div>
+        <div class="messageOption" onclick="closeMessageOptions()">
+            <span>❌</span>
+            <span>Cancel</span>
+        </div>
+    </div>
+</div>
+
+<!-- IMAGE OPTIONS MODAL -->
+<div class="imageOptionsModal" id="imageOptionsModal">
+    <div class="imageOptionsContent">
+        <div class="imageOptionsTitle">Image Options</div>
+        <div class="emojiRow">
+            <div class="emojiOption" onclick="reactToImage('👍')">👍</div>
+            <div class="emojiOption" onclick="reactToImage('❤️')">❤️</div>
+            <div class="emojiOption" onclick="reactToImage('😂')">😂</div>
+            <div class="emojiOption" onclick="reactToImage('😮')">😮</div>
+            <div class="emojiOption" onclick="reactToImage('⚓')">⚓</div>
+        </div>
+        <div class="imageOption share" onclick="shareImage()">
+            <span>📤</span>
+            <span>Share</span>
+        </div>
+        <div class="imageOption save" onclick="saveImage()">
+            <span>💾</span>
+            <span>Save to Photos</span>
+        </div>
+        <div class="imageOption copy" onclick="copyImageUrl()">
+            <span>📋</span>
+            <span>Copy</span>
+        </div>
+        <div class="imageOption" onclick="closeImageOptions()">
+            <span>❌</span>
+            <span>Cancel</span>
+        </div>
+    </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+<script>
+// Firebase config
 const firebaseConfig = {
-  apiKey:"AIzaSyCNlodsmEHrSXxgH0gTOcx4cAXwG8qmG9w",
-  authDomain:"seaconnect-d2baa.firebaseapp.com",
-  projectId:"seaconnect-d2baa"
+    apiKey: "AIzaSyCNlodsmEHrSXxgH0gTOcx4cAXwG8qmG9w",
+    authDomain: "seaconnect-d2baa.firebaseapp.com",
+    projectId: "seaconnect-d2baa",
+    storageBucket: "seaconnect-d2baa.appspot.com",
+    messagingSenderId: "402383997556",
+    appId: "1:402383997556:web:d4b5894b25545ecaef9f21"
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
 
-const IMGBB_KEY="5b417e8de4a883f7425eeda12dc38f06";
+// ImgBB API Key
+const IMGBB_API_KEY = '7a6b8c43b67ce45e354763c86371b2e1';
 
-/* elements */
-const chatList = document.getElementById("chatList");
-const chatBox = document.getElementById("chatBox");
-const messagesEl = document.getElementById("messages");
-const chatAvatar = document.getElementById("chatAvatar");
-const chatName = document.getElementById("chatName");
-const chatRank = document.getElementById("chatRank");
-const chatOnline = document.getElementById("chatOnline");
-const preview = document.getElementById("preview");
-const messageInput = document.getElementById("messageInput");
-const fileInput = document.getElementById("fileInput");
-const sendBtn = document.getElementById("sendBtn");
-const plusBtn = document.getElementById("plusBtn");
+let currentUser = null;
+let currentUserData = null;
+let currentChatPartnerId = null;
+let currentChatPartnerEmail = null;
+let allUsers = [];
+let allChats = [];
+let selectedImageFile = null;
+let messagesListener = null;
+let currentMessageId = null;
+let currentMessageText = '';
+let currentImageUrl = null;
+let currentImageMessageId = null;
+let longPressTimer = null;
+let swipedItem = null;
+let touchStartX = 0;
+let touchCurrentX = 0;
+let isSwiping = false;
 
-plusBtn.onclick = () => fileInput.click();
+// Disable system menus
+document.addEventListener('contextmenu', (e) => e.preventDefault());
 
-let currentEmail = null;
-let chatUser = null;
-let chatId = null;
-let unsubMessages = null;
-
-/* helpers */
-function chatKey(a,b){ return [a,b].sort().join("_"); }
-
-async function getMyUserDocRefByEmail(email){
-  const q = query(collection(db,"users"), where("email","==",email), limit(1));
-  const s = await getDocs(q);
-  if(s.empty) return null;
-  return doc(db,"users", s.docs[0].id);
-}
-
-async function setOnlineStatus(state){
-  const ref = await getMyUserDocRefByEmail(currentEmail);
-  if(!ref) return;
-  await updateDoc(ref, { online: state, lastSeen: Date.now() });
-}
-
-window.addEventListener("beforeunload", ()=>{
-  if(currentEmail) setOnlineStatus(false);
-});
-document.addEventListener("visibilitychange", ()=>{
-  if(document.hidden){
-    setOnlineStatus(false);
-  }else{
-    setOnlineStatus(true);
-  }
-});
-/* INTERNET CONNECTION DETECTION */
-
-window.addEventListener("offline", ()=>{
-  console.log("Internet lost");
-  setOnlineStatus(false);
-});
-
-window.addEventListener("online", ()=>{
-  console.log("Internet restored");
-  setOnlineStatus(true);
-});
-  
-/* user profile */
-
-async function getUser(email){
-  let name=email.split("@")[0];
-  let rank="";
-  let photo="https://i.ibb.co/2kRZ7Z6/avatar.png";
-  let online=false;
-  let lastSeen=0;
-
-  const snap = await getDocs(collection(db,"users"));
-  snap.forEach(d=>{
-    const u=d.data();
-    if(((u.email||"").toLowerCase())===email){
-      name=u.name||name;
-      rank=u.rank||"";
-      photo=u.photo||photo;
-      online=!!u.online;
-      lastSeen=u.lastSeen || 0;
+// Format time helper
+function formatTime(timestamp) {
+    if (!timestamp) return 'just now';
+    
+    try {
+        let date;
+        if (timestamp.toDate) {
+            date = timestamp.toDate();
+        } else if (timestamp.seconds) {
+            date = new Date(timestamp.seconds * 1000);
+        } else {
+            date = new Date(timestamp);
+        }
+        
+        if (isNaN(date.getTime())) {
+            return 'just now';
+        }
+        
+        const now = new Date();
+        const diff = Math.floor((now - date) / 1000);
+        
+        if (diff < 60) return 'just now';
+        if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+        if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+        if (diff < 604800) return Math.floor(diff / 86400) + 'd ago';
+        
+        return date.toLocaleDateString();
+    } catch (e) {
+        return 'just now';
     }
-  });
-
-  return {name,rank,photo,online,lastSeen};
 }
-/* auth */
-onAuthStateChanged(auth, async (user)=>{
-  if(!user){ location.href="index.html"; return; }
 
-  currentEmail = user.email.toLowerCase();
-  await setOnlineStatus(true);
-/* heartbeat */
-setInterval(()=>{
-  if(currentEmail){
-    setOnlineStatus(true);
-  }
-},15000);
-  loadChats();
+// Mark messages as read when opening chat
+async function markMessagesAsRead(chatPartnerEmail) {
+    if (!currentUser || !chatPartnerEmail) return;
+    
+    try {
+        const snapshot = await db.collection('messages')
+            .where('from', '==', chatPartnerEmail)
+            .where('to', '==', currentUser.email)
+            .where('seen', '==', false)
+            .get();
+        
+        const batch = db.batch();
+        snapshot.forEach((doc) => {
+            batch.update(doc.ref, { seen: true });
+        });
+        
+        if (snapshot.size > 0) {
+            await batch.commit();
+        }
+    } catch (error) {
+        console.error('Error marking messages as read:', error);
+    }
+}
 
-  /* open chat if coming from friends.html: message.html?user=email */
-  const params = new URLSearchParams(window.location.search);
-  const openUser = params.get("user");
-  if(openUser){
-    openChat(openUser.toLowerCase());
-  }
-});
-
-/* CHAT LIST with unread/read + delete */
-function loadChats(){
-  const q = query(collection(db,"messages"), orderBy("createdAt"));
-
-  onSnapshot(q, async (snap)=>{
-    // Map: otherEmail -> { lastMsg, unreadCount }
-    const chats = {};
-
-    snap.forEach(docSnap=>{
-      const m = docSnap.data();
-
-      // ignore deleted messages
-      if(m.deleted) return;
-
-      if(m.from!==currentEmail && m.to!==currentEmail) return;
-
-      const other = (m.from===currentEmail) ? m.to : m.from;
-      if(!chats[other]) chats[other] = { lastMsg: null, unread: 0 };
-
-      // last message
-      chats[other].lastMsg = m;
-
-      // unread count (messages TO me, not seen)
-      if(m.to===currentEmail && !m.seen){
-        chats[other].unread += 1;
-      }
+// Load user theme
+function loadUserTheme() {
+    if (!currentUser) return;
+    db.collection('users').doc(currentUser.uid).get().then((doc) => {
+        if (doc.exists) {
+            const data = doc.data();
+            if (data.appearance && data.appearance.theme) {
+                if (data.appearance.theme === 'Dark') {
+                    document.body.setAttribute('data-theme', 'dark');
+                } else {
+                    document.body.setAttribute('data-theme', 'light');
+                }
+            }
+            if (data.photoURL) {
+                document.getElementById('navAvatar').src = data.photoURL;
+            }
+        }
     });
+}
 
-    chatList.innerHTML = "";
+// Load current user data
+function loadCurrentUserData() {
+    if (!currentUser) return;
+    db.collection('users').doc(currentUser.uid).get().then((doc) => {
+        if (doc.exists) {
+            currentUserData = doc.data();
+            if (currentUserData.photoURL) {
+                document.getElementById('navAvatar').src = currentUserData.photoURL;
+            }
+        }
+    });
+}
 
-    // render
-    for(const email in chats){
-      const info = chats[email];
+// Toast helper
+function showToast(message) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2000);
+}
 
-const p = await getUser(email);
-
-const unreadCount = info.unread || 0;
-const readLabel = unreadCount>0 ? `Unread ${unreadCount}` : "Read";
-const badgeClass = unreadCount>0 ? "unreadBadge unread" : "unreadBadge";
-
-const lastText = (info.lastMsg?.text && info.lastMsg.text.trim())
-  ? info.lastMsg.text.trim()
-  : (info.lastMsg?.photo ? "📷 Photo" : "");
-
-const isOnline = p.online && (Date.now() - (p.lastSeen || 0) < 15000);
-const onlineClass = isOnline ? "on" : "off";
-
-/* WATCH USER ONLINE REALTIME */
-const qUser = query(collection(db,"users"), where("email","==",email), limit(1));
-
-onSnapshot(qUser,(snap)=>{
-  if(!snap.empty){
-    const u = snap.docs[0].data();
-    const dot = document.querySelector(`.chatItem[data-email="${email}"] .online`);
-    if(dot){
-const isOnline = u.online && (Date.now() - (u.lastSeen || 0) < 15000);
-
-dot.className = "online " + (isOnline ? "on" : "off");
+// Check for URL parameters
+function checkUrlForChat() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const friendId = urlParams.get('friend');
+    const friendEmail = urlParams.get('email');
+    
+    if (friendId) {
+        if (friendEmail) {
+            openChat(friendId, decodeURIComponent(friendEmail));
+        } else {
+            setTimeout(() => {
+                const user = allUsers.find(u => u.id === friendId);
+                if (user) {
+                    openChat(friendId, user.email);
+                }
+            }, 1000);
+        }
     }
-  }
-});
-      
+}
 
-      chatList.innerHTML += `
-        <div class="chatItem" data-email="${email}">
-          <div class="chatLeftItem">
-            <div class="avatarWrap">
-              <img class="avatar" src="${p.photo}">
-              <div class="online ${onlineClass}"></div>
+// Check auth state
+auth.onAuthStateChanged((user) => {
+    if (!user) {
+        window.location.href = 'login.html';
+        return;
+    }
+    currentUser = user;
+    loadCurrentUserData();
+    loadUserTheme();
+    loadAllUsers().then(() => {
+        loadChats();
+        checkUrlForChat();
+    });
+});
+
+// Load all users
+function loadAllUsers() {
+    return db.collection('users').get().then((snapshot) => {
+        allUsers = [];
+        snapshot.forEach((doc) => {
+            const data = doc.data();
+            allUsers.push({
+                id: doc.id,
+                email: data.email,
+                name: data.name || data.email?.split('@')[0] || 'User',
+                photo: data.photoURL || 'https://i.ibb.co/2kRZ7Z6/avatar.png',
+                status: data.status || 'offline',
+                verified: data.verified || false
+            });
+        });
+    });
+}
+
+// Load chats
+function loadChats() {
+    const chatList = document.getElementById('chatList');
+    const loading = document.getElementById('chatsLoading');
+    
+    if (!chatList || !loading) return;
+    
+    db.collection('messages')
+        .orderBy('createdAt', 'desc')
+        .onSnapshot(async (snapshot) => {
+            loading.style.display = 'none';
+            
+            const chatMap = new Map();
+            
+            snapshot.forEach(doc => {
+                const msg = doc.data();
+                if (msg.deleted) return;
+                if (msg.from !== currentUser.email && msg.to !== currentUser.email) return;
+                
+                const otherEmail = msg.from === currentUser.email ? msg.to : msg.from;
+                
+                if (!chatMap.has(otherEmail)) {
+                    chatMap.set(otherEmail, {
+                        lastMsg: msg,
+                        unread: msg.to === currentUser.email && !msg.seen ? 1 : 0
+                    });
+                } else {
+                    const chat = chatMap.get(otherEmail);
+                    if (msg.to === currentUser.email && !msg.seen) {
+                        chat.unread = (chat.unread || 0) + 1;
+                    }
+                    
+                    const existingTime = chat.lastMsg.createdAt ? 
+                        (chat.lastMsg.createdAt.toDate ? chat.lastMsg.createdAt.toDate() : new Date(chat.lastMsg.createdAt)) : new Date(0);
+                    const newTime = msg.createdAt ? 
+                        (msg.createdAt.toDate ? msg.createdAt.toDate() : new Date(msg.createdAt)) : new Date(0);
+                    
+                    if (newTime > existingTime) {
+                        chat.lastMsg = msg;
+                    }
+                }
+            });
+            
+            if (chatMap.size === 0) {
+                chatList.innerHTML = '<div class="emptyState"><div class="emoji">💬</div><h3>No messages yet</h3><p>Start chatting!</p></div>';
+                return;
+            }
+            
+            let html = '';
+            allChats = [];
+            
+            for (const [email, chatData] of chatMap) {
+                const user = allUsers.find(u => u.email === email);
+                if (!user) continue;
+                
+                const time = chatData.lastMsg.createdAt ? formatTime(chatData.lastMsg.createdAt) : '';
+                const lastMsg = chatData.lastMsg.text || (chatData.lastMsg.photo ? '📷 Photo' : '');
+                
+                let statusClass = 'statusOffline';
+                if (user.status === 'online') statusClass = 'statusOnline';
+                else if (user.status === 'atSea') statusClass = 'statusAtSea';
+                else if (user.status === 'inPort') statusClass = 'statusInPort';
+                
+                const chatId = [currentUser.uid, user.id].sort().join('_');
+                const unreadCount = chatData.unread || 0;
+                
+                allChats.push({
+                    email, userId: user.id, name: user.name, photo: user.photo,
+                    status: user.status, verified: user.verified,
+                    unread: unreadCount, lastMsg, time, chatId
+                });
+                
+                html += `
+                    <div class="chat-item-wrapper" data-chat-id="${chatId}">
+                        <div class="delete-overlay" onclick="deleteChat('${chatId}')">
+                            <span>Delete</span>
+                        </div>
+                        <div class="chatItem" onclick="openChat('${user.id}', '${email}')"
+                             ontouchstart="handleSwipeStart(event, '${chatId}')"
+                             ontouchmove="handleSwipeMove(event)"
+                             ontouchend="handleSwipeEnd(event)">
+                            <div class="chatAvatarWrapper">
+                                <img src="${user.photo}" class="chatAvatar">
+                                <span class="chatStatusDot ${statusClass}"></span>
+                            </div>
+                            <div class="chatInfo">
+                                <div class="chatHeader">
+                                    <span class="chatName">${user.name}${user.verified ? '<span class="verifiedBadge"></span>' : ''}</span>
+                                    <span class="chatTime">${time}</span>
+                                </div>
+                                <div class="chatPreview">
+                                    <span class="previewText">${lastMsg}</span>
+                                    ${unreadCount > 0 ? `<span class="unreadBadge show">${unreadCount}</span>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            chatList.innerHTML = html;
+        }, error => {
+            console.error('Error loading chats:', error);
+            chatList.innerHTML = '<div class="emptyState">Error loading chats</div>';
+        });
+}
+
+// Swipe handlers for delete
+function handleSwipeStart(event, chatId) {
+    touchStartX = event.touches[0].clientX;
+    touchCurrentX = touchStartX;
+    isSwiping = true;
+    
+    if (swipedItem && swipedItem !== chatId) {
+        const prevWrapper = document.querySelector(`.chat-item-wrapper[data-chat-id="${swipedItem}"]`);
+        if (prevWrapper) {
+            const prevItem = prevWrapper.querySelector('.chatItem');
+            const prevOverlay = prevWrapper.querySelector('.delete-overlay');
+            if (prevItem) {
+                prevItem.classList.remove('swiped');
+                prevItem.style.transform = '';
+            }
+            if (prevOverlay) {
+                prevOverlay.classList.remove('active');
+            }
+        }
+    }
+}
+
+function handleSwipeMove(event) {
+    if (!isSwiping) return;
+    
+    touchCurrentX = event.touches[0].clientX;
+    const diff = touchStartX - touchCurrentX;
+    
+    if (diff > 10 && diff < 100) {
+        const item = event.target.closest('.chatItem');
+        if (item) {
+            item.style.transform = `translateX(-${Math.min(diff, 80)}px)`;
+        }
+    }
+}
+
+function handleSwipeEnd(event) {
+    if (!isSwiping) return;
+    
+    const diff = touchStartX - touchCurrentX;
+    const item = event.target.closest('.chatItem');
+    const wrapper = item?.closest('.chat-item-wrapper');
+    
+    if (item && wrapper) {
+        const chatId = wrapper.dataset.chatId;
+        const overlay = wrapper.querySelector('.delete-overlay');
+        
+        if (diff > 40) {
+            item.classList.add('swiped');
+            item.style.transform = '';
+            overlay.classList.add('active');
+            swipedItem = chatId;
+        } else {
+            item.classList.remove('swiped');
+            item.style.transform = '';
+            overlay.classList.remove('active');
+            swipedItem = null;
+        }
+    }
+    
+    isSwiping = false;
+}
+
+// Delete entire chat
+async function deleteChat(chatId) {
+    if (!confirm('Delete this entire conversation? This cannot be undone.')) {
+        resetSwipe(chatId);
+        return;
+    }
+    
+    showToast('🗑️ Deleting conversation...');
+    
+    try {
+        const userIds = chatId.split('_');
+        const otherUserId = userIds.find(id => id !== currentUser.uid);
+        
+        if (!otherUserId) {
+            showToast('❌ Error: Could not identify chat');
+            resetSwipe(chatId);
+            return;
+        }
+        
+        const otherUser = allUsers.find(u => u.id === otherUserId);
+        if (!otherUser) {
+            showToast('❌ Error: User not found');
+            resetSwipe(chatId);
+            return;
+        }
+        
+        const messagesSnapshot = await db.collection('messages').get();
+        
+        const batch = db.batch();
+        let deleteCount = 0;
+        
+        messagesSnapshot.forEach((doc) => {
+            const msg = doc.data();
+            if ((msg.from === currentUser.email && msg.to === otherUser.email) ||
+                (msg.from === otherUser.email && msg.to === currentUser.email)) {
+                batch.delete(doc.ref);
+                deleteCount++;
+            }
+        });
+        
+        if (deleteCount === 0) {
+            showToast('❌ No messages found');
+            resetSwipe(chatId);
+            return;
+        }
+        
+        await batch.commit();
+        
+        showToast(`✅ Deleted ${deleteCount} messages`);
+        
+        const wrapper = document.querySelector(`.chat-item-wrapper[data-chat-id="${chatId}"]`);
+        if (wrapper) {
+            wrapper.style.animation = 'fadeOut 0.3s ease';
+            setTimeout(() => {
+                wrapper.remove();
+                const chatList = document.getElementById('chatList');
+                if (chatList.children.length === 0) {
+                    chatList.innerHTML = '<div class="emptyState"><div class="emoji">💬</div><h3>No messages yet</h3><p>Start chatting!</p></div>';
+                }
+            }, 300);
+        }
+        
+    } catch (error) {
+        console.error('Error deleting chat:', error);
+        showToast('❌ Error deleting conversation: ' + error.message);
+        resetSwipe(chatId);
+    }
+}
+
+function resetSwipe(chatId) {
+    const wrapper = document.querySelector(`.chat-item-wrapper[data-chat-id="${chatId}"]`);
+    if (wrapper) {
+        const item = wrapper.querySelector('.chatItem');
+        const overlay = wrapper.querySelector('.delete-overlay');
+        if (item) {
+            item.classList.remove('swiped');
+            item.style.transform = '';
+        }
+        if (overlay) {
+            overlay.classList.remove('active');
+        }
+    }
+    swipedItem = null;
+}
+
+// Search chats
+function searchChats() {
+    const term = document.getElementById('searchInput').value.toLowerCase();
+    const filtered = allChats.filter(c => c.name.toLowerCase().includes(term));
+    
+    let html = '';
+    filtered.forEach(chat => {
+        let statusClass = chat.status === 'online' ? 'statusOnline' : 'statusOffline';
+        html += `
+            <div class="chat-item-wrapper" data-chat-id="${chat.chatId}">
+                <div class="delete-overlay" onclick="deleteChat('${chat.chatId}')">
+                    <span>Delete</span>
+                </div>
+                <div class="chatItem" onclick="openChat('${chat.userId}', '${chat.email}')"
+                     ontouchstart="handleSwipeStart(event, '${chat.chatId}')"
+                     ontouchmove="handleSwipeMove(event)"
+                     ontouchend="handleSwipeEnd(event)">
+                    <div class="chatAvatarWrapper">
+                        <img src="${chat.photo}" class="chatAvatar">
+                        <span class="chatStatusDot ${statusClass}"></span>
+                    </div>
+                    <div class="chatInfo">
+                        <div class="chatHeader">
+                            <span class="chatName">${chat.name}</span>
+                            <span class="chatTime">${chat.time}</span>
+                        </div>
+                        <div class="chatPreview">
+                            <span class="previewText">${chat.lastMsg}</span>
+                            ${chat.unread > 0 ? `<span class="unreadBadge show">${chat.unread}</span>` : ''}
+                        </div>
+                    </div>
+                </div>
             </div>
+        `;
+    });
+    document.getElementById('chatList').innerHTML = html || '<div class="emptyState">No results</div>';
+}
 
-            <div style="min-width:0;">
-              <div class="name">${p.name}</div>
-              <div class="rank">${p.rank}</div>
-              <div class="lastLine">${lastText}</div>
+// Open chat
+function openChat(userId, email) {
+    if (!userId) return;
+    
+    if (!email) {
+        const user = allUsers.find(u => u.id === userId);
+        if (user) {
+            email = user.email;
+        } else {
+            showToast('❌ Could not identify user');
+            return;
+        }
+    }
+    
+    currentChatPartnerId = userId;
+    currentChatPartnerEmail = email;
+    
+    // Mark messages as read when opening chat
+    markMessagesAsRead(email);
+    
+    db.collection('users').doc(userId).get().then(doc => {
+        if (doc.exists) {
+            const data = doc.data();
+            document.getElementById('chatHeaderName').textContent = data.name || email.split('@')[0] || 'Sailor';
+            document.getElementById('chatHeaderAvatar').src = data.photoURL || 'https://i.ibb.co/2kRZ7Z6/avatar.png';
+            
+            let statusClass = 'statusOffline';
+            let statusText = 'Offline';
+            if (data.status === 'online') {
+                statusClass = 'statusOnline';
+                statusText = 'Online';
+            } else if (data.status === 'atSea') {
+                statusClass = 'statusAtSea';
+                statusText = 'At Sea';
+            } else if (data.status === 'inPort') {
+                statusClass = 'statusInPort';
+                statusText = 'In Port';
+            }
+            document.getElementById('chatHeaderStatusDot').className = `chatHeaderStatusDot ${statusClass}`;
+            document.getElementById('chatHeaderStatus').innerHTML = `<span class="${statusClass}" style="width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px;"></span> ${statusText}`;
+        } else {
+            document.getElementById('chatHeaderName').textContent = email.split('@')[0] || 'Sailor';
+            document.getElementById('chatHeaderAvatar').src = 'https://i.ibb.co/2kRZ7Z6/avatar.png';
+            document.getElementById('chatHeaderStatusDot').className = 'chatHeaderStatusDot statusOffline';
+            document.getElementById('chatHeaderStatus').innerHTML = '<span class="statusOffline" style="width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px;"></span> Offline';
+        }
+    }).catch(error => {
+        console.error('Error loading user:', error);
+    });
+    
+    document.getElementById('chatListView').style.display = 'none';
+    document.getElementById('chatView').classList.add('active');
+    
+    loadMessages();
+}
+
+// Close chat
+function closeChat() {
+    document.getElementById('chatListView').style.display = 'block';
+    document.getElementById('chatView').classList.remove('active');
+    if (messagesListener) messagesListener();
+    currentChatPartnerId = null;
+    currentChatPartnerEmail = null;
+    removeSelectedImage();
+}
+
+// Load messages with seen indicators
+function loadMessages() {
+    const container = document.getElementById('messagesContainer');
+    
+    if (!currentChatPartnerEmail || !currentUser) return;
+    
+    if (messagesListener) messagesListener();
+    
+    messagesListener = db.collection('messages')
+        .orderBy('createdAt', 'asc')
+        .onSnapshot(snapshot => {
+            let html = '';
+            let count = 0;
+            
+            snapshot.forEach(doc => {
+                const msg = doc.data();
+                
+                if ((msg.from === currentUser.email && msg.to === currentChatPartnerEmail) ||
+                    (msg.from === currentChatPartnerEmail && msg.to === currentUser.email)) {
+                    
+                    if (msg.deleted) return;
+                    
+                    count++;
+                    const isSent = msg.from === currentUser.email;
+                    const timeStr = formatTime(msg.createdAt);
+                    
+                    // Add seen indicator for sent messages
+                    let seenIndicator = '';
+                    if (isSent) {
+                        seenIndicator = msg.seen ? ' ✓✓' : ' ✓';
+                    }
+                    
+                    let reactionsHtml = '';
+                    if (msg.reactions && msg.reactions.length > 0) {
+                        const counts = {};
+                        msg.reactions.forEach(r => counts[r.emoji] = (counts[r.emoji] || 0) + 1);
+                        
+                        reactionsHtml = '<div class="emojiReactions">';
+                        for (let [emoji, cnt] of Object.entries(counts)) {
+                            reactionsHtml += `
+                                <div class="emojiReaction ${isSent ? 'sent' : ''}" onclick="toggleReaction('${doc.id}', '${emoji}')">
+                                    <span>${emoji}</span>
+                                    ${cnt > 1 ? `<span class="count">${cnt}</span>` : ''}
+                                </div>
+                            `;
+                        }
+                        reactionsHtml += '</div>';
+                    }
+                    
+                    const safeText = (msg.text || '').replace(/'/g, "\\'");
+                    
+                    html += `
+                        <div class="messageWrapper ${isSent ? 'sent' : 'received'}" data-id="${doc.id}">
+                            <div class="messageBubble ${isSent ? 'sent' : 'received'}"
+                                 ontouchstart="handleTouchStart('${doc.id}', '${safeText}', ${isSent})"
+                                 ontouchmove="handleTouchMove()"
+                                 ontouchend="handleTouchEnd()">
+                                ${msg.text || ''}
+                                ${msg.photo ? `<img src="${msg.photo}" class="messageImage" onclick="window.open('${msg.photo}')" ontouchstart="handleImageTouchStart('${doc.id}', '${msg.photo}')">` : ''}
+                            </div>
+                            ${reactionsHtml}
+                            <div class="messageTime">
+                                ${timeStr}
+                                <span class="seenIndicator ${msg.seen ? 'seen' : ''}">${seenIndicator}</span>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+            
+            if (count === 0) {
+                container.innerHTML = '<div class="emptyState"><div class="emoji">💬</div><h3>No messages yet</h3><p>Say hello!</p></div>';
+            } else {
+                container.innerHTML = html;
+            }
+            
+            container.scrollTop = container.scrollHeight;
+        }, error => {
+            console.error('Error loading messages:', error);
+            container.innerHTML = '<div class="emptyState">Error loading messages</div>';
+        });
+}
+
+// Touch handlers
+let selectedMessageId = null;
+let selectedMessageText = '';
+let selectedMessageIsSent = false;
+
+function handleTouchStart(id, text, isSent) {
+    longPressTimer = setTimeout(() => {
+        selectedMessageId = id;
+        selectedMessageText = text;
+        selectedMessageIsSent = isSent;
+        document.getElementById('deleteOption').style.display = isSent ? 'flex' : 'none';
+        document.getElementById('messageOptionsModal').classList.add('active');
+    }, 500);
+}
+
+function handleTouchMove() {
+    clearTimeout(longPressTimer);
+}
+
+function handleTouchEnd() {
+    clearTimeout(longPressTimer);
+}
+
+function handleImageTouchStart(id, url) {
+    longPressTimer = setTimeout(() => {
+        currentImageMessageId = id;
+        currentImageUrl = url;
+        document.getElementById('imageOptionsModal').classList.add('active');
+    }, 500);
+}
+
+function reactToMessage(emoji) {
+    if (selectedMessageId) {
+        toggleReaction(selectedMessageId, emoji);
+        closeMessageOptions();
+    }
+}
+
+function reactToImage(emoji) {
+    if (currentImageMessageId) {
+        toggleReaction(currentImageMessageId, emoji);
+        closeImageOptions();
+    }
+}
+
+async function toggleReaction(messageId, emoji) {
+    const msgRef = db.collection('messages').doc(messageId);
+    const msg = await msgRef.get();
+    
+    if (!msg.exists) return;
+    
+    const reactions = msg.data().reactions || [];
+    const existing = reactions.findIndex(r => r.userId === currentUser.uid && r.emoji === emoji);
+    
+    if (existing >= 0) {
+        reactions.splice(existing, 1);
+    } else {
+        reactions.push({ userId: currentUser.uid, emoji, timestamp: Date.now() });
+    }
+    
+    await msgRef.update({ reactions });
+}
+
+function copyMessage() {
+    if (selectedMessageText) {
+        navigator.clipboard.writeText(selectedMessageText);
+        showToast('Copied!');
+    }
+    closeMessageOptions();
+}
+
+async function deleteMessage() {
+    if (!selectedMessageId) return;
+    await db.collection('messages').doc(selectedMessageId).update({ deleted: true });
+    showToast('Deleted');
+    closeMessageOptions();
+}
+
+function closeMessageOptions() {
+    document.getElementById('messageOptionsModal').classList.remove('active');
+    selectedMessageId = null;
+}
+
+function shareImage() {
+    if (navigator.share && currentImageUrl) {
+        navigator.share({ url: currentImageUrl });
+    }
+    closeImageOptions();
+}
+
+function saveImage() {
+    if (currentImageUrl) {
+        const a = document.createElement('a');
+        a.href = currentImageUrl;
+        a.download = 'image.jpg';
+        a.click();
+        showToast('Saved');
+    }
+    closeImageOptions();
+}
+
+function copyImageUrl() {
+    if (currentImageUrl) {
+        navigator.clipboard.writeText(currentImageUrl);
+        showToast('URL copied');
+    }
+    closeImageOptions();
+}
+
+function closeImageOptions() {
+    document.getElementById('imageOptionsModal').classList.remove('active');
+    currentImageMessageId = null;
+    currentImageUrl = null;
+}
+
+// Image preview functions
+function showImagePreview(file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        document.getElementById('previewImage').src = e.target.result;
+        document.getElementById('previewFilename').textContent = file.name;
+        document.getElementById('imagePreviewBar').classList.add('active');
+    };
+    reader.readAsDataURL(file);
+}
+
+function removeSelectedImage() {
+    selectedImageFile = null;
+    document.getElementById('imagePreviewBar').classList.remove('active');
+    document.getElementById('previewImage').src = '';
+    document.getElementById('previewFilename').textContent = '';
+    document.getElementById('messageInput').placeholder = 'Type a message...';
+}
+
+function attachFile() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            if (file.size > 10 * 1024 * 1024) {
+                showToast('❌ Image too large (max 10MB)');
+                return;
+            }
+            selectedImageFile = file;
+            showImagePreview(file);
+        }
+    };
+    input.click();
+}
+
+// Send message with instant posting
+async function sendMessage() {
+    const input = document.getElementById('messageInput');
+    const text = input.value.trim();
+    
+    if (!text && !selectedImageFile) {
+        return;
+    }
+    
+    if (!currentChatPartnerEmail) {
+        showToast('❌ No chat partner selected');
+        return;
+    }
+    
+    const messageText = text;
+    const fileToUpload = selectedImageFile;
+    
+    input.value = '';
+    removeSelectedImage();
+    
+    const tempId = 'temp_' + Date.now();
+    
+    const container = document.getElementById('messagesContainer');
+    const tempMessageHtml = `
+        <div class="messageWrapper sent" data-id="${tempId}">
+            <div class="messageBubble sent">
+                ${messageText || '📷 Sending image...'}
             </div>
-          </div>
-
-          <div class="badges">
-            <div class="${badgeClass}">${readLabel}</div>
-            <div class="deleteChat" title="Delete">✕</div>
-          </div>
+            <div class="messageTime">
+                just now
+                <span class="seenIndicator"> ✓</span>
+            </div>
         </div>
-      `;
-    }
-
-    // click handlers (NO inline onclick, no broken attributes)
-    document.querySelectorAll(".chatItem").forEach(item=>{
-      const email = item.getAttribute("data-email");
-      const delBtn = item.querySelector(".deleteChat");
-
-      item.addEventListener("click", ()=> openChat(email));
-
-      delBtn.addEventListener("click", (e)=>{
-        e.stopPropagation();
-        deleteChat(email);
-      });
-    });
-  });
+    `;
+    container.insertAdjacentHTML('beforeend', tempMessageHtml);
+    container.scrollTop = container.scrollHeight;
+    
+    (async () => {
+        try {
+            let photoUrl = '';
+            
+            if (fileToUpload) {
+                const formData = new FormData();
+                formData.append('image', fileToUpload);
+                
+                const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    photoUrl = data.data.url;
+                }
+            }
+            
+            await db.collection('messages').add({
+                from: currentUser.email,
+                to: currentChatPartnerEmail,
+                text: messageText || '',
+                photo: photoUrl,
+                seen: false,
+                deleted: false,
+                reactions: [],
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            
+        } catch (error) {
+            console.error('Send error:', error);
+            showToast('❌ Failed to send');
+            
+            const tempMsg = document.querySelector(`[data-id="${tempId}"]`);
+            if (tempMsg) tempMsg.remove();
+        }
+    })();
 }
 
-/* OPEN CHAT */
-window.openChat = async function(email){
-
-  chatUser = email;
-  chatId = chatKey(currentEmail, email);
-
-  const q = query(collection(db,"users"), where("email","==",email), limit(1));
-
-  onSnapshot(q,(snap)=>{
-
-    if(!snap.empty){
-
-      const u = snap.docs[0].data();
-
-      chatAvatar.src = u.photo || "https://i.ibb.co/2kRZ7Z6/avatar.png";
-      chatName.innerText = u.name || email.split("@")[0];
-      chatRank.innerText = u.rank || "";
-
-      const isOnline = u.online && (Date.now() - (u.lastSeen || 0) < 15000);
-
-chatOnline.className = "online " + (isOnline ? "on" : "off");
-
+// Close modals on outside tap
+document.addEventListener('touchstart', (e) => {
+    const msgModal = document.getElementById('messageOptionsModal');
+    if (msgModal.classList.contains('active') && !e.target.closest('.messageOptionsContent')) {
+        closeMessageOptions();
     }
-
-  });
-
-  chatBox.style.display = "flex";
-
-  await markSeen();
-
-  if(unsubMessages) unsubMessages();
-  loadMessages();
-};
-
-window.closeChat = function(){
-  chatBox.style.display = "none";
-};
-
-/* CALL BUTTON */
-window.startCall = function(){
-  alert("Call feature coming soon");
-};
-
-/* Mark seen */
-async function markSeen(){
-  if(!chatId) return;
-
-  const snap = await getDocs(collection(db,"messages"));
-  for(const d of snap.docs){
-    const m = d.data();
-    if(m.deleted) continue;
-    if(m.chatId===chatId && m.to===currentEmail && !m.seen){
-      await updateDoc(doc(db,"messages", d.id), { seen:true });
+    
+    const imgModal = document.getElementById('imageOptionsModal');
+    if (imgModal.classList.contains('active') && !e.target.closest('.imageOptionsContent')) {
+        closeImageOptions();
     }
-  }
-}
-
-/* LOAD MESSAGES */
-function loadMessages(){
-  const q = query(collection(db,"messages"), orderBy("createdAt"));
-
-  unsubMessages = onSnapshot(q, (snap)=>{
-    messagesEl.innerHTML = "";
-
-    snap.forEach(d=>{
-      const m = d.data();
-      if(m.deleted) return;
-      if(m.chatId!==chatId) return;
-
-      const me = (m.from===currentEmail);
-
-      messagesEl.innerHTML += `
-        <div class="message ${me?'me':''}">
-          <div class="bubble">
-            ${m.text ? m.text : ""}
-            ${m.photo ? `<img src="${m.photo}" class="chatPhoto">` : ""}
-            ${me ? `<div class="status">${m.seen ? "✓✓ Seen" : "✓ Sent"}</div>` : ""}
-          </div>
-        </div>
-      `;
-    });
-
-    messagesEl.scrollTop = messagesEl.scrollHeight;
-  });
-}
-
-/* PREVIEW */
-fileInput.onchange = function(){
-  const f = this.files[0];
-  if(!f) return;
-  preview.src = URL.createObjectURL(f);
-  preview.style.display = "block";
-};
-
-/* SEND */
-sendBtn.onclick = async ()=>{
-  const text = messageInput.value.trim();
-  const file = fileInput.files[0];
-
-  if(!text && !file) return;
-
-  if(!chatId || !chatUser){
-    alert("Open a chat first.");
-    return;
-  }
-
-  let photo = "";
-  if(file) photo = URL.createObjectURL(file);
-
-  const ref = await addDoc(collection(db,"messages"),{
-    chatId,
-    from: currentEmail,
-    to: chatUser,
-    text,
-    photo,
-    seen:false,
-    deleted:false,
-    createdAt: Date.now()
-  });
-
-  messageInput.value = "";
-  preview.style.display = "none";
-  fileInput.value = "";
-
-  // upload in background
-  if(file){
-    const form = new FormData();
-    form.append("image", file);
-
-    const res = await fetch("https://api.imgbb.com/1/upload?key="+IMGBB_KEY,{
-      method:"POST",
-      body:form
-    });
-
-    const data = await res.json();
-    if(data && data.success && data.data && data.data.url){
-      await updateDoc(doc(db,"messages", ref.id), { photo: data.data.url });
+    
+    if (!e.target.closest('.chatItem') && swipedItem) {
+        const wrapper = document.querySelector(`.chat-item-wrapper[data-chat-id="${swipedItem}"]`);
+        if (wrapper) {
+            const item = wrapper.querySelector('.chatItem');
+            const overlay = wrapper.querySelector('.delete-overlay');
+            if (item) {
+                item.classList.remove('swiped');
+                item.style.transform = '';
+            }
+            if (overlay) {
+                overlay.classList.remove('active');
+            }
+        }
+        swipedItem = null;
     }
-  }
-};
+});
 
-/* DELETE CHAT (SAFE: NO onSnapshot loop) */
-window.deleteChat = async function(email){
-  if(!confirm("Delete chat?")) return;
+// Navigation
+function openFiles() { location.href = 'files.html'; }
+function openSettings() { location.href = 'settings.html'; }
 
-  const id = chatKey(currentEmail, email);
+// Hide header on scroll
+let lastScroll = 0;
+const header = document.querySelector(".appHeader");
+const nav = document.querySelector(".bottomnav");
 
-  const snap = await getDocs(collection(db,"messages"));
-  for(const d of snap.docs){
-    const m = d.data();
-    if(m.chatId===id && !m.deleted){
-      await updateDoc(doc(db,"messages", d.id), { deleted:true });
+window.addEventListener("scroll", function() {
+    if (document.getElementById('chatView').classList.contains('active')) return;
+    
+    const currentScroll = window.pageYOffset;
+    
+    if (currentScroll < 50) {
+        header.classList.remove('hidden');
+        nav.classList.remove('hidden');
+        return;
     }
-  }
+    
+    if (currentScroll > lastScroll) {
+        header.classList.add('hidden');
+        nav.classList.add('hidden');
+    } else {
+        header.classList.remove('hidden');
+        nav.classList.remove('hidden');
+    }
+    
+    lastScroll = currentScroll;
+});
 
-  // if you deleted the chat you are currently viewing, close it
-  if(chatId===id){
-    closeChat();
-  }
-};
-  window.logoutUser = async function(){
+// Pull to refresh
+let startY = 0;
+let pulling = false;
+const loader = document.getElementById("pullLoader");
 
-  await setOnlineStatus(false);
+window.addEventListener("touchstart", (e) => {
+    if (window.scrollY === 0 && !document.getElementById('chatView').classList.contains('active')) {
+        pulling = true;
+        startY = e.touches[0].clientY;
+    }
+});
 
-  await auth.signOut();
+window.addEventListener("touchmove", (e) => {
+    if (!pulling) return;
+    const distance = e.touches[0].clientY - startY;
+    if (distance > 0) {
+        loader.style.top = Math.min(distance - 60, 20) + "px";
+    }
+});
 
-  location.href="index.html";
+window.addEventListener("touchend", () => {
+    if (!pulling) return;
+    const top = parseInt(loader.style.top);
+    if (top > 10) {
+        loader.style.top = "10px";
+        setTimeout(() => { location.reload(); }, 400);
+    } else {
+        loader.style.top = "-60px";
+    }
+    pulling = false;
+});
 
-}  
+// Set active nav
+document.getElementById('navMessages').classList.add('active');
 </script>
 
 </body>

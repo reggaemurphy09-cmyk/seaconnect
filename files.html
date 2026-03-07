@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Documents | Sea Connect</title>
+
+<style>
+
+/* PULL REFRESH */
+
+#pullLoader{
+position:fixed;
+top:-60px;
+left:0;
+right:0;
+height:60px;
+display:flex;
+align-items:center;
+justify-content:center;
+z-index:2000;
+transition:top 0.25s ease;
+}
+
+.loader{
+width:26px;
+height:26px;
+border:3px solid #e2e8f0;
+border-top:3px solid #0a4b7a;
+border-radius:50%;
+animation:spin 1s linear infinite;
+}
+
+@keyframes spin{
+0%{transform:rotate(0deg);}
+100%{transform:rotate(360deg);}
+}
+
+*{
+box-sizing:border-box;
+-webkit-tap-highlight-color:transparent;
+}
+
+body{
+margin:0;
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
+background:#f8fafc;
+color:#0b1e33;
+}
+
+/* HEADER */
+
+.appHeader{
+position:fixed;
+top:0;
+left:0;
+right:0;
+height:60px;
+background:#ffffff;
+display:flex;
+align-items:center;
+justify-content:center;
+border-bottom:1px solid #eef2f6;
+z-index:1000;
+transition:transform 0.35s ease;
+box-shadow:0 2px 8px rgba(0,0,0,0.02);
+}
+
+.fileBtn{
+position:absolute;
+left:10px;
+display:flex;
+flex-direction:column;
+align-items:center;
+background:none;
+border:none;
+cursor:pointer;
+font-size:10px;
+font-weight:500;
+color:#1e3a5f;
+}
+
+.settingsBtn{
+position:absolute;
+right:10px;
+display:flex;
+flex-direction:column;
+align-items:center;
+background:none;
+border:none;
+cursor:pointer;
+font-size:10px;
+font-weight:500;
+color:#1e3a5f;
+}
+
+.headerIcon{
+width:20px;
+height:20px;
+margin-bottom:2px;
+stroke:#1e3a5f;
+}
+
+.logo{
+font-size:20px;
+font-weight:700;
+letter-spacing:0.5px;
+color:#0a4b7a;
+}
+
+/* PAGE */
+
+.page{
+padding:80px 16px 100px 16px;
+min-height:100vh;
+}
+
+/* STATS CARD */
+
+.statsCard{
+background:white;
+border-radius:20px;
+padding:16px;
+margin-bottom:16px;
+box-shadow:0 4px 12px rgba(0,0,0,0.02);
+border:1px solid #f0f4f9;
+}
+
+.statsGrid{
+display:flex;
+justify-content:space-around;
+text-align:center;
+}
+
+.statItem{
+flex:1;
+}
+
+.statNumber{
+font-size:24px;
+font-weight:700;
+color:#0a4b7a;
+margin-bottom:4px;
+}
+
+.statLabel{
+font-size:12px;
+color:#5f6c80;
+}
+
+/* NOTIFICATION BANNER */
+
+.notificationBanner{
+background:#fef9c3;
+border-left:4px solid #eab308;
+padding:12px 16px;
+border-radius:12px;
+margin-bottom:16px;
+display:flex;
+align-items:center;
+gap:12px;
+}
+
+.notificationIcon{
+font-size:24px;
+}
+
+.notificationContent{
+flex:1;
+}
+
+.notificationTitle{
+font-weight:600;
+color:#854d0e;
+margin-bottom:2px;
+}
+
+.notificationDesc{
+font-size:12px;
+color:#854d0e;
+opacity:0.8;
+}
+
+/* SECTION CARD */
+
+.sectionCard{
+background:white;
+border-radius:20px;
+padding:20px;
+margin-bottom:16px;
+box-shadow:0 4px 12px rgba(0,0,0,0.02);
+border:1px solid #f0f4f9;
+}
+
+.sectionHeader{
+display:flex;
+align-items:center;
+gap:10px;
+margin-bottom:16px;
+padding-bottom:12px;
+border-bottom:1px solid #f0f4f9;
+}
+
+.sectionHeaderIcon{
+font-size:20px;
+}
+
+.sectionHeaderTitle{
+font-weight:600;
+color:#0a4b7a;
+font-size:14px;
+text-transform:uppercase;
+letter-spacing:0.5px;
+}
+
+/* DOCUMENT ITEM */
+
+.documentItem{
+display:flex;
+align-items:center;
+padding:14px 0;
+border-bottom:1px solid #f0f4f9;
+cursor:pointer;
+transition:background 0.2s;
+}
+
+.documentItem:last-child{
+border-bottom:none;
+}
+
+.documentItem:active{
+background:#f8fafc;
+}
+
+.documentIcon{
+width:50px;
+height:50px;
+border-radius:12px;
+background:#f1f5f9;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:26px;
+color:#0a4b7a;
+margin-right:14px;
+flex-shrink:0;
+}
+
+.documentInfo{
+flex:1;
+}
+
+.documentName{
+font-weight:600;
+color:#0b1e33;
+font-size:15px;
+margin-bottom:4px;
+}
+
+.documentDates{
+display:flex;
+align-items:center;
+gap:12px;
+font-size:12px;
+color:#5f6c80;
+margin-bottom:4px;
+}
+
+.documentDate{
+display:flex;
+align-items:center;
+gap:4px;
+}
+
+.documentStatus{
+display:inline-flex;
+align-items:center;
+gap:4px;
+padding:4px 10px;
+border-radius:30px;
+font-size:11px;
+font-weight:500;
+}
+
+.statusValid{
+background:#dff9e6;
+color:#0b5e42;
+}
+
+.statusExpiring{
+background:#fef3c7;
+color:#b45309;
+}
+
+.statusExpired{
+background:#fee2e2;
+color:#b91c1c;
+}
+
+.documentArrow{
+color:#94a3b8;
+font-size:18px;
+}
+
+/* ADD BUTTON */
+
+.addButton{
+position:fixed;
+right:20px;
+bottom:100px;
+width:56px;
+height:56px;
+border-radius:50%;
+background:#0a4b7a;
+color:white;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:28px;
+box-shadow:0 4px 12px rgba(10,75,122,0.3);
+cursor:pointer;
+z-index:100;
+border:2px solid white;
+}
+
+.addButton:active{
+transform:scale(0.95);
+background:#1e3a5f;
+}
+
+/* BOTTOM NAV */
+
+.navIcon{
+width:22px;
+height:22px;
+margin-bottom:3px;
+stroke:#5f6c80;
+stroke-width:1.8;
+}
+
+.navAvatar{
+width:22px;
+height:22px;
+border-radius:50%;
+object-fit:cover;
+margin-bottom:3px;
+border:1px solid #e2e8f0;
+}
+
+.bottomnav{
+position:fixed;
+left:20px;
+right:20px;
+bottom:20px;
+height:64px;
+background:white;
+border-radius:32px;
+display:flex;
+align-items:center;
+justify-content:space-around;
+box-shadow:0 8px 24px rgba(0,0,0,0.08);
+z-index:999;
+transition:transform 0.35s ease;
+border:1px solid #f0f4f9;
+padding:0 8px;
+}
+
+.bottomnav button{
+flex:1;
+background:none;
+border:none;
+cursor:pointer;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+font-size:11px;
+font-weight:500;
+color:#5f6c80;
+transition:all 0.2s;
+padding:8px 0;
+border-radius:24px;
+}
+
+.bottomnav button.active{
+color:#0a4b7a;
+}
+
+.bottomnav button.active .navIcon{
+stroke:#0a4b7a;
+stroke-width:2.2;
+}
+
+/* MODAL */
+
+.modalOverlay{
+display:none;
+position:fixed;
+top:0;
+left:0;
+right:0;
+bottom:0;
+background:rgba(0,0,0,0.5);
+z-index:2000;
+align-items:center;
+justify-content:center;
+}
+
+.modalOverlay.active{
+display:flex;
+}
+
+.modalContent{
+background:white;
+border-radius:24px;
+width:340px;
+padding:24px;
+max-height:80vh;
+overflow-y:auto;
+}
+
+.modalTitle{
+font-weight:600;
+color:#0b1e33;
+font-size:18px;
+margin-bottom:20px;
+}
+
+.modalField{
+margin-bottom:16px;
+}
+
+.modalLabel{
+font-size:13px;
+font-weight:500;
+color:#5f6c80;
+margin-bottom:6px;
+display:block;
+}
+
+.modalInput{
+width:100%;
+padding:12px;
+border:1px solid #e2e8f0;
+border-radius:12px;
+font-size:14px;
+background:#f8fafc;
+}
+
+.modalInput:focus{
+outline:none;
+border-color:#0a4b7a;
+background:white;
+}
+
+.modalButtons{
+display:flex;
+gap:12px;
+margin-top:20px;
+}
+
+.modalSave{
+flex:1;
+padding:14px;
+background:#0a4b7a;
+color:white;
+border:none;
+border-radius:40px;
+font-weight:600;
+cursor:pointer;
+}
+
+.modalCancel{
+flex:1;
+padding:14px;
+background:#f1f5f9;
+color:#1e293b;
+border:none;
+border-radius:40px;
+font-weight:600;
+cursor:pointer;
+}
+
+.modalDelete{
+background:#fee2e2;
+color:#b91c1c;
+border:none;
+padding:14px;
+border-radius:40px;
+font-weight:600;
+cursor:pointer;
+width:100%;
+margin-top:10px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="pullLoader">
+<div class="loader"></div>
+</div>
+
+<div class="appHeader">
+
+<button class="fileBtn" onclick="openFiles()">
+<svg class="headerIcon" viewBox="0 0 24 24" fill="none" stroke-width="2">
+<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+<polyline points="14 2 14 8 20 8"/>
+</svg>
+Files
+</button>
+
+<div class="logo">SEA CONNECT</div>
+
+<button class="settingsBtn" onclick="openSettings()">
+<svg class="headerIcon" viewBox="0 0 24 24" fill="none" stroke-width="2">
+<circle cx="12" cy="12" r="3"></circle>
+<path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82
+l.06.06a2 2 0 1 1-2.83 2.83
+l-.06-.06a1.65 1.65 0 0 0-1.82-.33
+1.65 1.65 0 0 0-1 1.51V21
+a2 2 0 1 1-4 0v-.09
+a1.65 1.65 0 0 0-1-1.51
+1.65 1.65 0 0 0-1.82.33
+l-.06.06a2 2 0 1 1-2.83-2.83
+l.06-.06a1.65 1.65 0 0 0 .33-1.82
+1.65 1.65 0 0 0-1.51-1H3
+a2 2 0 1 1 0-4h.09
+a1.65 1.65 0 0 0 1.51-1
+1.65 1.65 0 0 0-.33-1.82
+l-.06-.06a2 2 0 1 1 2.83-2.83
+l.06.06a1.65 1.65 0 0 0 1.82.33H9
+a1.65 1.65 0 0 0 1-1.51V3
+a2 2 0 1 1 4 0v.09
+a1.65 1.65 0 0 0 1 1.51
+1.65 1.65 0 0 0 1.82-.33
+l.06-.06a2 2 0 1 1 2.83 2.83
+l-.06.06a1.65 1.65 0 0 0-.33 1.82V9
+c0 .66.39 1.26 1 1.51H21
+a2 2 0 1 1 0 4h-.09
+c-.66 0-1.26.39-1.51 1z"/>
+</svg>
+Settings
+</button>
+
+</div>
+
+<div class="page">
+
+<!-- STATS CARD -->
+<div class="statsCard">
+    <div class="statsGrid">
+        <div class="statItem">
+            <div class="statNumber" id="totalDocs">8</div>
+            <div class="statLabel">Total</div>
+        </div>
+        <div class="statItem">
+            <div class="statNumber" id="validDocs">5</div>
+            <div class="statLabel">Valid</div>
+        </div>
+        <div class="statItem">
+            <div class="statNumber" id="expiringDocs">2</div>
+            <div class="statLabel">Expiring</div>
+        </div>
+        <div class="statItem">
+            <div class="statNumber" id="expiredDocs">1</div>
+            <div class="statLabel">Expired</div>
+        </div>
+    </div>
+</div>
+
+<!-- EXPIRING SOON NOTIFICATION -->
+<div class="notificationBanner" id="expiringBanner">
+    <div class="notificationIcon">⚠️</div>
+    <div class="notificationContent">
+        <div class="notificationTitle">2 documents expiring soon</div>
+        <div class="notificationDesc">COC expires in 15 days • Medical expires in 23 days</div>
+    </div>
+</div>
+
+<!-- MARITIME DOCUMENTS SECTION -->
+<div class="sectionCard">
+    <div class="sectionHeader">
+        <span class="sectionHeaderIcon">📄</span>
+        <span class="sectionHeaderTitle">MARITIME DOCUMENTS</span>
+    </div>
+    
+    <!-- COC - Expiring Soon -->
+    <div class="documentItem" onclick="openDocument('coc')">
+        <div class="documentIcon">📑</div>
+        <div class="documentInfo">
+            <div class="documentName">Certificate of Competency (COC)</div>
+            <div class="documentDates">
+                <span class="documentDate">📅 Issued: 15 Mar 2023</span>
+                <span class="documentDate">⏳ Expires: 15 Mar 2026</span>
+            </div>
+            <span class="documentStatus statusExpiring">⚠️ Expires in 15 days</span>
+        </div>
+        <span class="documentArrow">›</span>
+    </div>
+    
+    <!-- Seaman's Book - Valid -->
+    <div class="documentItem" onclick="openDocument('seaman')">
+        <div class="documentIcon">📘</div>
+        <div class="documentInfo">
+            <div class="documentName">Seaman's Book</div>
+            <div class="documentDates">
+                <span class="documentDate">📅 Issued: 10 Jan 2022</span>
+                <span class="documentDate">⏳ Expires: 10 Jan 2027</span>
+            </div>
+            <span class="documentStatus statusValid">✅ Valid</span>
+        </div>
+        <span class="documentArrow">›</span>
+    </div>
+    
+    <!-- Passport - Valid -->
+    <div class="documentItem" onclick="openDocument('passport')">
+        <div class="documentIcon">🛂</div>
+        <div class="documentInfo">
+            <div class="documentName">International Passport</div>
+            <div class="documentDates">
+                <span class="documentDate">📅 Issued: 20 Jun 2022</span>
+                <span class="documentDate">⏳ Expires: 20 Jun 2027</span>
+            </div>
+            <span class="documentStatus statusValid">✅ Valid</span>
+        </div>
+        <span class="documentArrow">›</span>
+    </div>
+    
+    <!-- Medical Certificate - Expiring Soon -->
+    <div class="documentItem" onclick="openDocument('medical')">
+        <div class="documentIcon">⚕️</div>
+        <div class="documentInfo">
+            <div class="documentName">Medical Certificate</div>
+            <div class="documentDates">
+                <span class="documentDate">📅 Issued: 05 Sep 2024</span>
+                <span class="documentDate">⏳ Expires: 05 Sep 2025</span>
+            </div>
+            <span class="documentStatus statusExpiring">⚠️ Expires in 23 days</span>
+        </div>
+        <span class="documentArrow">›</span>
+    </div>
+    
+    <!-- STCW - Valid -->
+    <div class="documentItem" onclick="openDocument('stcw')">
+        <div class="documentIcon">📋</div>
+        <div class="documentInfo">
+            <div class="documentName">STCW Certificates</div>
+            <div class="documentDates">
+                <span class="documentDate">📅 Issued: 12 Nov 2023</span>
+                <span class="documentDate">⏳ Expires: 12 Nov 2028</span>
+            </div>
+            <span class="documentStatus statusValid">✅ Valid</span>
+        </div>
+        <span class="documentArrow">›</span>
+    </div>
+    
+    <!-- Yellow Fever - Expired -->
+    <div class="documentItem" onclick="openDocument('yellowfever')">
+        <div class="documentIcon">💉</div>
+        <div class="documentInfo">
+            <div class="documentName">Yellow Fever Vaccination</div>
+            <div class="documentDates">
+                <span class="documentDate">📅 Issued: 03 Feb 2020</span>
+                <span class="documentDate">⏳ Expires: 03 Feb 2025</span>
+            </div>
+            <span class="documentStatus statusExpired">❌ Expired</span>
+        </div>
+        <span class="documentArrow">›</span>
+    </div>
+</div>
+
+<!-- TRAINING CERTIFICATES -->
+<div class="sectionCard">
+    <div class="sectionHeader">
+        <span class="sectionHeaderIcon">🎓</span>
+        <span class="sectionHeaderTitle">TRAINING & CERTIFICATES</span>
+    </div>
+    
+    <!-- Basic Safety Training -->
+    <div class="documentItem" onclick="openDocument('bst')">
+        <div class="documentIcon">🛟</div>
+        <div class="documentInfo">
+            <div class="documentName">Basic Safety Training (BST)</div>
+            <div class="documentDates">
+                <span class="documentDate">📅 Issued: 08 Apr 2023</span>
+                <span class="documentDate">⏳ Expires: 08 Apr 2028</span>
+            </div>
+            <span class="documentStatus statusValid">✅ Valid</span>
+        </div>
+        <span class="documentArrow">›</span>
+    </div>
+    
+    <!-- Advanced Fire Fighting -->
+    <div class="documentItem" onclick="openDocument('aff')">
+        <div class="documentIcon">🔥</div>
+        <div class="documentInfo">
+            <div class="documentName">Advanced Fire Fighting</div>
+            <div class="documentDates">
+                <span class="documentDate">📅 Issued: 15 Jul 2023</span>
+                <span class="documentDate">⏳ Expires: 15 Jul 2028</span>
+            </div>
+            <span class="documentStatus statusValid">✅ Valid</span>
+        </div>
+        <span class="documentArrow">›</span>
+    </div>
+</div>
+
+<!-- COMPANY DOCUMENTS -->
+<div class="sectionCard">
+    <div class="sectionHeader">
+        <span class="sectionHeaderIcon">🏢</span>
+        <span class="sectionHeaderTitle">COMPANY DOCUMENTS</span>
+    </div>
+    
+    <!-- Employment Contract -->
+    <div class="documentItem" onclick="openDocument('contract')">
+        <div class="documentIcon">📝</div>
+        <div class="documentInfo">
+            <div class="documentName">Employment Contract</div>
+            <div class="documentDates">
+                <span class="documentDate">📅 Issued: 01 Jan 2025</span>
+                <span class="documentDate">⏳ Expires: 31 Dec 2025</span>
+            </div>
+            <span class="documentStatus statusValid">✅ Valid</span>
+        </div>
+        <span class="documentArrow">›</span>
+    </div>
+</div>
+
+</div>
+
+<!-- ADD DOCUMENT BUTTON -->
+<div class="addButton" onclick="addDocument()">+</div>
+
+<!-- BOTTOM NAVIGATION -->
+<div class="bottomnav">
+
+<button onclick="location.href='feeds.html'" id="navFeeds">
+<svg class="navIcon" viewBox="0 0 24 24" fill="none" stroke-width="2">
+<rect x="3" y="3" width="7" height="7"></rect>
+<rect x="14" y="3" width="7" height="7"></rect>
+<rect x="14" y="14" width="7" height="7"></rect>
+<rect x="3" y="14" width="7" height="7"></rect>
+</svg>
+Feeds
+</button>
+
+<button onclick="location.href='friends.html'" id="navFriends">
+<svg class="navIcon" viewBox="0 0 24 24" fill="none" stroke-width="2">
+<circle cx="12" cy="7" r="4"></circle>
+<path d="M5.5 21a6.5 6.5 0 0 1 13 0"></path>
+</svg>
+Friends
+</button>
+
+<button onclick="location.href='messages.html'" id="navMessages">
+<svg class="navIcon" viewBox="0 0 24 24" fill="none" stroke-width="2">
+<path d="M21 15a4 4 0 0 1-4 4H7l-4 4V5a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"></path>
+</svg>
+Messages
+</button>
+
+<button onclick="location.href='profile.html'" id="navProfile">
+<img src="https://i.ibb.co/2kRZ7Z6/avatar.png" class="navAvatar" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2222%22 height=%2222%22 viewBox=%220 0 24 24%22 fill=%22%230a4b7a%22><circle cx=%2212%22 cy=%228%22 r=%224%22/><path d=%22M5.5 21a6.5 6.5 0 0 1 13 0%22/></svg>'">
+Profile
+</button>
+
+</div>
+
+<!-- DOCUMENT EDIT MODAL -->
+<div class="modalOverlay" id="documentModal">
+    <div class="modalContent">
+        <div class="modalTitle" id="modalTitle">Edit Document</div>
+        
+        <div class="modalField">
+            <label class="modalLabel">Document Name</label>
+            <input type="text" class="modalInput" id="docName" value="Certificate of Competency (COC)">
+        </div>
+        
+        <div class="modalField">
+            <label class="modalLabel">Issue Date</label>
+            <input type="date" class="modalInput" id="issueDate" value="2023-03-15">
+        </div>
+        
+        <div class="modalField">
+            <label class="modalLabel">Expiry Date</label>
+            <input type="date" class="modalInput" id="expiryDate" value="2026-03-15">
+        </div>
+        
+        <div class="modalField">
+            <label class="modalLabel">Document Number</label>
+            <input type="text" class="modalInput" id="docNumber" value="COC-12345-6789">
+        </div>
+        
+        <div class="modalField">
+            <label class="modalLabel">Issuing Authority</label>
+            <input type="text" class="modalInput" id="issuingAuthority" value="Maritime Industry Authority">
+        </div>
+        
+        <div class="modalButtons">
+            <button class="modalSave" onclick="saveDocument()">Save</button>
+            <button class="modalCancel" onclick="closeModal()">Cancel</button>
+        </div>
+        
+        <button class="modalDelete" onclick="deleteDocument()">Delete Document</button>
+    </div>
+</div>
+
+<script>
+
+function openFiles(){
+location.href="files.html";
+}
+
+function openSettings(){
+location.href="settings.html";
+}
+
+/* HIDE HEADER + NAV */
+let lastScroll=0;
+const header=document.querySelector(".appHeader");
+const nav=document.querySelector(".bottomnav");
+
+window.addEventListener("scroll",function(){
+    const currentScroll=window.pageYOffset;
+    if(currentScroll<50){
+        header.style.transform="translateY(0)";
+        nav.style.transform="translateY(0)";
+        return;
+    }
+    if(currentScroll>lastScroll){
+        header.style.transform="translateY(-100%)";
+        nav.style.transform="translateY(120%)";
+    } else {
+        header.style.transform="translateY(0)";
+        nav.style.transform="translateY(0)";
+    }
+    lastScroll=currentScroll;
+});
+
+/* PULL TO REFRESH */
+let startY=0;
+let pulling=false;
+const loader=document.getElementById("pullLoader");
+
+window.addEventListener("touchstart",(e)=>{
+    if(window.scrollY===0){
+        pulling=true;
+        startY=e.touches[0].clientY;
+    }
+});
+
+window.addEventListener("touchmove",(e)=>{
+    if(!pulling) return;
+    let distance=e.touches[0].clientY-startY;
+    if(distance>0){
+        loader.style.top=Math.min(distance-60,20)+"px";
+    }
+});
+
+window.addEventListener("touchend",()=>{
+    if(!pulling) return;
+    let top=parseInt(loader.style.top);
+    if(top>10){
+        loader.style.top="10px";
+        setTimeout(()=>{ location.reload(); },400);
+    } else {
+        loader.style.top="-60px";
+    }
+    pulling=false;
+});
+
+/* DOCUMENT FUNCTIONS */
+
+let currentDoc = '';
+
+function openDocument(docId){
+    currentDoc = docId;
+    
+    // Set modal values based on document
+    if(docId === 'coc'){
+        document.getElementById('docName').value = 'Certificate of Competency (COC)';
+        document.getElementById('issueDate').value = '2023-03-15';
+        document.getElementById('expiryDate').value = '2026-03-15';
+        document.getElementById('docNumber').value = 'COC-12345-6789';
+        document.getElementById('issuingAuthority').value = 'Maritime Industry Authority';
+    } else if(docId === 'seaman'){
+        document.getElementById('docName').value = 'Seaman\'s Book';
+        document.getElementById('issueDate').value = '2022-01-10';
+        document.getElementById('expiryDate').value = '2027-01-10';
+        document.getElementById('docNumber').value = 'SB-98765-4321';
+        document.getElementById('issuingAuthority').value = 'Philippine Coast Guard';
+    } else if(docId === 'medical'){
+        document.getElementById('docName').value = 'Medical Certificate';
+        document.getElementById('issueDate').value = '2024-09-05';
+        document.getElementById('expiryDate').value = '2025-09-05';
+        document.getElementById('docNumber').value = 'MED-55555-7777';
+        document.getElementById('issuingAuthority').value = 'Maritime Medical Clinic';
+    } else if(docId === 'yellowfever'){
+        document.getElementById('docName').value = 'Yellow Fever Vaccination';
+        document.getElementById('issueDate').value = '2020-02-03';
+        document.getElementById('expiryDate').value = '2025-02-03';
+        document.getElementById('docNumber').value = 'YF-11111-2222';
+        document.getElementById('issuingAuthority').value = 'World Health Organization';
+    }
+    
+    document.getElementById('documentModal').classList.add('active');
+}
+
+function addDocument(){
+    document.getElementById('docName').value = 'New Document';
+    document.getElementById('issueDate').value = '2025-01-01';
+    document.getElementById('expiryDate').value = '2026-01-01';
+    document.getElementById('docNumber').value = 'NEW-00000-0000';
+    document.getElementById('issuingAuthority').value = 'Maritime Authority';
+    document.getElementById('documentModal').classList.add('active');
+}
+
+function saveDocument(){
+    alert('✅ Document saved successfully!');
+    closeModal();
+}
+
+function deleteDocument(){
+    if(confirm('Are you sure you want to delete this document?')){
+        alert('❌ Document deleted');
+        closeModal();
+    }
+}
+
+function closeModal(){
+    document.getElementById('documentModal').classList.remove('active');
+}
+
+/* UPDATE NOTIFICATIONS BASED ON DATES */
+function checkExpiryDates(){
+    // This would normally calculate from dates
+    // For demo, we'll keep static values
+    console.log('Checking expiry dates...');
+}
+
+// Run on load
+checkExpiryDates();
+
+/* SET ACTIVE NAV ITEM */
+document.getElementById('navFiles')?.classList.add('active');
+// Since Files is in header, we don't need bottom nav active
+
+</script>
+
+</body>
+</html>

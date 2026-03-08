@@ -2,13 +2,11 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
 <title>Documents | Sea Connect</title>
 
 <style>
-
 /* PULL REFRESH */
-
 #pullLoader{
 position:fixed;
 top:-60px;
@@ -49,7 +47,6 @@ color:#0b1e33;
 }
 
 /* HEADER */
-
 .appHeader{
 position:fixed;
 top:0;
@@ -109,14 +106,12 @@ color:#0a4b7a;
 }
 
 /* PAGE */
-
 .page{
 padding:80px 16px 100px 16px;
 min-height:100vh;
 }
 
 /* STATS CARD */
-
 .statsCard{
 background:white;
 border-radius:20px;
@@ -149,7 +144,6 @@ color:#5f6c80;
 }
 
 /* NOTIFICATION BANNER */
-
 .notificationBanner{
 background:#fef9c3;
 border-left:4px solid #eab308;
@@ -159,6 +153,12 @@ margin-bottom:16px;
 display:flex;
 align-items:center;
 gap:12px;
+cursor:pointer;
+transition:all 0.3s;
+}
+
+.notificationBanner:active{
+transform:scale(0.98);
 }
 
 .notificationIcon{
@@ -182,7 +182,6 @@ opacity:0.8;
 }
 
 /* SECTION CARD */
-
 .sectionCard{
 background:white;
 border-radius:20px;
@@ -214,14 +213,13 @@ letter-spacing:0.5px;
 }
 
 /* DOCUMENT ITEM */
-
 .documentItem{
 display:flex;
 align-items:center;
 padding:14px 0;
 border-bottom:1px solid #f0f4f9;
 cursor:pointer;
-transition:background 0.2s;
+transition:all 0.2s;
 }
 
 .documentItem:last-child{
@@ -230,6 +228,7 @@ border-bottom:none;
 
 .documentItem:active{
 background:#f8fafc;
+transform:scale(0.99);
 }
 
 .documentIcon{
@@ -264,6 +263,7 @@ gap:12px;
 font-size:12px;
 color:#5f6c80;
 margin-bottom:4px;
+flex-wrap:wrap;
 }
 
 .documentDate{
@@ -300,10 +300,15 @@ color:#b91c1c;
 .documentArrow{
 color:#94a3b8;
 font-size:18px;
+transition:transform 0.2s;
+}
+
+.documentItem:hover .documentArrow{
+transform:translateX(5px);
+color:#0a4b7a;
 }
 
 /* ADD BUTTON */
-
 .addButton{
 position:fixed;
 right:20px;
@@ -321,6 +326,7 @@ box-shadow:0 4px 12px rgba(10,75,122,0.3);
 cursor:pointer;
 z-index:100;
 border:2px solid white;
+transition:all 0.2s;
 }
 
 .addButton:active{
@@ -329,7 +335,6 @@ background:#1e3a5f;
 }
 
 /* BOTTOM NAV */
-
 .navIcon{
 width:22px;
 height:22px;
@@ -344,7 +349,7 @@ height:22px;
 border-radius:50%;
 object-fit:cover;
 margin-bottom:3px;
-border:1px solid #e2e8f0;
+border:2px solid #0a4b7a;
 }
 
 .bottomnav{
@@ -392,7 +397,6 @@ stroke-width:2.2;
 }
 
 /* MODAL */
-
 .modalOverlay{
 display:none;
 position:fixed;
@@ -400,7 +404,8 @@ top:0;
 left:0;
 right:0;
 bottom:0;
-background:rgba(0,0,0,0.5);
+background:rgba(0,0,0,0.8);
+backdrop-filter:blur(4px);
 z-index:2000;
 align-items:center;
 justify-content:center;
@@ -438,7 +443,7 @@ margin-bottom:6px;
 display:block;
 }
 
-.modalInput{
+.modalInput, .modalSelect{
 width:100%;
 padding:12px;
 border:1px solid #e2e8f0;
@@ -447,7 +452,7 @@ font-size:14px;
 background:#f8fafc;
 }
 
-.modalInput:focus{
+.modalInput:focus, .modalSelect:focus{
 outline:none;
 border-color:#0a4b7a;
 background:white;
@@ -493,6 +498,120 @@ width:100%;
 margin-top:10px;
 }
 
+/* LOADING */
+.loadingContainer{
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:200px;
+flex-direction:column;
+gap:20px;
+}
+
+.loadingSpinner{
+width:40px;
+height:40px;
+border:4px solid #e2e8f0;
+border-top:4px solid #0a4b7a;
+border-radius:50%;
+animation:spin 1s linear infinite;
+}
+
+.loadingText{
+color:#5f6c80;
+font-size:14px;
+}
+
+.errorContainer{
+text-align:center;
+padding:40px 20px;
+}
+
+.errorContainer .emoji{
+font-size:48px;
+margin-bottom:16px;
+}
+
+.errorContainer h3{
+color:#ef4444;
+margin-bottom:10px;
+}
+
+.errorContainer p{
+color:#5f6c80;
+margin-bottom:20px;
+}
+
+.retryBtn{
+background:#0a4b7a;
+color:white;
+border:none;
+padding:12px 30px;
+border-radius:40px;
+font-weight:600;
+cursor:pointer;
+}
+
+.emptyState{
+text-align:center;
+padding:60px 20px;
+color:#5f6c80;
+}
+
+.emptyState .emoji{
+font-size:60px;
+margin-bottom:20px;
+opacity:0.5;
+}
+
+.emptyState h3{
+font-size:20px;
+font-weight:600;
+margin-bottom:10px;
+color:#0b1e33;
+}
+
+.emptyState p{
+font-size:14px;
+margin-bottom:25px;
+}
+
+.emptyStateBtn{
+background:#0a4b7a;
+color:white;
+border:none;
+padding:14px 30px;
+border-radius:40px;
+font-weight:600;
+cursor:pointer;
+}
+
+/* TOAST */
+.toast{
+position:fixed;
+bottom:100px;
+left:20px;
+right:20px;
+background:#0b1e33;
+color:white;
+padding:16px;
+border-radius:30px;
+text-align:center;
+font-size:14px;
+font-weight:500;
+z-index:3000;
+display:none;
+}
+
+.toast.show{
+display:block;
+animation:slideUp 0.3s ease;
+}
+
+@keyframes slideUp{
+from{ transform:translateY(20px); opacity:0; }
+to{ transform:translateY(0); opacity:1; }
+}
 </style>
 </head>
 
@@ -503,233 +622,83 @@ margin-top:10px;
 </div>
 
 <div class="appHeader">
-
-<button class="fileBtn" onclick="openFiles()">
-<svg class="headerIcon" viewBox="0 0 24 24" fill="none" stroke-width="2">
-<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-<polyline points="14 2 14 8 20 8"/>
-</svg>
-Files
-</button>
-
-<div class="logo">SEA CONNECT</div>
-
-<button class="settingsBtn" onclick="openSettings()">
-<svg class="headerIcon" viewBox="0 0 24 24" fill="none" stroke-width="2">
-<circle cx="12" cy="12" r="3"></circle>
-<path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82
-l.06.06a2 2 0 1 1-2.83 2.83
-l-.06-.06a1.65 1.65 0 0 0-1.82-.33
-1.65 1.65 0 0 0-1 1.51V21
-a2 2 0 1 1-4 0v-.09
-a1.65 1.65 0 0 0-1-1.51
-1.65 1.65 0 0 0-1.82.33
-l-.06.06a2 2 0 1 1-2.83-2.83
-l.06-.06a1.65 1.65 0 0 0 .33-1.82
-1.65 1.65 0 0 0-1.51-1H3
-a2 2 0 1 1 0-4h.09
-a1.65 1.65 0 0 0 1.51-1
-1.65 1.65 0 0 0-.33-1.82
-l-.06-.06a2 2 0 1 1 2.83-2.83
-l.06.06a1.65 1.65 0 0 0 1.82.33H9
-a1.65 1.65 0 0 0 1-1.51V3
-a2 2 0 1 1 4 0v.09
-a1.65 1.65 0 0 0 1 1.51
-1.65 1.65 0 0 0 1.82-.33
-l.06-.06a2 2 0 1 1 2.83 2.83
-l-.06.06a1.65 1.65 0 0 0-.33 1.82V9
-c0 .66.39 1.26 1 1.51H21
-a2 2 0 1 1 0 4h-.09
-c-.66 0-1.26.39-1.51 1z"/>
-</svg>
-Settings
-</button>
-
+    <button class="fileBtn" onclick="openFiles()">
+        <svg class="headerIcon" viewBox="0 0 24 24" fill="none" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+        </svg>
+        Files
+    </button>
+    <div class="logo">SEA CONNECT</div>
+    <button class="settingsBtn" onclick="openSettings()">
+        <svg class="headerIcon" viewBox="0 0 24 24" fill="none" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c0 .66.39 1.26 1 1.51H21a2 2 0 0 1 0 4h-.09c-.66 0-1.26.39-1.51 1z"/>
+        </svg>
+        Settings
+    </button>
 </div>
 
 <div class="page">
+    <!-- Loading State -->
+    <div class="loadingContainer" id="loadingContainer">
+        <div class="loadingSpinner"></div>
+        <div class="loadingText">Loading documents...</div>
+    </div>
 
-<!-- STATS CARD -->
-<div class="statsCard">
-    <div class="statsGrid">
-        <div class="statItem">
-            <div class="statNumber" id="totalDocs">8</div>
-            <div class="statLabel">Total</div>
-        </div>
-        <div class="statItem">
-            <div class="statNumber" id="validDocs">5</div>
-            <div class="statLabel">Valid</div>
-        </div>
-        <div class="statItem">
-            <div class="statNumber" id="expiringDocs">2</div>
-            <div class="statLabel">Expiring</div>
-        </div>
-        <div class="statItem">
-            <div class="statNumber" id="expiredDocs">1</div>
-            <div class="statLabel">Expired</div>
-        </div>
+    <!-- Error State -->
+    <div class="errorContainer" id="errorContainer" style="display: none;">
+        <div class="emoji">❌</div>
+        <h3>Error Loading Documents</h3>
+        <p id="errorMessage"></p>
+        <button class="retryBtn" onclick="location.reload()">Try Again</button>
     </div>
-</div>
 
-<!-- EXPIRING SOON NOTIFICATION -->
-<div class="notificationBanner" id="expiringBanner">
-    <div class="notificationIcon">⚠️</div>
-    <div class="notificationContent">
-        <div class="notificationTitle">2 documents expiring soon</div>
-        <div class="notificationDesc">COC expires in 15 days • Medical expires in 23 days</div>
-    </div>
-</div>
+    <!-- Documents Content (hidden initially) -->
+    <div id="documentsContent" style="display: none;">
+        <!-- STATS CARD -->
+        <div class="statsCard">
+            <div class="statsGrid">
+                <div class="statItem">
+                    <div class="statNumber" id="totalDocs">0</div>
+                    <div class="statLabel">Total</div>
+                </div>
+                <div class="statItem">
+                    <div class="statNumber" id="validDocs">0</div>
+                    <div class="statLabel">Valid</div>
+                </div>
+                <div class="statItem">
+                    <div class="statNumber" id="expiringDocs">0</div>
+                    <div class="statLabel">Expiring</div>
+                </div>
+                <div class="statItem">
+                    <div class="statNumber" id="expiredDocs">0</div>
+                    <div class="statLabel">Expired</div>
+                </div>
+            </div>
+        </div>
 
-<!-- MARITIME DOCUMENTS SECTION -->
-<div class="sectionCard">
-    <div class="sectionHeader">
-        <span class="sectionHeaderIcon">📄</span>
-        <span class="sectionHeaderTitle">MARITIME DOCUMENTS</span>
-    </div>
-    
-    <!-- COC - Expiring Soon -->
-    <div class="documentItem" onclick="openDocument('coc')">
-        <div class="documentIcon">📑</div>
-        <div class="documentInfo">
-            <div class="documentName">Certificate of Competency (COC)</div>
-            <div class="documentDates">
-                <span class="documentDate">📅 Issued: 15 Mar 2023</span>
-                <span class="documentDate">⏳ Expires: 15 Mar 2026</span>
+        <!-- EXPIRING SOON NOTIFICATION -->
+        <div class="notificationBanner" id="expiringBanner" style="display: none;" onclick="showExpiringDocs()">
+            <div class="notificationIcon">⚠️</div>
+            <div class="notificationContent">
+                <div class="notificationTitle" id="expiringTitle">Documents expiring soon</div>
+                <div class="notificationDesc" id="expiringDesc"></div>
             </div>
-            <span class="documentStatus statusExpiring">⚠️ Expires in 15 days</span>
         </div>
-        <span class="documentArrow">›</span>
-    </div>
-    
-    <!-- Seaman's Book - Valid -->
-    <div class="documentItem" onclick="openDocument('seaman')">
-        <div class="documentIcon">📘</div>
-        <div class="documentInfo">
-            <div class="documentName">Seaman's Book</div>
-            <div class="documentDates">
-                <span class="documentDate">📅 Issued: 10 Jan 2022</span>
-                <span class="documentDate">⏳ Expires: 10 Jan 2027</span>
-            </div>
-            <span class="documentStatus statusValid">✅ Valid</span>
-        </div>
-        <span class="documentArrow">›</span>
-    </div>
-    
-    <!-- Passport - Valid -->
-    <div class="documentItem" onclick="openDocument('passport')">
-        <div class="documentIcon">🛂</div>
-        <div class="documentInfo">
-            <div class="documentName">International Passport</div>
-            <div class="documentDates">
-                <span class="documentDate">📅 Issued: 20 Jun 2022</span>
-                <span class="documentDate">⏳ Expires: 20 Jun 2027</span>
-            </div>
-            <span class="documentStatus statusValid">✅ Valid</span>
-        </div>
-        <span class="documentArrow">›</span>
-    </div>
-    
-    <!-- Medical Certificate - Expiring Soon -->
-    <div class="documentItem" onclick="openDocument('medical')">
-        <div class="documentIcon">⚕️</div>
-        <div class="documentInfo">
-            <div class="documentName">Medical Certificate</div>
-            <div class="documentDates">
-                <span class="documentDate">📅 Issued: 05 Sep 2024</span>
-                <span class="documentDate">⏳ Expires: 05 Sep 2025</span>
-            </div>
-            <span class="documentStatus statusExpiring">⚠️ Expires in 23 days</span>
-        </div>
-        <span class="documentArrow">›</span>
-    </div>
-    
-    <!-- STCW - Valid -->
-    <div class="documentItem" onclick="openDocument('stcw')">
-        <div class="documentIcon">📋</div>
-        <div class="documentInfo">
-            <div class="documentName">STCW Certificates</div>
-            <div class="documentDates">
-                <span class="documentDate">📅 Issued: 12 Nov 2023</span>
-                <span class="documentDate">⏳ Expires: 12 Nov 2028</span>
-            </div>
-            <span class="documentStatus statusValid">✅ Valid</span>
-        </div>
-        <span class="documentArrow">›</span>
-    </div>
-    
-    <!-- Yellow Fever - Expired -->
-    <div class="documentItem" onclick="openDocument('yellowfever')">
-        <div class="documentIcon">💉</div>
-        <div class="documentInfo">
-            <div class="documentName">Yellow Fever Vaccination</div>
-            <div class="documentDates">
-                <span class="documentDate">📅 Issued: 03 Feb 2020</span>
-                <span class="documentDate">⏳ Expires: 03 Feb 2025</span>
-            </div>
-            <span class="documentStatus statusExpired">❌ Expired</span>
-        </div>
-        <span class="documentArrow">›</span>
-    </div>
-</div>
 
-<!-- TRAINING CERTIFICATES -->
-<div class="sectionCard">
-    <div class="sectionHeader">
-        <span class="sectionHeaderIcon">🎓</span>
-        <span class="sectionHeaderTitle">TRAINING & CERTIFICATES</span>
-    </div>
-    
-    <!-- Basic Safety Training -->
-    <div class="documentItem" onclick="openDocument('bst')">
-        <div class="documentIcon">🛟</div>
-        <div class="documentInfo">
-            <div class="documentName">Basic Safety Training (BST)</div>
-            <div class="documentDates">
-                <span class="documentDate">📅 Issued: 08 Apr 2023</span>
-                <span class="documentDate">⏳ Expires: 08 Apr 2028</span>
+        <!-- DOCUMENTS LIST -->
+        <div class="sectionCard">
+            <div class="sectionHeader">
+                <span class="sectionHeaderIcon">📄</span>
+                <span class="sectionHeaderTitle">MY DOCUMENTS</span>
             </div>
-            <span class="documentStatus statusValid">✅ Valid</span>
-        </div>
-        <span class="documentArrow">›</span>
-    </div>
-    
-    <!-- Advanced Fire Fighting -->
-    <div class="documentItem" onclick="openDocument('aff')">
-        <div class="documentIcon">🔥</div>
-        <div class="documentInfo">
-            <div class="documentName">Advanced Fire Fighting</div>
-            <div class="documentDates">
-                <span class="documentDate">📅 Issued: 15 Jul 2023</span>
-                <span class="documentDate">⏳ Expires: 15 Jul 2028</span>
+            
+            <div id="documentsList">
+                <!-- Documents will be loaded here -->
             </div>
-            <span class="documentStatus statusValid">✅ Valid</span>
         </div>
-        <span class="documentArrow">›</span>
     </div>
-</div>
-
-<!-- COMPANY DOCUMENTS -->
-<div class="sectionCard">
-    <div class="sectionHeader">
-        <span class="sectionHeaderIcon">🏢</span>
-        <span class="sectionHeaderTitle">COMPANY DOCUMENTS</span>
-    </div>
-    
-    <!-- Employment Contract -->
-    <div class="documentItem" onclick="openDocument('contract')">
-        <div class="documentIcon">📝</div>
-        <div class="documentInfo">
-            <div class="documentName">Employment Contract</div>
-            <div class="documentDates">
-                <span class="documentDate">📅 Issued: 01 Jan 2025</span>
-                <span class="documentDate">⏳ Expires: 31 Dec 2025</span>
-            </div>
-            <span class="documentStatus statusValid">✅ Valid</span>
-        </div>
-        <span class="documentArrow">›</span>
-    </div>
-</div>
-
 </div>
 
 <!-- ADD DOCUMENT BUTTON -->
@@ -737,67 +706,78 @@ Settings
 
 <!-- BOTTOM NAVIGATION -->
 <div class="bottomnav">
-
-<button onclick="location.href='feeds.html'" id="navFeeds">
-<svg class="navIcon" viewBox="0 0 24 24" fill="none" stroke-width="2">
-<rect x="3" y="3" width="7" height="7"></rect>
-<rect x="14" y="3" width="7" height="7"></rect>
-<rect x="14" y="14" width="7" height="7"></rect>
-<rect x="3" y="14" width="7" height="7"></rect>
-</svg>
-Feeds
-</button>
-
-<button onclick="location.href='friends.html'" id="navFriends">
-<svg class="navIcon" viewBox="0 0 24 24" fill="none" stroke-width="2">
-<circle cx="12" cy="7" r="4"></circle>
-<path d="M5.5 21a6.5 6.5 0 0 1 13 0"></path>
-</svg>
-Friends
-</button>
-
-<button onclick="location.href='messages.html'" id="navMessages">
-<svg class="navIcon" viewBox="0 0 24 24" fill="none" stroke-width="2">
-<path d="M21 15a4 4 0 0 1-4 4H7l-4 4V5a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"></path>
-</svg>
-Messages
-</button>
-
-<button onclick="location.href='profile.html'" id="navProfile">
-<img src="https://i.ibb.co/2kRZ7Z6/avatar.png" class="navAvatar" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2222%22 height=%2222%22 viewBox=%220 0 24 24%22 fill=%22%230a4b7a%22><circle cx=%2212%22 cy=%228%22 r=%224%22/><path d=%22M5.5 21a6.5 6.5 0 0 1 13 0%22/></svg>'">
-Profile
-</button>
-
+    <button onclick="location.href='feeds.html'" id="navFeeds">
+        <svg class="navIcon" viewBox="0 0 24 24" fill="none" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"/>
+            <rect x="14" y="3" width="7" height="7"/>
+            <rect x="14" y="14" width="7" height="7"/>
+            <rect x="3" y="14" width="7" height="7"/>
+        </svg>
+        Feeds
+    </button>
+    <button onclick="location.href='friends.html'" id="navFriends">
+        <svg class="navIcon" viewBox="0 0 24 24" fill="none" stroke-width="2">
+            <circle cx="12" cy="7" r="4"/>
+            <path d="M5.5 21a6.5 6.5 0 0 1 13 0"/>
+        </svg>
+        Friends
+    </button>
+    <button onclick="location.href='messages.html'" id="navMessages">
+        <svg class="navIcon" viewBox="0 0 24 24" fill="none" stroke-width="2">
+            <path d="M21 15a4 4 0 0 1-4 4H7l-4 4V5a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/>
+        </svg>
+        Messages
+    </button>
+    <button onclick="location.href='profile.html'" id="navProfile">
+        <img src="" class="navAvatar" id="navAvatar">
+        Profile
+    </button>
 </div>
 
 <!-- DOCUMENT EDIT MODAL -->
 <div class="modalOverlay" id="documentModal">
     <div class="modalContent">
-        <div class="modalTitle" id="modalTitle">Edit Document</div>
+        <div class="modalTitle" id="modalTitle">Add Document</div>
+        
+        <div class="modalField">
+            <label class="modalLabel">Document Type</label>
+            <select class="modalSelect" id="docType">
+                <option value="coc">Certificate of Competency (COC)</option>
+                <option value="seaman">Seaman's Book</option>
+                <option value="passport">International Passport</option>
+                <option value="medical">Medical Certificate</option>
+                <option value="stcw">STCW Certificate</option>
+                <option value="yellowfever">Yellow Fever Vaccination</option>
+                <option value="bst">Basic Safety Training</option>
+                <option value="aff">Advanced Fire Fighting</option>
+                <option value="contract">Employment Contract</option>
+                <option value="other">Other</option>
+            </select>
+        </div>
         
         <div class="modalField">
             <label class="modalLabel">Document Name</label>
-            <input type="text" class="modalInput" id="docName" value="Certificate of Competency (COC)">
+            <input type="text" class="modalInput" id="docName" placeholder="e.g., COC Class 3">
         </div>
         
         <div class="modalField">
             <label class="modalLabel">Issue Date</label>
-            <input type="date" class="modalInput" id="issueDate" value="2023-03-15">
+            <input type="date" class="modalInput" id="issueDate">
         </div>
         
         <div class="modalField">
             <label class="modalLabel">Expiry Date</label>
-            <input type="date" class="modalInput" id="expiryDate" value="2026-03-15">
+            <input type="date" class="modalInput" id="expiryDate">
         </div>
         
         <div class="modalField">
             <label class="modalLabel">Document Number</label>
-            <input type="text" class="modalInput" id="docNumber" value="COC-12345-6789">
+            <input type="text" class="modalInput" id="docNumber" placeholder="e.g., COC-12345">
         </div>
         
         <div class="modalField">
             <label class="modalLabel">Issuing Authority</label>
-            <input type="text" class="modalInput" id="issuingAuthority" value="Maritime Industry Authority">
+            <input type="text" class="modalInput" id="issuingAuthority" placeholder="e.g., MARINA">
         </div>
         
         <div class="modalButtons">
@@ -805,150 +785,525 @@ Profile
             <button class="modalCancel" onclick="closeModal()">Cancel</button>
         </div>
         
-        <button class="modalDelete" onclick="deleteDocument()">Delete Document</button>
+        <button class="modalDelete" id="deleteDocBtn" style="display: none;" onclick="deleteDocument()">Delete Document</button>
     </div>
 </div>
 
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
 <script>
+// Firebase config
+const firebaseConfig = {
+    apiKey: "AIzaSyCNlodsmEHrSXxgH0gTOcx4cAXwG8qmG9w",
+    authDomain: "seaconnect-d2baa.firebaseapp.com",
+    projectId: "seaconnect-d2baa",
+    storageBucket: "seaconnect-d2baa.appspot.com",
+    messagingSenderId: "402383997556",
+    appId: "1:402383997556:web:d4b5894b25545ecaef9f21"
+};
 
-function openFiles(){
-location.href="files.html";
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+let currentUser = null;
+let currentUserData = null;
+let currentDocId = null;
+let unsubscribeDocs = null;
+let loadingTimeout = null;
+
+// Toast function
+function showToast(message, isError = false) {
+    const toast = document.getElementById('toast');
+    toast.innerText = message;
+    toast.style.background = isError ? '#ef4444' : '#0b1e33';
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
-function openSettings(){
-location.href="settings.html";
-}
+// Navigation
+function openFiles() { location.href = 'files.html'; }
+function openSettings() { location.href = 'settings.html'; }
 
-/* HIDE HEADER + NAV */
-let lastScroll=0;
-const header=document.querySelector(".appHeader");
-const nav=document.querySelector(".bottomnav");
+// Set loading timeout
+loadingTimeout = setTimeout(() => {
+    const loading = document.getElementById('loadingContainer');
+    if (loading && loading.style.display !== 'none') {
+        document.getElementById('loadingContainer').style.display = 'none';
+        document.getElementById('errorContainer').style.display = 'block';
+        document.getElementById('errorMessage').innerText = 'Loading timeout. Please check your connection and Firebase rules.';
+    }
+}, 8000);
 
-window.addEventListener("scroll",function(){
-    const currentScroll=window.pageYOffset;
-    if(currentScroll<50){
-        header.style.transform="translateY(0)";
-        nav.style.transform="translateY(0)";
+// Check auth state
+auth.onAuthStateChanged(async (user) => {
+    clearTimeout(loadingTimeout);
+    
+    if (!user || user.isAnonymous) {
+        window.location.href = 'login.html';
         return;
     }
-    if(currentScroll>lastScroll){
-        header.style.transform="translateY(-100%)";
-        nav.style.transform="translateY(120%)";
-    } else {
-        header.style.transform="translateY(0)";
-        nav.style.transform="translateY(0)";
+    
+    currentUser = user;
+    
+    try {
+        const userDoc = await db.collection('users').doc(user.uid).get();
+        
+        if (!userDoc.exists) {
+            window.location.href = 'login.html';
+            return;
+        }
+        
+        currentUserData = userDoc.data();
+        
+        // Check if verified
+        if (!currentUserData.verified && currentUserData.status !== 'approved') {
+            window.location.href = 'pending.html';
+            return;
+        }
+        
+        // Update nav avatar
+        if (currentUserData.photoURL) {
+            document.getElementById('navAvatar').src = currentUserData.photoURL;
+        } else {
+            const initials = (currentUserData.name || 'U').charAt(0).toUpperCase();
+            document.getElementById('navAvatar').src = `https://ui-avatars.com/api/?name=${initials}&background=0a4b7a&color=fff&size=50`;
+        }
+        
+        // Load documents WITHOUT orderBy first (doesn't need index)
+        loadDocumentsSimple();
+        
+    } catch (error) {
+        console.error('Auth error:', error);
+        document.getElementById('loadingContainer').style.display = 'none';
+        document.getElementById('errorContainer').style.display = 'block';
+        document.getElementById('errorMessage').innerText = error.message;
     }
-    lastScroll=currentScroll;
+});
+
+// Simple load without orderBy (no index needed)
+function loadDocumentsSimple() {
+    if (unsubscribeDocs) {
+        unsubscribeDocs();
+    }
+    
+    const documentsList = document.getElementById('documentsList');
+    
+    try {
+        // No orderBy - this doesn't require an index
+        unsubscribeDocs = db.collection('documents')
+            .where('userId', '==', currentUser.uid)
+            .onSnapshot((snapshot) => {
+                document.getElementById('loadingContainer').style.display = 'none';
+                document.getElementById('documentsContent').style.display = 'block';
+                
+                if (snapshot.empty) {
+                    documentsList.innerHTML = `
+                        <div class="emptyState">
+                            <div class="emoji">📄</div>
+                            <h3>No documents yet</h3>
+                            <p>Add your maritime documents to track expiry dates</p>
+                            <button class="emptyStateBtn" onclick="addDocument()">Add Document</button>
+                        </div>
+                    `;
+                    updateStats([]);
+                    return;
+                }
+                
+                // Convert to array and sort manually
+                let docs = [];
+                snapshot.forEach((doc) => {
+                    const document = doc.data();
+                    document.id = doc.id;
+                    docs.push(document);
+                });
+                
+                // Sort by expiry date manually (client-side)
+                docs.sort((a, b) => {
+                    if (!a.expiryDate) return 1;
+                    if (!b.expiryDate) return -1;
+                    return new Date(a.expiryDate) - new Date(b.expiryDate);
+                });
+                
+                let html = '';
+                docs.forEach((document) => {
+                    const status = getDocumentStatus(document.issueDate, document.expiryDate);
+                    const statusClass = getStatusClass(status);
+                    const statusText = getStatusText(status);
+                    const icon = getDocumentIcon(document.type);
+                    
+                    const issueDate = formatDate(document.issueDate);
+                    const expiryDate = formatDate(document.expiryDate);
+                    
+                    html += `
+                        <div class="documentItem" onclick="openDocument('${document.id}')">
+                            <div class="documentIcon">${icon}</div>
+                            <div class="documentInfo">
+                                <div class="documentName">${document.name || document.type}</div>
+                                <div class="documentDates">
+                                    <span class="documentDate">📅 Issued: ${issueDate}</span>
+                                    <span class="documentDate">⏳ Expires: ${expiryDate}</span>
+                                </div>
+                                <span class="documentStatus ${statusClass}">${statusText}</span>
+                            </div>
+                            <span class="documentArrow">›</span>
+                        </div>
+                    `;
+                });
+                
+                documentsList.innerHTML = html;
+                updateStats(docs);
+                
+            }, (error) => {
+                console.error('Error loading documents:', error);
+                document.getElementById('loadingContainer').style.display = 'none';
+                document.getElementById('errorContainer').style.display = 'block';
+                
+                // Show specific error message
+                if (error.code === 'permission-denied') {
+                    document.getElementById('errorMessage').innerHTML = 
+                        'Permission denied. Please update Firebase rules:<br><br>' +
+                        '<code style="background:#333; color:#fff; padding:10px; display:block; border-radius:5px;">' +
+                        'match /documents/{documentId} {\n  allow read, write: if request.auth != null;\n}' +
+                        '</code>';
+                } else {
+                    document.getElementById('errorMessage').innerText = error.message;
+                }
+            });
+    } catch (error) {
+        console.error('Error setting up listener:', error);
+        document.getElementById('loadingContainer').style.display = 'none';
+        document.getElementById('errorContainer').style.display = 'block';
+        document.getElementById('errorMessage').innerText = error.message;
+    }
+}
+
+// Get document status based on dates
+function getDocumentStatus(issueDate, expiryDate) {
+    if (!expiryDate) return 'unknown';
+    
+    const today = new Date();
+    const expiry = new Date(expiryDate);
+    const diffTime = expiry - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays < 0) return 'expired';
+    if (diffDays <= 30) return 'expiring';
+    return 'valid';
+}
+
+function getStatusClass(status) {
+    switch(status) {
+        case 'valid': return 'statusValid';
+        case 'expiring': return 'statusExpiring';
+        case 'expired': return 'statusExpired';
+        default: return '';
+    }
+}
+
+function getStatusText(status) {
+    switch(status) {
+        case 'valid': return '✅ Valid';
+        case 'expiring': return '⚠️ Expires soon';
+        case 'expired': return '❌ Expired';
+        default: return '📄 Unknown';
+    }
+}
+
+function getDocumentIcon(type) {
+    const icons = {
+        'coc': '📑',
+        'seaman': '📘',
+        'passport': '🛂',
+        'medical': '⚕️',
+        'stcw': '📋',
+        'yellowfever': '💉',
+        'bst': '🛟',
+        'aff': '🔥',
+        'contract': '📝',
+        'other': '📄'
+    };
+    return icons[type] || '📄';
+}
+
+function formatDate(dateString) {
+    if (!dateString) return 'Unknown';
+    try {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+    } catch (e) {
+        return dateString;
+    }
+}
+
+// Update stats
+function updateStats(docs) {
+    let total = docs.length;
+    let valid = 0;
+    let expiring = 0;
+    let expired = 0;
+    let expiringDocs = [];
+    
+    docs.forEach(doc => {
+        const status = getDocumentStatus(doc.issueDate, doc.expiryDate);
+        if (status === 'valid') valid++;
+        else if (status === 'expiring') {
+            expiring++;
+            expiringDocs.push(doc);
+        }
+        else if (status === 'expired') expired++;
+    });
+    
+    document.getElementById('totalDocs').innerText = total;
+    document.getElementById('validDocs').innerText = valid;
+    document.getElementById('expiringDocs').innerText = expiring;
+    document.getElementById('expiredDocs').innerText = expired;
+    
+    // Show expiring banner
+    const banner = document.getElementById('expiringBanner');
+    if (expiring > 0) {
+        banner.style.display = 'flex';
+        
+        // Get expiring soon details
+        let details = [];
+        expiringDocs.slice(0, 2).forEach(doc => {
+            const days = getDaysUntilExpiry(doc.expiryDate);
+            details.push(`${doc.name || doc.type} (${days} days)`);
+        });
+        
+        document.getElementById('expiringTitle').innerText = 
+            `${expiring} document${expiring > 1 ? 's' : ''} expiring soon`;
+        document.getElementById('expiringDesc').innerText = details.join(' • ');
+    } else {
+        banner.style.display = 'none';
+    }
+}
+
+function getDaysUntilExpiry(expiryDate) {
+    const today = new Date();
+    const expiry = new Date(expiryDate);
+    const diffTime = expiry - today;
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+}
+
+// Show expiring documents
+function showExpiringDocs() {
+    showToast(`📅 Check your expiring documents`);
+}
+
+// Open document for editing
+function openDocument(docId) {
+    currentDocId = docId;
+    
+    db.collection('documents').doc(docId).get().then((doc) => {
+        if (doc.exists) {
+            const data = doc.data();
+            
+            document.getElementById('modalTitle').innerText = 'Edit Document';
+            document.getElementById('docType').value = data.type || 'other';
+            document.getElementById('docName').value = data.name || '';
+            document.getElementById('issueDate').value = data.issueDate || '';
+            document.getElementById('expiryDate').value = data.expiryDate || '';
+            document.getElementById('docNumber').value = data.number || '';
+            document.getElementById('issuingAuthority').value = data.authority || '';
+            
+            document.getElementById('deleteDocBtn').style.display = 'block';
+            document.getElementById('documentModal').classList.add('active');
+        }
+    }).catch((error) => {
+        console.error('Error getting document:', error);
+        showToast('❌ Error loading document', true);
+    });
+}
+
+// Add new document
+function addDocument() {
+    currentDocId = null;
+    
+    // Set default dates
+    const today = new Date().toISOString().split('T')[0];
+    const nextYear = new Date();
+    nextYear.setFullYear(nextYear.getFullYear() + 1);
+    const nextYearStr = nextYear.toISOString().split('T')[0];
+    
+    document.getElementById('modalTitle').innerText = 'Add Document';
+    document.getElementById('docType').value = 'coc';
+    document.getElementById('docName').value = '';
+    document.getElementById('issueDate').value = today;
+    document.getElementById('expiryDate').value = nextYearStr;
+    document.getElementById('docNumber').value = '';
+    document.getElementById('issuingAuthority').value = '';
+    
+    document.getElementById('deleteDocBtn').style.display = 'none';
+    document.getElementById('documentModal').classList.add('active');
+}
+
+// Save document
+async function saveDocument() {
+    const docType = document.getElementById('docType').value;
+    const docName = document.getElementById('docName').value.trim();
+    const issueDate = document.getElementById('issueDate').value;
+    const expiryDate = document.getElementById('expiryDate').value;
+    const docNumber = document.getElementById('docNumber').value.trim();
+    const authority = document.getElementById('issuingAuthority').value.trim();
+    
+    if (!issueDate || !expiryDate) {
+        showToast('❌ Please enter issue and expiry dates', true);
+        return;
+    }
+    
+    // Validate dates
+    const issue = new Date(issueDate);
+    const expiry = new Date(expiryDate);
+    
+    if (expiry < issue) {
+        showToast('❌ Expiry date cannot be before issue date', true);
+        return;
+    }
+    
+    const documentData = {
+        userId: currentUser.uid,
+        type: docType,
+        name: docName || getDocumentTypeName(docType),
+        issueDate: issueDate,
+        expiryDate: expiryDate,
+        number: docNumber,
+        authority: authority,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+    
+    try {
+        if (currentDocId) {
+            // Update existing document
+            await db.collection('documents').doc(currentDocId).update(documentData);
+            showToast('✅ Document updated');
+        } else {
+            // Add new document
+            documentData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+            await db.collection('documents').add(documentData);
+            showToast('✅ Document added');
+        }
+        
+        closeModal();
+    } catch (error) {
+        console.error('Error saving document:', error);
+        showToast('❌ Error saving document', true);
+    }
+}
+
+// Get document type name
+function getDocumentTypeName(type) {
+    const names = {
+        'coc': 'Certificate of Competency',
+        'seaman': 'Seaman\'s Book',
+        'passport': 'International Passport',
+        'medical': 'Medical Certificate',
+        'stcw': 'STCW Certificate',
+        'yellowfever': 'Yellow Fever Vaccination',
+        'bst': 'Basic Safety Training',
+        'aff': 'Advanced Fire Fighting',
+        'contract': 'Employment Contract',
+        'other': 'Document'
+    };
+    return names[type] || 'Document';
+}
+
+// Delete document
+async function deleteDocument() {
+    if (!currentDocId) return;
+    
+    if (confirm('Are you sure you want to delete this document?')) {
+        try {
+            await db.collection('documents').doc(currentDocId).delete();
+            showToast('✅ Document deleted');
+            closeModal();
+        } catch (error) {
+            console.error('Error deleting document:', error);
+            showToast('❌ Error deleting document', true);
+        }
+    }
+}
+
+// Close modal
+function closeModal() {
+    document.getElementById('documentModal').classList.remove('active');
+    currentDocId = null;
+}
+
+// ============================================
+// FIXED SCROLL HANDLER - FOR NAV HIDING
+// ============================================
+let lastScroll = 0;
+const header = document.querySelector(".appHeader");
+const nav = document.querySelector(".bottomnav");
+let ticking = false;
+
+window.addEventListener("scroll", function() {
+    if (!ticking) {
+        window.requestAnimationFrame(function() {
+            const currentScroll = window.pageYOffset;
+            
+            // Always show at the top
+            if (currentScroll < 50) {
+                header.style.transform = "translateY(0)";
+                nav.style.transform = "translateY(0)";
+            } 
+            // Scrolling down - hide
+            else if (currentScroll > lastScroll && currentScroll > 100) {
+                header.style.transform = "translateY(-100%)";
+                nav.style.transform = "translateY(120%)";
+            } 
+            // Scrolling up - show
+            else if (currentScroll < lastScroll) {
+                header.style.transform = "translateY(0)";
+                nav.style.transform = "translateY(0)";
+            }
+            
+            lastScroll = currentScroll;
+            ticking = false;
+        });
+        
+        ticking = true;
+    }
 });
 
 /* PULL TO REFRESH */
-let startY=0;
-let pulling=false;
-const loader=document.getElementById("pullLoader");
+let startY = 0;
+let pulling = false;
+const loader = document.getElementById("pullLoader");
 
-window.addEventListener("touchstart",(e)=>{
-    if(window.scrollY===0){
-        pulling=true;
-        startY=e.touches[0].clientY;
+window.addEventListener("touchstart", (e) => {
+    if (window.scrollY === 0) {
+        pulling = true;
+        startY = e.touches[0].clientY;
     }
 });
 
-window.addEventListener("touchmove",(e)=>{
-    if(!pulling) return;
-    let distance=e.touches[0].clientY-startY;
-    if(distance>0){
-        loader.style.top=Math.min(distance-60,20)+"px";
+window.addEventListener("touchmove", (e) => {
+    if (!pulling) return;
+    let distance = e.touches[0].clientY - startY;
+    if (distance > 0) {
+        loader.style.top = Math.min(distance - 60, 20) + "px";
     }
 });
 
-window.addEventListener("touchend",()=>{
-    if(!pulling) return;
-    let top=parseInt(loader.style.top);
-    if(top>10){
-        loader.style.top="10px";
-        setTimeout(()=>{ location.reload(); },400);
+window.addEventListener("touchend", () => {
+    if (!pulling) return;
+    let top = parseInt(loader.style.top);
+    if (top > 10) {
+        loader.style.top = "10px";
+        setTimeout(() => { location.reload(); }, 400);
     } else {
-        loader.style.top="-60px";
+        loader.style.top = "-60px";
     }
-    pulling=false;
+    pulling = false;
 });
-
-/* DOCUMENT FUNCTIONS */
-
-let currentDoc = '';
-
-function openDocument(docId){
-    currentDoc = docId;
-    
-    // Set modal values based on document
-    if(docId === 'coc'){
-        document.getElementById('docName').value = 'Certificate of Competency (COC)';
-        document.getElementById('issueDate').value = '2023-03-15';
-        document.getElementById('expiryDate').value = '2026-03-15';
-        document.getElementById('docNumber').value = 'COC-12345-6789';
-        document.getElementById('issuingAuthority').value = 'Maritime Industry Authority';
-    } else if(docId === 'seaman'){
-        document.getElementById('docName').value = 'Seaman\'s Book';
-        document.getElementById('issueDate').value = '2022-01-10';
-        document.getElementById('expiryDate').value = '2027-01-10';
-        document.getElementById('docNumber').value = 'SB-98765-4321';
-        document.getElementById('issuingAuthority').value = 'Philippine Coast Guard';
-    } else if(docId === 'medical'){
-        document.getElementById('docName').value = 'Medical Certificate';
-        document.getElementById('issueDate').value = '2024-09-05';
-        document.getElementById('expiryDate').value = '2025-09-05';
-        document.getElementById('docNumber').value = 'MED-55555-7777';
-        document.getElementById('issuingAuthority').value = 'Maritime Medical Clinic';
-    } else if(docId === 'yellowfever'){
-        document.getElementById('docName').value = 'Yellow Fever Vaccination';
-        document.getElementById('issueDate').value = '2020-02-03';
-        document.getElementById('expiryDate').value = '2025-02-03';
-        document.getElementById('docNumber').value = 'YF-11111-2222';
-        document.getElementById('issuingAuthority').value = 'World Health Organization';
-    }
-    
-    document.getElementById('documentModal').classList.add('active');
-}
-
-function addDocument(){
-    document.getElementById('docName').value = 'New Document';
-    document.getElementById('issueDate').value = '2025-01-01';
-    document.getElementById('expiryDate').value = '2026-01-01';
-    document.getElementById('docNumber').value = 'NEW-00000-0000';
-    document.getElementById('issuingAuthority').value = 'Maritime Authority';
-    document.getElementById('documentModal').classList.add('active');
-}
-
-function saveDocument(){
-    alert('✅ Document saved successfully!');
-    closeModal();
-}
-
-function deleteDocument(){
-    if(confirm('Are you sure you want to delete this document?')){
-        alert('❌ Document deleted');
-        closeModal();
-    }
-}
-
-function closeModal(){
-    document.getElementById('documentModal').classList.remove('active');
-}
-
-/* UPDATE NOTIFICATIONS BASED ON DATES */
-function checkExpiryDates(){
-    // This would normally calculate from dates
-    // For demo, we'll keep static values
-    console.log('Checking expiry dates...');
-}
-
-// Run on load
-checkExpiryDates();
-
-/* SET ACTIVE NAV ITEM */
-document.getElementById('navFiles')?.classList.add('active');
-// Since Files is in header, we don't need bottom nav active
-
 </script>
 
 </body>

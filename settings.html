@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
 <title>Settings | Sea Connect</title>
 
 <style>
@@ -128,6 +128,18 @@ body {
     padding: 20px;
     margin-bottom: 16px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    animation: fadeInUp 0.3s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .settingsHeader {
@@ -410,6 +422,7 @@ input:checked + .slider:before {
     z-index: 999;
     transition: transform 0.35s ease;
     padding: 0 8px;
+    border: 1px solid var(--bg-primary);
 }
 
 .bottomnav button {
@@ -527,6 +540,7 @@ input:checked + .slider:before {
     margin-bottom: 16px;
     background: var(--input-bg);
     color: var(--text-primary);
+    border: 1px solid var(--bg-primary);
 }
 
 .editInput:focus {
@@ -606,6 +620,59 @@ input:checked + .slider:before {
     background: var(--danger-bg) !important;
     color: #ef4444 !important;
 }
+
+.loadingContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.loadingSpinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--border-subtle);
+    border-top: 4px solid var(--blue-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.loadingText {
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+.errorContainer {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.errorContainer .emoji {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.errorContainer h3 {
+    color: #ef4444;
+    margin-bottom: 10px;
+}
+
+.errorContainer p {
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+}
+
+.retryBtn {
+    background: var(--blue-primary);
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 40px;
+    font-weight: 600;
+    cursor: pointer;
+}
 </style>
 </head>
 
@@ -616,408 +683,391 @@ input:checked + .slider:before {
 </div>
 
 <div class="appHeader">
-
-<button class="fileBtn" onclick="openFiles()">
-<svg class="headerIcon" viewBox="0 0 24 24" fill="none" stroke-width="2">
-<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-<polyline points="14 2 14 8 20 8"/>
-</svg>
-Files
-</button>
-
-<div class="logo">SEA CONNECT</div>
-
-<button class="settingsBtn" onclick="openSettings()">
-<svg class="headerIcon" viewBox="0 0 24 24" fill="none" stroke-width="2">
-<circle cx="12" cy="12" r="3"></circle>
-<path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82
-l.06.06a2 2 0 1 1-2.83 2.83
-l-.06-.06a1.65 1.65 0 0 0-1.82-.33
-1.65 1.65 0 0 0-1 1.51V21
-a2 2 0 1 1-4 0v-.09
-a1.65 1.65 0 0 0-1-1.51
-1.65 1.65 0 0 0-1.82.33
-l-.06.06a2 2 0 1 1-2.83-2.83
-l.06-.06a1.65 1.65 0 0 0 .33-1.82
-1.65 1.65 0 0 0-1.51-1H3
-a2 2 0 1 1 0-4h.09
-a1.65 1.65 0 0 0 1.51-1
-1.65 1.65 0 0 0-.33-1.82
-l-.06-.06a2 2 0 1 1 2.83-2.83
-l.06.06a1.65 1.65 0 0 0 1.82.33H9
-a1.65 1.65 0 0 0 1-1.51V3
-a2 2 0 1 1 4 0v.09
-a1.65 1.65 0 0 0 1 1.51
-1.65 1.65 0 0 0 1.82-.33
-l.06-.06a2 2 0 1 1 2.83 2.83
-l-.06.06a1.65 1.65 0 0 0-.33 1.82V9
-c0 .66.39 1.26 1 1.51H21
-a2 2 0 1 1 0 4h-.09
-c-.66 0-1.26.39-1.51 1z"/>
-</svg>
-Settings
-</button>
-
+    <button class="fileBtn" onclick="openFiles()">
+        <svg class="headerIcon" viewBox="0 0 24 24" fill="none" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+        </svg>
+        Files
+    </button>
+    <div class="logo">SEA CONNECT</div>
+    <button class="settingsBtn" onclick="openSettings()">
+        <svg class="headerIcon" viewBox="0 0 24 24" fill="none" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c0 .66.39 1.26 1 1.51H21a2 2 0 0 1 0 4h-.09c-.66 0-1.26.39-1.51 1z"/>
+        </svg>
+        Settings
+    </button>
 </div>
 
 <div class="page">
+    <!-- Loading State -->
+    <div class="loadingContainer" id="loadingContainer">
+        <div class="loadingSpinner"></div>
+        <div class="loadingText">Loading settings...</div>
+    </div>
 
-<!-- PROFILE SUMMARY CARD WITH CAMERA OUTSIDE CIRCLE -->
-<div class="settingsCard" onclick="viewProfile()">
-    <div class="profileSummary">
-        <div class="profileAvatarWrapper">
-            <div class="profileAvatar" id="profileAvatar">
-                <img id="profileAvatarImg" src="" style="display:none;">
-                <span id="profileInitials">MS</span>
+    <!-- Error State (hidden initially) -->
+    <div class="errorContainer" id="errorContainer" style="display: none;">
+        <div class="emoji">❌</div>
+        <h3>Error Loading Settings</h3>
+        <p id="errorMessage"></p>
+        <button class="retryBtn" onclick="location.reload()">Try Again</button>
+    </div>
+
+    <!-- Settings Content (hidden initially) -->
+    <div id="settingsContent" style="display: none;">
+        <!-- PROFILE SUMMARY CARD WITH CAMERA OUTSIDE CIRCLE -->
+        <div class="settingsCard" onclick="viewProfile()">
+            <div class="profileSummary">
+                <div class="profileAvatarWrapper">
+                    <div class="profileAvatar" id="profileAvatar">
+                        <img id="profileAvatarImg" src="" style="display:none;">
+                        <span id="profileInitials">MS</span>
+                    </div>
+                    <div class="cameraIcon" onclick="event.stopPropagation(); uploadPhoto()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                            <circle cx="12" cy="13" r="4"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="profileInfo">
+                    <div class="profileName" id="profileName">Loading...</div>
+                    <div class="profileEmail" id="profileEmail">loading@email.com</div>
+                    <span class="profileRank" id="profileRank">Seafarer</span>
+                </div>
+                <span class="profileArrow">›</span>
             </div>
-            <div class="cameraIcon" onclick="event.stopPropagation(); uploadPhoto()">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-                    <circle cx="12" cy="13" r="4"/>
-                </svg>
+        </div>
+
+        <input type="file" id="imageUpload" accept="image/*" onchange="handleImageUpload(event)">
+
+        <!-- ACCOUNT SETTINGS -->
+        <div class="settingsCard">
+            <div class="settingsHeader">
+                <span class="settingsHeaderIcon">👤</span>
+                <span class="settingsHeaderTitle">ACCOUNT</span>
+            </div>
+            
+            <div class="settingsItem" onclick="openEditModal('name', 'Display Name', document.getElementById('displayNameValue').innerText)">
+                <div class="settingsItemIcon">👤</div>
+                <div class="settingsItemContent">
+                    <div class="settingsItemTitle">Display Name</div>
+                    <div class="settingsItemDesc" id="displayNameValue">Loading...</div>
+                </div>
+                <span class="settingsItemArrow">›</span>
+            </div>
+            
+            <div class="settingsItem" onclick="openEditModal('rank', 'Rank', document.getElementById('rankValue').innerText)">
+                <div class="settingsItemIcon">⚓</div>
+                <div class="settingsItemContent">
+                    <div class="settingsItemTitle">Rank / Position</div>
+                    <div class="settingsItemDesc" id="rankValue">Loading...</div>
+                </div>
+                <span class="settingsItemArrow">›</span>
+            </div>
+            
+            <div class="settingsItem" onclick="openEditModal('company', 'Company', document.getElementById('companyValue').innerText)">
+                <div class="settingsItemIcon">🏢</div>
+                <div class="settingsItemContent">
+                    <div class="settingsItemTitle">Shipping Company</div>
+                    <div class="settingsItemDesc" id="companyValue">Loading...</div>
+                </div>
+                <span class="settingsItemArrow">›</span>
+            </div>
+            
+            <div class="settingsItem" onclick="openEditModal('vessel', 'Vessel', document.getElementById('vesselValue').innerText)">
+                <div class="settingsItemIcon">🚢</div>
+                <div class="settingsItemContent">
+                    <div class="settingsItemTitle">Current Vessel</div>
+                    <div class="settingsItemDesc" id="vesselValue">Loading...</div>
+                </div>
+                <span class="settingsItemArrow">›</span>
+            </div>
+            
+            <div class="settingsItem" onclick="openEditModal('seamanBook', 'Seaman Book', document.getElementById('seamanValue').innerText)">
+                <div class="settingsItemIcon">📘</div>
+                <div class="settingsItemContent">
+                    <div class="settingsItemTitle">Seaman's Book</div>
+                    <div class="settingsItemDesc" id="seamanValue">Loading...</div>
+                </div>
+                <span class="settingsItemArrow">›</span>
             </div>
         </div>
-        <div class="profileInfo">
-            <div class="profileName" id="profileName">Loading...</div>
-            <div class="profileEmail" id="profileEmail">loading@email.com</div>
-            <span class="profileRank" id="profileRank">Seafarer</span>
-        </div>
-        <span class="profileArrow">›</span>
-    </div>
-</div>
 
-<input type="file" id="imageUpload" accept="image/*" onchange="handleImageUpload(event)">
+        <!-- NOTIFICATIONS -->
+        <div class="settingsCard">
+            <div class="settingsHeader">
+                <span class="settingsHeaderIcon">🔔</span>
+                <span class="settingsHeaderTitle">NOTIFICATIONS</span>
+            </div>
+            
+            <div class="settingsItem">
+                <div class="settingsItemIcon">💬</div>
+                <div class="settingsItemContent">
+                    <div class="settingsItemTitle">Message Notifications</div>
+                    <div class="settingsItemDesc">Get alerts for new messages</div>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="notifyMessages" checked onchange="saveToggle('messages', this.checked)">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <div class="settingsItem">
+                <div class="settingsItemIcon">📱</div>
+                <div class="settingsItemContent">
+                    <div class="settingsItemTitle">Feed Updates</div>
+                    <div class="settingsItemDesc">When crew members post</div>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="notifyFeeds" checked onchange="saveToggle('feeds', this.checked)">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <div class="settingsItem">
+                <div class="settingsItemIcon">👥</div>
+                <div class="settingsItemContent">
+                    <div class="settingsItemTitle">Friend Requests</div>
+                    <div class="settingsItemDesc">When someone adds you</div>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="notifyFriends" checked onchange="saveToggle('friends', this.checked)">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <div class="settingsItem">
+                <div class="settingsItemIcon">⚓</div>
+                <div class="settingsItemContent">
+                    <div class="settingsItemTitle">Port Arrivals</div>
+                    <div class="settingsItemDesc">When friends reach port</div>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="notifyPorts" onchange="saveToggle('ports', this.checked)">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
 
-<!-- ACCOUNT SETTINGS -->
-<div class="settingsCard">
-    <div class="settingsHeader">
-        <span class="settingsHeaderIcon">👤</span>
-        <span class="settingsHeaderTitle">ACCOUNT</span>
-    </div>
-    
-    <div class="settingsItem" onclick="openEditModal('name', 'Display Name', document.getElementById('displayNameValue').innerText)">
-        <div class="settingsItemIcon">👤</div>
-        <div class="settingsItemContent">
-            <div class="settingsItemTitle">Display Name</div>
-            <div class="settingsItemDesc" id="displayNameValue">Loading...</div>
+        <!-- APPEARANCE -->
+        <div class="settingsCard">
+            <div class="settingsHeader">
+                <span class="settingsHeaderIcon">🎨</span>
+                <span class="settingsHeaderTitle">APPEARANCE</span>
+            </div>
+            
+            <div class="settingsItem" onclick="openThemeModal()">
+                <div class="settingsItemIcon">🌓</div>
+                <div class="settingsItemContent">
+                    <div class="settingsItemTitle">Theme</div>
+                    <div class="settingsItemDesc">Light / Dark / Auto</div>
+                </div>
+                <span class="settingsItemValue" id="themeValue">Light</span>
+                <span class="settingsItemArrow">›</span>
+            </div>
+            
+            <div class="settingsItem" onclick="openLanguageModal()">
+                <div class="settingsItemIcon">🌐</div>
+                <div class="settingsItemContent">
+                    <div class="settingsItemTitle">Language</div>
+                    <div class="settingsItemDesc">English (US)</div>
+                </div>
+                <span class="settingsItemValue" id="languageValue">EN</span>
+                <span class="settingsItemArrow">›</span>
+            </div>
+            
+            <div class="settingsItem">
+                <div class="settingsItemIcon">🔤</div>
+                <div class="settingsItemContent">
+                    <div class="settingsItemTitle">Font Size</div>
+                    <div class="settingsItemDesc">Choose text size</div>
+                </div>
+                <div class="radioGroup">
+                    <div class="radioOption" onclick="setFontSize('small', this)">A-</div>
+                    <div class="radioOption active" onclick="setFontSize('medium', this)">A</div>
+                    <div class="radioOption" onclick="setFontSize('large', this)">A+</div>
+                </div>
+            </div>
         </div>
-        <span class="settingsItemArrow">›</span>
-    </div>
-    
-    <div class="settingsItem" onclick="openEditModal('rank', 'Rank', document.getElementById('rankValue').innerText)">
-        <div class="settingsItemIcon">⚓</div>
-        <div class="settingsItemContent">
-            <div class="settingsItemTitle">Rank / Position</div>
-            <div class="settingsItemDesc" id="rankValue">Loading...</div>
-        </div>
-        <span class="settingsItemArrow">›</span>
-    </div>
-    
-    <div class="settingsItem" onclick="openEditModal('company', 'Company', document.getElementById('companyValue').innerText)">
-        <div class="settingsItemIcon">🏢</div>
-        <div class="settingsItemContent">
-            <div class="settingsItemTitle">Shipping Company</div>
-            <div class="settingsItemDesc" id="companyValue">Loading...</div>
-        </div>
-        <span class="settingsItemArrow">›</span>
-    </div>
-    
-    <div class="settingsItem" onclick="openEditModal('vessel', 'Vessel', document.getElementById('vesselValue').innerText)">
-        <div class="settingsItemIcon">🚢</div>
-        <div class="settingsItemContent">
-            <div class="settingsItemTitle">Current Vessel</div>
-            <div class="settingsItemDesc" id="vesselValue">Loading...</div>
-        </div>
-        <span class="settingsItemArrow">›</span>
-    </div>
-    
-    <div class="settingsItem" onclick="openEditModal('seaman', 'Seaman Book', document.getElementById('seamanValue').innerText)">
-        <div class="settingsItemIcon">📘</div>
-        <div class="settingsItemContent">
-            <div class="settingsItemTitle">Seaman's Book</div>
-            <div class="settingsItemDesc" id="seamanValue">Loading...</div>
-        </div>
-        <span class="settingsItemArrow">›</span>
-    </div>
-</div>
 
-<!-- NOTIFICATIONS -->
-<div class="settingsCard">
-    <div class="settingsHeader">
-        <span class="settingsHeaderIcon">🔔</span>
-        <span class="settingsHeaderTitle">NOTIFICATIONS</span>
-    </div>
-    
-    <div class="settingsItem">
-        <div class="settingsItemIcon">💬</div>
-        <div class="settingsItemContent">
-            <div class="settingsItemTitle">Message Notifications</div>
-            <div class="settingsItemDesc">Get alerts for new messages</div>
+        <!-- PRIVACY -->
+        <div class="settingsCard">
+            <div class="settingsHeader">
+                <span class="settingsHeaderIcon">🔒</span>
+                <span class="settingsHeaderTitle">PRIVACY</span>
+            </div>
+            
+            <div class="settingsItem" onclick="openPrivacyModal()">
+                <div class="settingsItemIcon">👁️</div>
+                <div class="settingsItemContent">
+                    <div class="settingsItemTitle">Profile Visibility</div>
+                    <div class="settingsItemDesc">Who can see your profile</div>
+                </div>
+                <span class="settingsItemValue" id="privacyValue">Friends Only</span>
+                <span class="settingsItemArrow">›</span>
+            </div>
+            
+            <div class="settingsItem">
+                <div class="settingsItemIcon">📍</div>
+                <div class="settingsItemContent">
+                    <div class="settingsItemTitle">Share Location</div>
+                    <div class="settingsItemDesc">Show your current port</div>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="shareLocation" checked onchange="saveToggle('location', this.checked)">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <div class="settingsItem">
+                <div class="settingsItemIcon">🟢</div>
+                <div class="settingsItemContent">
+                    <div class="settingsItemTitle">Online Status</div>
+                    <div class="settingsItemDesc">Show when you're active</div>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="showStatus" checked onchange="saveToggle('status', this.checked)">
+                    <span class="slider"></span>
+                </label>
+            </div>
         </div>
-        <label class="switch">
-            <input type="checkbox" id="notifyMessages" checked onchange="saveToggle('messages', this.checked)">
-            <span class="slider"></span>
-        </label>
-    </div>
-    
-    <div class="settingsItem">
-        <div class="settingsItemIcon">📱</div>
-        <div class="settingsItemContent">
-            <div class="settingsItemTitle">Feed Updates</div>
-            <div class="settingsItemDesc">When crew members post</div>
-        </div>
-        <label class="switch">
-            <input type="checkbox" id="notifyFeeds" checked onchange="saveToggle('feeds', this.checked)">
-            <span class="slider"></span>
-        </label>
-    </div>
-    
-    <div class="settingsItem">
-        <div class="settingsItemIcon">👥</div>
-        <div class="settingsItemContent">
-            <div class="settingsItemTitle">Friend Requests</div>
-            <div class="settingsItemDesc">When someone adds you</div>
-        </div>
-        <label class="switch">
-            <input type="checkbox" id="notifyFriends" checked onchange="saveToggle('friends', this.checked)">
-            <span class="slider"></span>
-        </label>
-    </div>
-    
-    <div class="settingsItem">
-        <div class="settingsItemIcon">⚓</div>
-        <div class="settingsItemContent">
-            <div class="settingsItemTitle">Port Arrivals</div>
-            <div class="settingsItemDesc">When friends reach port</div>
-        </div>
-        <label class="switch">
-            <input type="checkbox" id="notifyPorts" onchange="saveToggle('ports', this.checked)">
-            <span class="slider"></span>
-        </label>
-    </div>
-</div>
 
-<!-- APPEARANCE -->
-<div class="settingsCard">
-    <div class="settingsHeader">
-        <span class="settingsHeaderIcon">🎨</span>
-        <span class="settingsHeaderTitle">APPEARANCE</span>
-    </div>
-    
-    <div class="settingsItem" onclick="openThemeModal()">
-        <div class="settingsItemIcon">🌓</div>
-        <div class="settingsItemContent">
-            <div class="settingsItemTitle">Theme</div>
-            <div class="settingsItemDesc">Light / Dark / Auto</div>
+        <!-- DATA & STORAGE -->
+        <div class="settingsCard">
+            <div class="settingsHeader">
+                <span class="settingsHeaderIcon">💾</span>
+                <span class="settingsHeaderTitle">DATA & STORAGE</span>
+            </div>
+            
+            <div class="settingsItem" onclick="showStorageInfo()">
+                <div class="settingsItemIcon">📊</div>
+                <div class="settingsItemContent">
+                    <div class="settingsItemTitle">Storage Used</div>
+                    <div class="settingsItemDesc" id="storageDesc">Calculating...</div>
+                </div>
+                <span class="settingsItemArrow">›</span>
+            </div>
+            
+            <div class="settingsItem" onclick="clearCache()">
+                <div class="settingsItemIcon">🧹</div>
+                <div class="settingsItemContent">
+                    <div class="settingsItemTitle">Clear Cache</div>
+                    <div class="settingsItemDesc">Free up space</div>
+                </div>
+                <span class="settingsItemArrow">›</span>
+            </div>
+            
+            <div class="settingsItem" onclick="exportData()">
+                <div class="settingsItemIcon">📤</div>
+                <div class="settingsItemContent">
+                    <div class="settingsItemTitle">Export My Data</div>
+                    <div class="settingsItemDesc">Download your information</div>
+                </div>
+                <span class="settingsItemArrow">›</span>
+            </div>
         </div>
-        <span class="settingsItemValue" id="themeValue">Light</span>
-        <span class="settingsItemArrow">›</span>
-    </div>
-    
-    <div class="settingsItem" onclick="openLanguageModal()">
-        <div class="settingsItemIcon">🌐</div>
-        <div class="settingsItemContent">
-            <div class="settingsItemTitle">Language</div>
-            <div class="settingsItemDesc">English (US)</div>
-        </div>
-        <span class="settingsItemValue" id="languageValue">EN</span>
-        <span class="settingsItemArrow">›</span>
-    </div>
-    
-    <div class="settingsItem">
-        <div class="settingsItemIcon">🔤</div>
-        <div class="settingsItemContent">
-            <div class="settingsItemTitle">Font Size</div>
-            <div class="settingsItemDesc">Choose text size</div>
-        </div>
-        <div class="radioGroup">
-            <div class="radioOption" onclick="setFontSize('small', this)">A</div>
-            <div class="radioOption active" onclick="setFontSize('medium', this)">A</div>
-            <div class="radioOption" onclick="setFontSize('large', this)">A</div>
-        </div>
-    </div>
-</div>
 
-<!-- PRIVACY -->
-<div class="settingsCard">
-    <div class="settingsHeader">
-        <span class="settingsHeaderIcon">🔒</span>
-        <span class="settingsHeaderTitle">PRIVACY</span>
-    </div>
-    
-    <div class="settingsItem" onclick="openPrivacyModal()">
-        <div class="settingsItemIcon">👁️</div>
-        <div class="settingsItemContent">
-            <div class="settingsItemTitle">Profile Visibility</div>
-            <div class="settingsItemDesc">Who can see your profile</div>
+        <!-- SUPPORT -->
+        <div class="settingsCard">
+            <div class="settingsHeader">
+                <span class="settingsHeaderIcon">❓</span>
+                <span class="settingsHeaderTitle">SUPPORT</span>
+            </div>
+            
+            <div class="settingsItem" onclick="openHelp()">
+                <div class="settingsItemIcon">📖</div>
+                <div class="settingsItemContent">
+                    <div class="settingsItemTitle">Help Center</div>
+                    <div class="settingsItemDesc">Guides and FAQs</div>
+                </div>
+                <span class="settingsItemArrow">›</span>
+            </div>
+            
+            <div class="settingsItem" onclick="openContact()">
+                <div class="settingsItemIcon">📧</div>
+                <div class="settingsItemContent">
+                    <div class="settingsItemTitle">Contact Support</div>
+                    <div class="settingsItemDesc">support@seaconnect.com</div>
+                </div>
+                <span class="settingsItemArrow">›</span>
+            </div>
+            
+            <div class="settingsItem" onclick="openTerms()">
+                <div class="settingsItemIcon">📜</div>
+                <div class="settingsItemContent">
+                    <div class="settingsItemTitle">Terms of Service</div>
+                    <div class="settingsItemDesc">Version 2.1.0</div>
+                </div>
+                <span class="settingsItemArrow">›</span>
+            </div>
+            
+            <div class="settingsItem">
+                <div class="settingsItemIcon">📱</div>
+                <div class="settingsItemContent">
+                    <div class="settingsItemTitle">App Version</div>
+                    <div class="settingsItemDesc">Sea Connect v1.0.0</div>
+                </div>
+            </div>
         </div>
-        <span class="settingsItemValue" id="privacyValue">Friends Only</span>
-        <span class="settingsItemArrow">›</span>
-    </div>
-    
-    <div class="settingsItem">
-        <div class="settingsItemIcon">📍</div>
-        <div class="settingsItemContent">
-            <div class="settingsItemTitle">Share Location</div>
-            <div class="settingsItemDesc">Show your current port</div>
-        </div>
-        <label class="switch">
-            <input type="checkbox" id="shareLocation" checked onchange="saveToggle('location', this.checked)">
-            <span class="slider"></span>
-        </label>
-    </div>
-    
-    <div class="settingsItem">
-        <div class="settingsItemIcon">🟢</div>
-        <div class="settingsItemContent">
-            <div class="settingsItemTitle">Online Status</div>
-            <div class="settingsItemDesc">Show when you're active</div>
-        </div>
-        <label class="switch">
-            <input type="checkbox" id="showStatus" checked onchange="saveToggle('status', this.checked)">
-            <span class="slider"></span>
-        </label>
-    </div>
-</div>
 
-<!-- DATA & STORAGE -->
-<div class="settingsCard">
-    <div class="settingsHeader">
-        <span class="settingsHeaderIcon">💾</span>
-        <span class="settingsHeaderTitle">DATA & STORAGE</span>
-    </div>
-    
-    <div class="settingsItem" onclick="showStorageInfo()">
-        <div class="settingsItemIcon">📊</div>
-        <div class="settingsItemContent">
-            <div class="settingsItemTitle">Storage Used</div>
-            <div class="settingsItemDesc" id="storageDesc">245 MB of 1 GB</div>
-        </div>
-        <span class="settingsItemArrow">›</span>
-    </div>
-    
-    <div class="settingsItem" onclick="clearCache()">
-        <div class="settingsItemIcon">🧹</div>
-        <div class="settingsItemContent">
-            <div class="settingsItemTitle">Clear Cache</div>
-            <div class="settingsItemDesc">Free up 128 MB</div>
-        </div>
-        <span class="settingsItemArrow">›</span>
-    </div>
-    
-    <div class="settingsItem" onclick="exportData()">
-        <div class="settingsItemIcon">📤</div>
-        <div class="settingsItemContent">
-            <div class="settingsItemTitle">Export My Data</div>
-            <div class="settingsItemDesc">Download your information</div>
-        </div>
-        <span class="settingsItemArrow">›</span>
-    </div>
-</div>
-
-<!-- SUPPORT -->
-<div class="settingsCard">
-    <div class="settingsHeader">
-        <span class="settingsHeaderIcon">❓</span>
-        <span class="settingsHeaderTitle">SUPPORT</span>
-    </div>
-    
-    <div class="settingsItem" onclick="openHelp()">
-        <div class="settingsItemIcon">📖</div>
-        <div class="settingsItemContent">
-            <div class="settingsItemTitle">Help Center</div>
-            <div class="settingsItemDesc">Guides and FAQs</div>
-        </div>
-        <span class="settingsItemArrow">›</span>
-    </div>
-    
-    <div class="settingsItem" onclick="openContact()">
-        <div class="settingsItemIcon">📧</div>
-        <div class="settingsItemContent">
-            <div class="settingsItemTitle">Contact Support</div>
-            <div class="settingsItemDesc">support@seaconnect.com</div>
-        </div>
-        <span class="settingsItemArrow">›</span>
-    </div>
-    
-    <div class="settingsItem" onclick="openTerms()">
-        <div class="settingsItemIcon">📜</div>
-        <div class="settingsItemContent">
-            <div class="settingsItemTitle">Terms of Service</div>
-            <div class="settingsItemDesc">Version 2.1.0</div>
-        </div>
-        <span class="settingsItemArrow">›</span>
-    </div>
-    
-    <div class="settingsItem">
-        <div class="settingsItemIcon">📱</div>
-        <div class="settingsItemContent">
-            <div class="settingsItemTitle">App Version</div>
-            <div class="settingsItemDesc">Sea Connect v1.0.0</div>
+        <!-- DANGER ZONE -->
+        <div class="settingsCard danger-zone">
+            <div class="settingsHeader">
+                <span class="settingsHeaderIcon">⚠️</span>
+                <span class="settingsHeaderTitle danger-text">DANGER ZONE</span>
+            </div>
+            
+            <div class="settingsItem" onclick="logout()">
+                <div class="settingsItemIcon danger-icon">🚪</div>
+                <div class="settingsItemContent">
+                    <div class="settingsItemTitle danger-text">Logout</div>
+                    <div class="settingsItemDesc">Sign out of your account</div>
+                </div>
+                <span class="settingsItemArrow">›</span>
+            </div>
+            
+            <div class="settingsItem" onclick="deleteAccount()">
+                <div class="settingsItemIcon danger-icon">🗑️</div>
+                <div class="settingsItemContent">
+                    <div class="settingsItemTitle danger-text">Delete Account</div>
+                    <div class="settingsItemDesc">Permanently remove all data</div>
+                </div>
+                <span class="settingsItemArrow">›</span>
+            </div>
         </div>
     </div>
-</div>
-
-<!-- DANGER ZONE -->
-<div class="settingsCard danger-zone">
-    <div class="settingsHeader">
-        <span class="settingsHeaderIcon">⚠️</span>
-        <span class="settingsHeaderTitle danger-text">DANGER ZONE</span>
-    </div>
-    
-    <div class="settingsItem" onclick="logout()">
-        <div class="settingsItemIcon danger-icon">🚪</div>
-        <div class="settingsItemContent">
-            <div class="settingsItemTitle danger-text">Logout</div>
-            <div class="settingsItemDesc">Sign out of your account</div>
-        </div>
-        <span class="settingsItemArrow">›</span>
-    </div>
-    
-    <div class="settingsItem" onclick="deleteAccount()">
-        <div class="settingsItemIcon danger-icon">🗑️</div>
-        <div class="settingsItemContent">
-            <div class="settingsItemTitle danger-text">Delete Account</div>
-            <div class="settingsItemDesc">Permanently remove all data</div>
-        </div>
-        <span class="settingsItemArrow">›</span>
-    </div>
-</div>
-
 </div>
 
 <div class="bottomnav">
-
-<button onclick="location.href='feeds.html'" id="navFeeds">
-<svg class="navIcon" viewBox="0 0 24 24" fill="none" stroke-width="2">
-<rect x="3" y="3" width="7" height="7"></rect>
-<rect x="14" y="3" width="7" height="7"></rect>
-<rect x="14" y="14" width="7" height="7"></rect>
-<rect x="3" y="14" width="7" height="7"></rect>
-</svg>
-Feeds
-</button>
-
-<button onclick="location.href='friends.html'" id="navFriends">
-<svg class="navIcon" viewBox="0 0 24 24" fill="none" stroke-width="2">
-<circle cx="12" cy="7" r="4"></circle>
-<path d="M5.5 21a6.5 6.5 0 0 1 13 0"></path>
-</svg>
-Friends
-</button>
-
-<button onclick="location.href='messages.html'" id="navMessages">
-<svg class="navIcon" viewBox="0 0 24 24" fill="none" stroke-width="2">
-<path d="M21 15a4 4 0 0 1-4 4H7l-4 4V5a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"></path>
-</svg>
-Messages
-</button>
-
-<button onclick="location.href='profile.html'" id="navProfile">
-<img src="https://i.ibb.co/2kRZ7Z6/avatar.png" class="navAvatar" id="navAvatar" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2222%22 height=%2222%22 viewBox=%220 0 24 24%22 fill=%22%230a4b7a%22><circle cx=%2212%22 cy=%228%22 r=%224%22/><path d=%22M5.5 21a6.5 6.5 0 0 1 13 0%22/></svg>'">
-Profile
-</button>
-
+    <button onclick="location.href='feeds.html'" id="navFeeds">
+        <svg class="navIcon" viewBox="0 0 24 24" fill="none" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"/>
+            <rect x="14" y="3" width="7" height="7"/>
+            <rect x="14" y="14" width="7" height="7"/>
+            <rect x="3" y="14" width="7" height="7"/>
+        </svg>
+        Feeds
+    </button>
+    <button onclick="location.href='friends.html'" id="navFriends">
+        <svg class="navIcon" viewBox="0 0 24 24" fill="none" stroke-width="2">
+            <circle cx="12" cy="7" r="4"/>
+            <path d="M5.5 21a6.5 6.5 0 0 1 13 0"/>
+        </svg>
+        Friends
+    </button>
+    <button onclick="location.href='messages.html'" id="navMessages">
+        <svg class="navIcon" viewBox="0 0 24 24" fill="none" stroke-width="2">
+            <path d="M21 15a4 4 0 0 1-4 4H7l-4 4V5a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/>
+        </svg>
+        Messages
+    </button>
+    <button onclick="location.href='profile.html'" id="navProfile">
+        <img src="" class="navAvatar" id="navAvatar">
+        Profile
+    </button>
 </div>
 
 <!-- MODAL -->
@@ -1035,8 +1085,10 @@ Profile
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
 
 <script>
+// Firebase config
 const firebaseConfig = {
     apiKey: "AIzaSyCNlodsmEHrSXxgH0gTOcx4cAXwG8qmG9w",
     authDomain: "seaconnect-d2baa.firebaseapp.com",
@@ -1046,90 +1098,158 @@ const firebaseConfig = {
     appId: "1:402383997556:web:d4b5894b25545ecaef9f21"
 };
 
+// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
+const storage = firebase.storage();
 
+// ImgBB API Key (fallback)
 const IMGBB_API_KEY = '7a6b8c43b67ce45e354763c86371b2e1';
 
 let currentUser = null;
+let currentUserData = null;
+let loadingTimeout = null;
 
-auth.onAuthStateChanged((user) => {
-    if (!user) {
+// Toast function
+function showToast(message, isError = false) {
+    const toast = document.getElementById('toast');
+    toast.innerText = message;
+    toast.style.background = isError ? '#ef4444' : '#0b1e33';
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// Navigation
+function openFiles() { location.href = 'files.html'; }
+function openSettings() { location.href = 'settings.html'; }
+function viewProfile() { location.href = 'profile.html'; }
+
+// Set loading timeout
+loadingTimeout = setTimeout(() => {
+    const loading = document.getElementById('loadingContainer');
+    if (loading && loading.style.display !== 'none') {
+        document.getElementById('loadingContainer').style.display = 'none';
+        document.getElementById('errorContainer').style.display = 'block';
+        document.getElementById('errorMessage').innerText = 'Loading timeout. Please check your connection.';
+    }
+}, 5000);
+
+// Check auth state
+auth.onAuthStateChanged(async (user) => {
+    clearTimeout(loadingTimeout);
+    
+    if (!user || user.isAnonymous) {
         window.location.href = 'login.html';
         return;
     }
+    
     currentUser = user;
-    loadUserData(user);
+    
+    try {
+        const userDoc = await db.collection('users').doc(user.uid).get();
+        
+        if (!userDoc.exists) {
+            window.location.href = 'login.html';
+            return;
+        }
+        
+        const userData = userDoc.data();
+        currentUserData = userData;
+        
+        // Check if verified
+        if (!userData.verified && userData.status !== 'approved') {
+            window.location.href = 'pending.html';
+            return;
+        }
+        
+        // Update UI with user data
+        updateUI(userData);
+        
+        // Hide loading, show content
+        document.getElementById('loadingContainer').style.display = 'none';
+        document.getElementById('settingsContent').style.display = 'block';
+        
+    } catch (error) {
+        console.error('Error loading user:', error);
+        document.getElementById('loadingContainer').style.display = 'none';
+        document.getElementById('errorContainer').style.display = 'block';
+        document.getElementById('errorMessage').innerText = error.message;
+    }
 });
 
-function loadUserData(user) {
-    db.collection('users').doc(user.uid).get().then((doc) => {
-        if (doc.exists) {
-            const data = doc.data();
-            
-            document.getElementById('profileName').innerText = data.name || user.email.split('@')[0];
-            document.getElementById('profileEmail').innerText = user.email;
-            document.getElementById('profileRank').innerText = data.rank || 'Seafarer';
-            
-            const name = data.name || user.email.split('@')[0];
-            const initials = name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
-            document.getElementById('profileInitials').innerText = initials || 'MS';
-            
-            if (data.photoURL) {
-                const avatarImg = document.getElementById('profileAvatarImg');
-                const initialsSpan = document.getElementById('profileInitials');
-                const navAvatar = document.getElementById('navAvatar');
-                
-                avatarImg.src = data.photoURL;
-                avatarImg.style.display = 'block';
-                initialsSpan.style.display = 'none';
-                
-                if (navAvatar) {
-                    navAvatar.src = data.photoURL;
-                }
-            }
-            
-            document.getElementById('displayNameValue').innerText = data.name || user.email.split('@')[0];
-            document.getElementById('rankValue').innerText = data.rank || 'Seafarer';
-            document.getElementById('companyValue').innerText = data.company || 'Royal Caribbean';
-            document.getElementById('vesselValue').innerText = data.vessel || 'Symphony of the Seas';
-            document.getElementById('seamanValue').innerText = data.seamanBook || 'SB-12345-6789';
-            
-            if (data.notifications) {
-                document.getElementById('notifyMessages').checked = data.notifications.messages !== false;
-                document.getElementById('notifyFeeds').checked = data.notifications.feeds !== false;
-                document.getElementById('notifyFriends').checked = data.notifications.friends !== false;
-                document.getElementById('notifyPorts').checked = data.notifications.ports === true;
-            }
-            
-            if (data.privacy) {
-                document.getElementById('privacyValue').innerText = data.privacy.profile || 'Friends Only';
-                document.getElementById('shareLocation').checked = data.privacy.shareLocation !== false;
-                document.getElementById('showStatus').checked = data.privacy.showStatus !== false;
-            }
-            
-            if (data.appearance) {
-                document.getElementById('themeValue').innerText = data.appearance.theme || 'Light';
-                document.getElementById('languageValue').innerText = data.appearance.language || 'EN';
-                
-                if (data.appearance.theme === 'Dark') {
-                    document.body.setAttribute('data-theme', 'dark');
-                } else {
-                    document.body.setAttribute('data-theme', 'light');
-                }
-
-                if (data.appearance.fontSize) {
-                    applyFontSize(data.appearance.fontSize);
-                }
+// Update UI with user data
+function updateUI(data) {
+    // Profile summary
+    document.getElementById('profileName').innerText = data.name || 'Seafarer';
+    document.getElementById('profileEmail').innerText = data.email || currentUser?.email || 'No email';
+    document.getElementById('profileRank').innerText = data.rank || 'Seafarer';
+    
+    // Account settings values
+    document.getElementById('displayNameValue').innerText = data.name || 'Not set';
+    document.getElementById('rankValue').innerText = data.rank || 'Not set';
+    document.getElementById('companyValue').innerText = data.company || 'Not set';
+    document.getElementById('vesselValue').innerText = data.vessel || 'Not set';
+    document.getElementById('seamanValue').innerText = data.seamanBook || 'Not set';
+    
+    // Notification settings
+    if (data.notifications) {
+        document.getElementById('notifyMessages').checked = data.notifications.messages !== false;
+        document.getElementById('notifyFeeds').checked = data.notifications.feeds !== false;
+        document.getElementById('notifyFriends').checked = data.notifications.friends !== false;
+        document.getElementById('notifyPorts').checked = data.notifications.ports === true;
+    }
+    
+    // Privacy settings
+    if (data.privacy) {
+        document.getElementById('privacyValue').innerText = data.privacy.profile || 'Friends Only';
+        document.getElementById('shareLocation').checked = data.privacy.shareLocation !== false;
+        document.getElementById('showStatus').checked = data.privacy.showStatus !== false;
+    }
+    
+    // Appearance settings
+    if (data.appearance) {
+        document.getElementById('themeValue').innerText = data.appearance.theme || 'Light';
+        document.getElementById('languageValue').innerText = data.appearance.language || 'EN';
+        
+        // Apply theme
+        if (data.appearance.theme === 'Dark') {
+            document.body.setAttribute('data-theme', 'dark');
+        } else {
+            document.body.setAttribute('data-theme', 'light');
+        }
+        
+        // Apply font size
+        if (data.appearance.fontSize) {
+            applyFontSize(data.appearance.fontSize);
+            // Update active state
+            document.querySelectorAll('.radioOption').forEach(opt => opt.classList.remove('active'));
+            if (data.appearance.fontSize === 'small') {
+                document.querySelectorAll('.radioOption')[0].classList.add('active');
+            } else if (data.appearance.fontSize === 'medium') {
+                document.querySelectorAll('.radioOption')[1].classList.add('active');
+            } else if (data.appearance.fontSize === 'large') {
+                document.querySelectorAll('.radioOption')[2].classList.add('active');
             }
         }
-    }).catch((error) => {
-        console.error('Error loading user data:', error);
-        showToast('❌ Error loading profile');
-    });
+    }
+    
+    // Photo
+    if (data.photoURL) {
+        document.getElementById('profileAvatarImg').src = data.photoURL;
+        document.getElementById('profileAvatarImg').style.display = 'block';
+        document.getElementById('profileInitials').style.display = 'none';
+        document.getElementById('navAvatar').src = data.photoURL;
+    } else {
+        const initials = (data.name || 'S').charAt(0).toUpperCase();
+        document.getElementById('profileInitials').innerText = initials;
+        document.getElementById('profileAvatarImg').style.display = 'none';
+        document.getElementById('profileInitials').style.display = 'block';
+        document.getElementById('navAvatar').src = `https://ui-avatars.com/api/?name=${initials}&background=0a4b7a&color=fff&size=50`;
+    }
 }
 
+// Apply font size
 function applyFontSize(size) {
     const root = document.documentElement;
     if (size === 'small') {
@@ -1141,73 +1261,85 @@ function applyFontSize(size) {
     }
 }
 
+// Save user data
 function saveUserData(updates) {
     if (!currentUser) return;
-    db.collection('users').doc(currentUser.uid).update(updates)
+    return db.collection('users').doc(currentUser.uid).update(updates)
         .then(() => showToast('✅ Settings saved'))
         .catch((error) => {
             console.error('Error saving:', error);
-            showToast('❌ Error saving settings');
+            showToast('❌ Error saving settings', true);
         });
 }
 
+// Upload photo
 function uploadPhoto() {
     document.getElementById('imageUpload').click();
 }
 
-function handleImageUpload(event) {
+async function handleImageUpload(event) {
     const file = event.target.files[0];
     if (!file) return;
     
-    showToast('⏳ Uploading photo...');
+    if (file.size > 5 * 1024 * 1024) {
+        showToast('❌ Image too large (max 5MB)', true);
+        return;
+    }
     
-    const formData = new FormData();
-    formData.append('image', file);
+    showToast('⏳ Uploading...');
     
-    fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(result => {
-        if (result.success) {
-            const imageUrl = result.data.url;
+    try {
+        // Try Firebase Storage first
+        const storageRef = storage.ref(`profile-photos/${currentUser.uid}`);
+        await storageRef.put(file);
+        const photoURL = await storageRef.getDownloadURL();
+        
+        await saveUserData({ photoURL: photoURL });
+        
+        // Update UI
+        document.getElementById('profileAvatarImg').src = photoURL;
+        document.getElementById('profileAvatarImg').style.display = 'block';
+        document.getElementById('profileInitials').style.display = 'none';
+        document.getElementById('navAvatar').src = photoURL;
+        
+        showToast('✅ Photo updated!');
+    } catch (error) {
+        console.error('Storage error:', error);
+        
+        // Fallback to ImgBB
+        try {
+            const formData = new FormData();
+            formData.append('image', file);
             
-            const avatarImg = document.getElementById('profileAvatarImg');
-            const initials = document.getElementById('profileInitials');
-            const navAvatar = document.getElementById('navAvatar');
+            const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                method: 'POST',
+                body: formData
+            });
             
-            avatarImg.src = imageUrl;
-            avatarImg.style.display = 'block';
-            initials.style.display = 'none';
+            const result = await response.json();
             
-            if (navAvatar) {
-                navAvatar.src = imageUrl;
+            if (result.success) {
+                const photoURL = result.data.url;
+                
+                await saveUserData({ photoURL: photoURL });
+                
+                document.getElementById('profileAvatarImg').src = photoURL;
+                document.getElementById('profileAvatarImg').style.display = 'block';
+                document.getElementById('profileInitials').style.display = 'none';
+                document.getElementById('navAvatar').src = photoURL;
+                
+                showToast('✅ Photo updated!');
+            } else {
+                throw new Error('Upload failed');
             }
-            
-            saveUserData({ photoURL: imageUrl });
-            showToast('✅ Photo uploaded!');
-        } else {
-            showToast('❌ Upload failed');
+        } catch (fallbackError) {
+            console.error('Fallback error:', fallbackError);
+            showToast('❌ Upload failed', true);
         }
-    })
-    .catch(error => {
-        console.error('Upload error:', error);
-        showToast('❌ Error uploading photo');
-    });
+    }
 }
 
-function openFiles() { location.href = 'files.html'; }
-function openSettings() { location.href = 'settings.html'; }
-function viewProfile() { location.href = 'profile.html'; }
-
-function showToast(message) {
-    const toast = document.getElementById('toast');
-    toast.innerText = message;
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 3000);
-}
-
+// Edit modal
 let currentEditField = '';
 let currentEditTitle = '';
 let currentEditValue = '';
@@ -1228,50 +1360,68 @@ function openEditModal(field, title, value) {
 }
 
 function saveEdit() {
-    const newValue = document.getElementById('editValue').value;
-    if (!newValue.trim()) {
-        showToast('❌ Value cannot be empty');
+    const newValue = document.getElementById('editValue').value.trim();
+    if (!newValue) {
+        showToast('❌ Value cannot be empty', true);
         return;
     }
     
+    // Map field names to Firestore fields
+    const fieldMap = {
+        'name': 'name',
+        'rank': 'rank',
+        'company': 'company',
+        'vessel': 'vessel',
+        'seamanBook': 'seamanBook'
+    };
+    
+    const firestoreField = fieldMap[currentEditField] || currentEditField;
+    
+    // Update UI
     if (currentEditField === 'name') {
         document.getElementById('displayNameValue').innerText = newValue;
         document.getElementById('profileName').innerText = newValue;
-        const initials = newValue.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
+        const initials = newValue.charAt(0).toUpperCase();
         document.getElementById('profileInitials').innerText = initials;
-        saveUserData({ name: newValue });
     } else if (currentEditField === 'rank') {
         document.getElementById('rankValue').innerText = newValue;
         document.getElementById('profileRank').innerText = newValue;
-        saveUserData({ rank: newValue });
     } else if (currentEditField === 'company') {
         document.getElementById('companyValue').innerText = newValue;
-        saveUserData({ company: newValue });
     } else if (currentEditField === 'vessel') {
         document.getElementById('vesselValue').innerText = newValue;
-        saveUserData({ vessel: newValue });
-    } else if (currentEditField === 'seaman') {
+    } else if (currentEditField === 'seamanBook') {
         document.getElementById('seamanValue').innerText = newValue;
-        saveUserData({ seamanBook: newValue });
     }
     
-    showToast(`✅ ${currentEditTitle} updated`);
+    // Save to Firestore
+    const updateData = {};
+    updateData[firestoreField] = newValue;
+    saveUserData(updateData);
+    
     closeModal();
 }
 
+function closeModal() {
+    document.getElementById('settingsModal').classList.remove('active');
+}
+
+// Toggle switches
 function saveToggle(setting, value) {
     const updates = {};
-    if (setting === 'messages' || setting === 'feeds' || setting === 'friends' || setting === 'ports') {
+    
+    if (['messages', 'feeds', 'friends', 'ports'].includes(setting)) {
         updates[`notifications.${setting}`] = value;
     } else if (setting === 'location') {
         updates['privacy.shareLocation'] = value;
     } else if (setting === 'status') {
         updates['privacy.showStatus'] = value;
     }
+    
     saveUserData(updates);
-    showToast(`⚙️ Setting updated`);
 }
 
+// Theme modal
 function openThemeModal() {
     const themes = ['Light', 'Dark', 'Auto'];
     const currentTheme = document.getElementById('themeValue').innerText;
@@ -1279,7 +1429,7 @@ function openThemeModal() {
     let html = '<div class="modalOptions">';
     themes.forEach(theme => {
         const selected = theme === currentTheme ? 'selected' : '';
-        html += `<div class="modalOption ${selected}" onclick="selectTheme('${theme}')"><span>${theme}</span></div>`;
+        html += `<div class="modalOption ${selected}" onclick="selectTheme('${theme}')">${theme}</div>`;
     });
     html += '</div>';
     
@@ -1298,19 +1448,18 @@ function selectTheme(theme) {
     }
     
     saveUserData({ 'appearance.theme': theme });
-    showToast(`🎨 Theme set to ${theme}`);
     closeModal();
 }
 
+// Language modal
 function openLanguageModal() {
-    const languages = ['English (US)', 'English (UK)', 'Spanish', 'French', 'German', 'Italian', 'Portuguese', 'Japanese', 'Korean', 'Chinese', 'Filipino'];
+    const languages = ['EN', 'ES', 'FR', 'DE', 'IT', 'PT', 'JP', 'KR', 'CN', 'PH'];
     const currentLang = document.getElementById('languageValue').innerText;
     
     let html = '<div class="modalOptions">';
     languages.forEach(lang => {
-        const code = lang.substring(0,2).toUpperCase();
-        const selected = code === currentLang ? 'selected' : '';
-        html += `<div class="modalOption ${selected}" onclick="selectLanguage('${lang}')"><span>${lang}</span></div>`;
+        const selected = lang === currentLang ? 'selected' : '';
+        html += `<div class="modalOption ${selected}" onclick="selectLanguage('${lang}')">${lang}</div>`;
     });
     html += '</div>';
     
@@ -1320,21 +1469,22 @@ function openLanguageModal() {
 }
 
 function selectLanguage(lang) {
-    const code = lang.substring(0,2).toUpperCase();
-    document.getElementById('languageValue').innerText = code;
-    saveUserData({ 'appearance.language': code });
-    showToast(`🌐 Language set to ${lang}`);
+    document.getElementById('languageValue').innerText = lang;
+    saveUserData({ 'appearance.language': lang });
+    showToast(`🌐 Language set`);
     closeModal();
 }
 
+// Font size
 function setFontSize(size, element) {
     document.querySelectorAll('.radioOption').forEach(opt => opt.classList.remove('active'));
     element.classList.add('active');
     applyFontSize(size);
     saveUserData({ 'appearance.fontSize': size });
-    showToast(`🔤 Font size set to ${size}`);
+    showToast(`🔤 Font size updated`);
 }
 
+// Privacy modal
 function openPrivacyModal() {
     const options = ['Public', 'Friends Only', 'Private'];
     const currentValue = document.getElementById('privacyValue').innerText;
@@ -1342,7 +1492,7 @@ function openPrivacyModal() {
     let html = '<div class="modalOptions">';
     options.forEach(opt => {
         const selected = opt === currentValue ? 'selected' : '';
-        html += `<div class="modalOption ${selected}" onclick="selectPrivacy('${opt}')"><span>${opt}</span></div>`;
+        html += `<div class="modalOption ${selected}" onclick="selectPrivacy('${opt}')">${opt}</div>`;
     });
     html += '</div>';
     
@@ -1354,37 +1504,101 @@ function openPrivacyModal() {
 function selectPrivacy(option) {
     document.getElementById('privacyValue').innerText = option;
     saveUserData({ 'privacy.profile': option });
-    showToast(`🔒 Profile set to ${option}`);
     closeModal();
 }
 
-function showStorageInfo() {
-    showToast('📊 Storage: 245 MB used of 1 GB');
-}
-
-function clearCache() {
-    if (confirm('Clear cached data? This will free up space.')) {
-        showToast('🧹 Cache cleared! 128 MB freed');
+// Storage info
+async function showStorageInfo() {
+    try {
+        // Get user's posts count
+        const postsSnapshot = await db.collection('feeds')
+            .where('uid', '==', currentUser.uid)
+            .get();
+        
+        const postsCount = postsSnapshot.size;
+        
+        // Get messages count
+        const messagesSnapshot = await db.collection('messages')
+            .where('from', '==', currentUser.email)
+            .get();
+        
+        const messagesCount = messagesSnapshot.size;
+        
+        // Estimate storage (rough estimate)
+        const estimatedStorage = (postsCount * 0.5) + (messagesCount * 0.1);
+        
+        showToast(`📊 ${postsCount} posts, ${messagesCount} messages`);
+    } catch (error) {
+        showToast('📊 Storage info unavailable');
     }
 }
 
-function exportData() {
-    showToast('📤 Preparing your data for export...');
-    setTimeout(() => showToast('✅ Data export ready! Check your email'), 2000);
+// Clear cache
+function clearCache() {
+    if (confirm('Clear cached data? This will free up space.')) {
+        // Clear localStorage items related to the app
+        const keysToRemove = [];
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key.startsWith('firebase:')) {
+                keysToRemove.push(key);
+            }
+        }
+        keysToRemove.forEach(key => localStorage.removeItem(key));
+        
+        showToast('🧹 Cache cleared!');
+    }
 }
 
+// Export data
+async function exportData() {
+    showToast('⏳ Preparing your data...');
+    
+    try {
+        const userDoc = await db.collection('users').doc(currentUser.uid).get();
+        const userData = userDoc.data();
+        
+        // Create export object
+        const exportData = {
+            profile: userData,
+            exportDate: new Date().toISOString(),
+            version: '1.0'
+        };
+        
+        // Create download link
+        const dataStr = JSON.stringify(exportData, null, 2);
+        const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+        
+        const exportFileDefaultName = `seaconnect-export-${new Date().toISOString().slice(0,10)}.json`;
+        
+        const linkElement = document.createElement('a');
+        linkElement.setAttribute('href', dataUri);
+        linkElement.setAttribute('download', exportFileDefaultName);
+        linkElement.click();
+        
+        showToast('✅ Data exported!');
+    } catch (error) {
+        console.error('Export error:', error);
+        showToast('❌ Export failed', true);
+    }
+}
+
+// Help
 function openHelp() {
     showToast('📖 Help Center - Coming soon!');
 }
 
+// Contact
 function openContact() {
-    showToast('📧 Email: support@seaconnect.com');
+    showToast('📧 support@seaconnect.com');
 }
 
+// Terms
 function openTerms() {
     showToast('📜 Terms of Service v2.1.0');
 }
 
+// Logout
 function logout() {
     if (confirm('Are you sure you want to logout from Sea Connect?')) {
         auth.signOut()
@@ -1392,10 +1606,11 @@ function logout() {
                 showToast('👋 Logging out...');
                 setTimeout(() => window.location.href = 'login.html', 1500);
             })
-            .catch((error) => showToast('❌ Error logging out: ' + error.message));
+            .catch((error) => showToast('❌ Error logging out: ' + error.message, true));
     }
 }
 
+// Delete account
 function deleteAccount() {
     if (confirm('⚠️ WARNING: This will permanently delete ALL your data!\n\nAre you ABSOLUTELY sure?')) {
         const confirmDelete = prompt('Type "DELETE" to confirm account deletion');
@@ -1405,34 +1620,7 @@ function deleteAccount() {
     }
 }
 
-function closeModal() {
-    document.getElementById('settingsModal').classList.remove('active');
-}
-
-let lastScroll = 0;
-const header = document.querySelector(".appHeader");
-const nav = document.querySelector(".bottomnav");
-
-window.addEventListener("scroll", function() {
-    const currentScroll = window.pageYOffset;
-    
-    if (currentScroll < 50) {
-        header.style.transform = "translateY(0)";
-        nav.style.transform = "translateY(0)";
-        return;
-    }
-    
-    if (currentScroll > lastScroll) {
-        header.style.transform = "translateY(-100%)";
-        nav.style.transform = "translateY(120%)";
-    } else {
-        header.style.transform = "translateY(0)";
-        nav.style.transform = "translateY(0)";
-    }
-    
-    lastScroll = currentScroll;
-});
-
+// Pull to refresh
 let startY = 0;
 let pulling = false;
 const loader = document.getElementById("pullLoader");
@@ -1462,6 +1650,31 @@ window.addEventListener("touchend", () => {
         loader.style.top = "-60px";
     }
     pulling = false;
+});
+
+// Hide header on scroll
+let lastScroll = 0;
+const header = document.querySelector(".appHeader");
+const nav = document.querySelector(".bottomnav");
+
+window.addEventListener("scroll", function() {
+    const currentScroll = window.pageYOffset;
+    
+    if (currentScroll < 50) {
+        header.classList.remove('hidden');
+        nav.classList.remove('hidden');
+        return;
+    }
+    
+    if (currentScroll > lastScroll && currentScroll > 100) {
+        header.classList.add('hidden');
+        nav.classList.add('hidden');
+    } else if (currentScroll < lastScroll) {
+        header.classList.remove('hidden');
+        nav.classList.remove('hidden');
+    }
+    
+    lastScroll = currentScroll;
 });
 </script>
 

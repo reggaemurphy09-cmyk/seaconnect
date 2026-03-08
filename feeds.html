@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-<title>Feeds | Sea Connect</title>
+<title>Crew Feeds | Sea Connect</title>
 
 <style>
 /* Theme Variables */
@@ -23,8 +23,6 @@
     --blue-primary: #0a4b7a;
     --blue-secondary: #1e6b9e;
     --delete-color: #ef4444;
-    --save-color: #10b981;
-    --hashtag-color: #3b82f6;
 }
 
 [data-theme="dark"] {
@@ -32,1642 +30,1133 @@
     --bg-secondary: #111111;
     --text-primary: #ffffff;
     --text-secondary: #888888;
-    --card-bg: #111111;
-    --header-bg: #111111;
-    --icon-bg: #222222;
+    --card-bg: #1a1a1a;
+    --header-bg: #1a1a1a;
+    --icon-bg: #333333;
     --input-bg: #222222;
-    --nav-bg: #111111;
-    --modal-bg: #111111;
-    --badge-bg: #1a1a1a;
-    --border-subtle: rgba(255,255,255,0.05);
+    --nav-bg: #1a1a1a;
+    --modal-bg: #1a1a1a;
+    --badge-bg: #2a2a2a;
+    --border-subtle: rgba(255,255,255,0.1);
     --blue-primary: #3b82f6;
     --blue-secondary: #1e3a8a;
     --delete-color: #ef4444;
-    --save-color: #10b981;
-    --hashtag-color: #60a5fa;
+}
+
+* {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+input, textarea {
+    -webkit-user-select: auto;
+    user-select: auto;
+}
+
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    transition: background-color 0.3s, color 0.3s;
 }
 
 /* PULL REFRESH */
-
-#pullLoader{
-position:fixed;
-top:-60px;
-left:0;
-right:0;
-height:60px;
-display:flex;
-align-items:center;
-justify-content:center;
-z-index:2000;
-transition:top 0.25s ease;
+#pullLoader {
+    position: fixed;
+    top: -60px;
+    left: 0;
+    right: 0;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    transition: top 0.25s ease;
 }
 
-.loader{
-width:26px;
-height:26px;
-border:3px solid var(--border-subtle);
-border-top:3px solid var(--blue-primary);
-border-radius:50%;
-animation:spin 1s linear infinite;
+.loader {
+    width: 26px;
+    height: 26px;
+    border: 3px solid var(--border-subtle);
+    border-top: 3px solid var(--blue-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
 }
 
-@keyframes spin{
-0%{transform:rotate(0deg);}
-100%{transform:rotate(360deg);}
-}
-
-*{
-box-sizing:border-box;
--webkit-tap-highlight-color:transparent;
-}
-
-body{
-margin:0;
-font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
-background:var(--bg-primary);
-color:var(--text-primary);
-transition: background-color 0.3s, color 0.3s;
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 /* HEADER */
-
-.appHeader{
-position:fixed;
-top:0;
-left:0;
-right:0;
-height:60px;
-background:var(--header-bg);
-display:flex;
-align-items:center;
-justify-content:center;
-border-bottom:1px solid var(--border-subtle);
-z-index:1000;
-transition:transform 0.35s ease;
-box-shadow:0 2px 8px rgba(0,0,0,0.02);
+.appHeader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: var(--header-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid var(--border-subtle);
+    z-index: 1000;
+    transition: transform 0.35s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
-.appHeader.hidden{
-transform:translateY(-100%);
+.fileBtn {
+    position: absolute;
+    left: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text-primary);
 }
 
-.fileBtn{
-position:absolute;
-left:10px;
-display:flex;
-flex-direction:column;
-align-items:center;
-background:none;
-border:none;
-cursor:pointer;
-font-size:10px;
-font-weight:500;
-color:var(--text-primary);
+.settingsBtn {
+    position: absolute;
+    right: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text-primary);
 }
 
-.settingsBtn{
-position:absolute;
-right:10px;
-display:flex;
-flex-direction:column;
-align-items:center;
-background:none;
-border:none;
-cursor:pointer;
-font-size:10px;
-font-weight:500;
-color:var(--text-primary);
+.headerIcon {
+    width: 20px;
+    height: 20px;
+    margin-bottom: 2px;
+    stroke: var(--text-primary);
+    stroke-width: 2;
 }
 
-.headerIcon{
-width:20px;
-height:20px;
-margin-bottom:2px;
-stroke:var(--text-primary);
-}
-
-.logo{
-font-size:20px;
-font-weight:700;
-letter-spacing:0.5px;
-color:var(--blue-primary);
+.logo {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--blue-primary);
 }
 
 /* PAGE */
-
-.page{
-padding:80px 16px 100px 16px;
-min-height:100vh;
+.page {
+    padding: 80px 0 100px 0;
+    min-height: 100vh;
+    width: 100%;
 }
 
 /* CREATE POST CARD */
-
-.createPostCard{
-background:var(--card-bg);
-border-radius:20px;
-padding:16px;
-margin-bottom:16px;
-box-shadow:0 4px 12px rgba(0,0,0,0.02);
-border:1px solid var(--border-subtle);
-}
-
-.createPostRow{
-display:flex;
-align-items:center;
-gap:12px;
-margin-bottom:12px;
-}
-
-.createPostAvatar{
-width:48px;
-height:48px;
-border-radius:50%;
-background:var(--blue-primary);
-color:white;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:20px;
-font-weight:500;
-flex-shrink:0;
-overflow:hidden;
-position:relative;
-}
-
-.createPostAvatar img{
-width:100%;
-height:100%;
-object-fit:cover;
-}
-
-.createPostInput{
-flex:1;
-height:48px;
-padding:0 16px;
-border:1px solid var(--border-subtle);
-border-radius:24px;
-font-size:14px;
-outline:none;
-background:var(--input-bg);
-color:var(--text-primary);
-}
-
-.createPostInput:focus{
-border-color:var(--blue-primary);
-background:var(--card-bg);
-}
-
-.createPostInput::placeholder{
-color:var(--text-secondary);
-}
-
-.createPostActions{
-display:flex;
-gap:8px;
-border-top:1px solid var(--border-subtle);
-padding-top:12px;
-}
-
-.postAction{
-flex:1;
-display:flex;
-flex-direction:column;
-align-items:center;
-justify-content:center;
-gap:4px;
-background:var(--icon-bg);
-border:none;
-padding:8px;
-border-radius:12px;
-font-size:11px;
-font-weight:500;
-color:var(--text-primary);
-cursor:pointer;
-transition:all 0.2s ease;
-}
-
-.postAction span:first-child{
-font-size:20px;
-}
-
-.postAction:hover{
-background:var(--border-subtle);
-transform:translateY(-2px);
-}
-
-.postAction:active{
-transform:scale(0.95);
-}
-
-/* IMAGE PREVIEW BAR */
-.imagePreviewBar {
-    padding: 8px 16px;
-    background: var(--card-bg);
-    border-radius: 12px;
+.createCard {
+    background: linear-gradient(135deg, var(--card-bg), var(--bg-secondary));
+    border-radius: 0;
+    padding: 20px 16px;
     margin-bottom: 12px;
-    display: none;
+    box-shadow: 0 4px 12px rgba(10, 75, 122, 0.08);
+    border-bottom: 1px solid var(--border-subtle);
+    width: 100%;
+}
+
+.createHeader {
+    display: flex;
     align-items: center;
     gap: 12px;
-    animation: slideUp 0.2s ease;
-    border: 1px solid var(--border-subtle);
+    margin-bottom: 16px;
 }
 
-.imagePreviewBar.active {
+.createAvatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--blue-primary);
+    box-shadow: 0 4px 12px rgba(10, 75, 122, 0.2);
+}
+
+.createTitle {
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--text-secondary);
+}
+
+.createInput {
+    width: 100%;
+    padding: 16px 20px;
+    border: 2px solid var(--border-subtle);
+    border-radius: 24px;
+    font-size: 15px;
+    background: var(--input-bg);
+    color: var(--text-primary);
+    transition: all 0.3s;
+    margin-bottom: 16px;
+    resize: none;
+    min-height: 100px;
+}
+
+.createInput:focus {
+    outline: none;
+    border-color: var(--blue-primary);
+    background: var(--card-bg);
+}
+
+.createFile {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 16px;
+    border: 2px dashed var(--border-subtle);
+    border-radius: 24px;
+    background: var(--icon-bg);
+    color: var(--text-secondary);
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.createFile:hover {
+    border-color: var(--blue-primary);
+    background: var(--card-bg);
+}
+
+.createActions {
     display: flex;
+    justify-content: flex-end;
 }
 
-.previewContainer {
+.createButton {
+    background: var(--blue-primary);
+    color: white;
+    padding: 14px 32px;
+    border: none;
+    border-radius: 40px;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 8px 20px rgba(10, 75, 122, 0.3);
+}
+
+.createButton:hover:not(:disabled) {
+    background: var(--blue-secondary);
+    transform: translateY(-2px);
+}
+
+.createButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* FEEDS CONTAINER */
+.feedsContainer {
+    width: 100%;
+    padding: 0;
+}
+
+/* FEED CARD */
+.feedCard {
+    background: var(--card-bg);
+    border-radius: 0;
+    padding: 20px 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    border-bottom: 1px solid var(--border-subtle);
+    width: 100%;
+    transition: all 0.3s;
+    animation: fadeInUp 0.5s ease;
+}
+
+.feedCard:last-child {
+    margin-bottom: 0;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Feed Header */
+.feedHeader {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
     position: relative;
-    width: 50px;
-    height: 50px;
-    border-radius: 8px;
-    overflow: hidden;
 }
 
-.previewContainer img {
+/* Avatar Container for Status Dot */
+.avatarContainer {
+    position: relative;
+    width: 52px;
+    height: 52px;
+    flex-shrink: 0;
+}
+
+.feedAvatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--blue-primary), var(--blue-secondary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border: 3px solid var(--blue-primary);
+    box-shadow: 0 6px 15px rgba(10, 75, 122, 0.2);
+}
+
+.feedAvatar img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-.removeImageBtn {
+/* Status Dot - positioned outside bottom right corner */
+.statusDot {
     position: absolute;
-    top: -6px;
-    right: -6px;
-    width: 20px;
-    height: 20px;
+    bottom: -2px;
+    right: -2px;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
-    background: var(--delete-color);
     border: 2px solid var(--card-bg);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    cursor: pointer;
     z-index: 10;
 }
 
-.previewFilename {
+.statusOnline { background: #10b981; }
+.statusAtSea { background: #f59e0b; }
+.statusInPort { background: #3b82f6; }
+.statusOffline { background: #94a3b8; }
+
+.feedAuthorInfo {
     flex: 1;
-    font-size: 13px;
-    color: var(--text-secondary);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
-/* FILTER BAR */
-.filterBar {
+.feedAuthor {
+    font-weight: 700;
+    color: var(--text-primary);
+    font-size: 16px;
+    margin-bottom: 4px;
     display: flex;
+    align-items: center;
     gap: 8px;
-    margin-bottom: 16px;
-    overflow-x: auto;
-    padding: 4px 0;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
+    flex-wrap: wrap;
 }
 
-.filterBar::-webkit-scrollbar {
-    display: none;
-}
-
-.filterBtn {
-    padding: 8px 16px;
+.authorBadge {
+    background: var(--badge-bg);
+    color: var(--blue-primary);
+    font-size: 11px;
+    padding: 4px 10px;
     border-radius: 30px;
+    font-weight: 600;
+}
+
+.verifiedBadge {
+    display: inline-flex;
+    align-items: center;
+    background: var(--badge-bg);
+    color: var(--blue-primary);
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 30px;
+    font-weight: 600;
+}
+
+.verifiedBadge::before {
+    content: "✓";
+    margin-right: 4px;
+    font-weight: bold;
+    color: #10b981;
+}
+
+.feedMeta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.feedTime {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Feed Menu */
+.feedMenu {
+    position: relative;
+}
+
+.feedMenuBtn {
+    background: var(--icon-bg);
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-size: 18px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.feedMenuBtn:hover {
+    background: var(--blue-primary);
+    color: white;
+}
+
+.feedMenuDropdown {
+    position: absolute;
+    right: 0;
+    top: 45px;
+    background: var(--modal-bg);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    border: 1px solid var(--border-subtle);
+    z-index: 100;
+    display: none;
+    min-width: 140px;
+    overflow: hidden;
+}
+
+.feedMenuDropdown.show {
+    display: block;
+    animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dropdownItem {
+    padding: 14px 16px;
+    font-size: 14px;
+    color: var(--text-primary);
+    cursor: pointer;
+    border-bottom: 1px solid var(--border-subtle);
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dropdownItem:last-child {
+    border-bottom: none;
+}
+
+.dropdownItem.delete {
+    color: var(--delete-color);
+}
+
+.dropdownItem:hover {
+    background: var(--icon-bg);
+    padding-left: 20px;
+}
+
+/* Feed Content */
+.feedContent {
+    margin-bottom: 16px;
+}
+
+.feedText {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.feedImage {
+    width: 100%;
+    border-radius: 16px;
+    cursor: pointer;
+    max-height: 400px;
+    object-fit: cover;
+    border: 1px solid var(--border-subtle);
+    transition: transform 0.3s;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+}
+
+.feedImage:hover {
+    transform: scale(1.02);
+}
+
+/* Feed Stats */
+.feedStats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-top: 1px solid var(--border-subtle);
+    border-bottom: 1px solid var(--border-subtle);
+    margin-bottom: 12px;
+}
+
+.likesInfo, .commentsInfo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: 30px;
+    transition: background 0.2s;
+}
+
+.likesInfo:hover, .commentsInfo:hover {
+    background: var(--icon-bg);
+}
+
+.likeIcon {
+    color: var(--delete-color);
+    font-size: 18px;
+}
+
+.likesCount, .commentsCount {
+    font-size: 14px;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* Feed Actions */
+.feedActions {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.feedActionBtn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     background: var(--icon-bg);
     border: 1px solid var(--border-subtle);
+    padding: 12px;
+    border-radius: 40px;
+    font-size: 14px;
+    font-weight: 600;
     color: var(--text-secondary);
-    font-size: 13px;
-    font-weight: 500;
     cursor: pointer;
-    white-space: nowrap;
-    transition: all 0.2s ease;
+    transition: all 0.2s;
 }
 
-.filterBtn.active {
+.feedActionBtn svg {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+}
+
+.feedActionBtn:hover {
+    background: var(--blue-primary);
+    color: white;
+    border-color: var(--blue-primary);
+    transform: translateY(-2px);
+}
+
+.feedActionBtn.active {
     background: var(--blue-primary);
     color: white;
     border-color: var(--blue-primary);
 }
 
-.filterBtn:hover {
-    transform: translateY(-2px);
-}
-
-/* FEED CARD */
-
-.feedCard{
-background:var(--card-bg);
-border-radius:20px;
-padding:16px;
-margin-bottom:16px;
-box-shadow:0 4px 12px rgba(0,0,0,0.02);
-border:1px solid var(--border-subtle);
-animation:fadeInUp 0.5s ease;
-transform-origin:top;
-}
-
-@keyframes fadeInUp{
-from{ opacity:0; transform:translateY(20px); }
-to{ opacity:1; transform:translateY(0); }
-}
-
-.feedHeader{
-display:flex;
-align-items:center;
-gap:12px;
-margin-bottom:12px;
-position:relative;
-}
-
-/* Avatar with status OUTSIDE the circle */
-.feedAvatarWrapper{
-position:relative;
-width:48px;
-height:48px;
-flex-shrink:0;
-}
-
-.feedAvatar{
-width:48px;
-height:48px;
-border-radius:50%;
-background:var(--blue-primary);
-color:white;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:20px;
-font-weight:500;
-overflow:hidden;
-transition:transform 0.3s ease;
-}
-
-.feedAvatar:hover{
-transform:scale(1.05);
-}
-
-.feedAvatar img{
-width:100%;
-height:100%;
-object-fit:cover;
-}
-
-/* Status dot OUTSIDE the circle - positioned to the right */
-.statusDotOutside{
-position:absolute;
-top:-2px;
-right:-8px;
-width:16px;
-height:16px;
-border-radius:50%;
-border:3px solid var(--bg-primary);
-z-index:10;
-animation:pulse 2s infinite;
-}
-
-@keyframes pulse{
-0%{ box-shadow:0 0 0 0 rgba(16,185,129,0.4); }
-70%{ box-shadow:0 0 0 6px rgba(16,185,129,0); }
-100%{ box-shadow:0 0 0 0 rgba(16,185,129,0); }
-}
-
-.statusOnline{ background:#10b981; }
-.statusAtSea{ background:#f59e0b; }
-.statusInPort{ background:#3b82f6; }
-.statusOffline{ background:#94a3b8; }
-
-.feedAuthorInfo{
-flex:1;
-}
-
-.feedAuthor{
-font-weight:600;
-color:var(--text-primary);
-font-size:16px;
-margin-bottom:4px;
-display:flex;
-align-items:center;
-gap:6px;
-flex-wrap:wrap;
-}
-
-.verifiedBadge{
-display:inline-flex;
-align-items:center;
-background:var(--badge-bg);
-color:var(--blue-primary);
-font-size:10px;
-padding:2px 6px;
-border-radius:30px;
-}
-
-.verifiedBadge::before{
-content:"✓";
-margin-right:2px;
-font-weight:bold;
-}
-
-.feedMeta{
-display:flex;
-align-items:center;
-gap:8px;
-font-size:11px;
-color:var(--text-secondary);
-flex-wrap:wrap;
-}
-
-.feedTime{
-display:flex;
-align-items:center;
-gap:4px;
-}
-
-.feedRank{
-background:var(--icon-bg);
-padding:2px 8px;
-border-radius:30px;
-font-size:10px;
-font-weight:500;
-color:var(--blue-primary);
-}
-
-.feedMenu{
-position:relative;
-}
-
-.feedMenuBtn{
-background:none;
-border:none;
-font-size:18px;
-color:var(--text-secondary);
-cursor:pointer;
-padding:8px;
-margin:-8px;
-transition:transform 0.2s ease;
-}
-
-.feedMenuBtn:hover{
-transform:rotate(90deg);
-}
-
-.feedMenuDropdown{
-position:absolute;
-right:0;
-top:30px;
-background:var(--modal-bg);
-border-radius:12px;
-box-shadow:0 5px 20px rgba(0,0,0,0.15);
-border:1px solid var(--border-subtle);
-z-index:100;
-display:none;
-min-width:120px;
-animation:slideDown 0.2s ease;
-}
-
-@keyframes slideDown{
-from{ opacity:0; transform:translateY(-10px); }
-to{ opacity:1; transform:translateY(0); }
-}
-
-.feedMenuDropdown.show{
-display:block;
-}
-
-.dropdownItem{
-padding:12px 16px;
-font-size:13px;
-color:var(--text-primary);
-cursor:pointer;
-border-bottom:1px solid var(--border-subtle);
-transition:background 0.2s ease;
-}
-
-.dropdownItem:last-child{
-border-bottom:none;
-}
-
-.dropdownItem.delete{
-color:var(--delete-color);
-}
-
-.dropdownItem.edit{
-color:var(--blue-primary);
-}
-
-.dropdownItem:hover{
-background:var(--icon-bg);
-padding-left:20px;
-}
-
-/* Hashtags */
-.hashtag {
-    color: var(--hashtag-color);
-    cursor: pointer;
-    font-weight: 500;
-}
-
-.hashtag:hover {
-    text-decoration: underline;
-}
-
-/* Post Location */
-.postLocation {
+/* Reactions Row */
+.reactionsRow {
     display: flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 11px;
-    color: var(--text-secondary);
-    margin-top: 4px;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+    padding: 8px 0;
 }
 
-.postLocation span {
+.reaction {
+    background: var(--icon-bg);
+    border-radius: 30px;
+    padding: 6px 14px;
+    font-size: 14px;
+    border: 1px solid var(--border-subtle);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.reaction:hover {
+    transform: scale(1.1);
+    background: var(--card-bg);
+}
+
+.reaction.active {
+    background: var(--blue-primary);
+    color: white;
+    border-color: var(--blue-primary);
+}
+
+.reaction .count {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-left: 2px;
+}
+
+.reaction.active .count {
+    color: white;
+}
+
+/* Comments Section */
+.commentsSection {
+    border-top: 1px solid var(--border-subtle);
+    padding-top: 16px;
+    display: none;
+}
+
+.commentsSection.show {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.comment {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+    background: var(--icon-bg);
+    padding: 12px;
+    border-radius: 16px;
+}
+
+.commentAvatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.commentContent {
+    flex: 1;
+}
+
+.commentHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.commentAuthor {
+    font-weight: 600;
+    font-size: 13px;
     color: var(--blue-primary);
 }
 
-/* Post Reactions */
-.postReactions {
-    display: flex;
-    gap: 6px;
-    margin: 8px 0;
-    flex-wrap: wrap;
-}
-
-.postReaction {
-    background: var(--icon-bg);
-    border-radius: 30px;
-    padding: 4px 10px;
-    font-size: 13px;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    cursor: pointer;
-    border: 1px solid var(--border-subtle);
-}
-
-.postReaction:hover {
-    background: var(--border-subtle);
-}
-
-.postReaction .count {
-    font-size: 11px;
-    color: var(--text-secondary);
-}
-
-/* Feed Content */
-.feedContent{
-margin-bottom:12px;
-}
-
-.feedText{
-font-size:14px;
-line-height:1.5;
-color:var(--text-primary);
-margin-bottom:12px;
-white-space:pre-wrap;
-word-wrap:break-word;
-}
-
-.feedImage{
-width:100%;
-border-radius:12px;
-margin-bottom:8px;
-cursor:pointer;
-max-height:300px;
-object-fit:cover;
-transition:transform 0.3s ease, opacity 0.3s ease;
-}
-
-.feedImage:hover{
-opacity:0.9;
-transform:scale(1.02);
-}
-
-/* FEED STATS - Like and Comment counts with avatars */
-.feedStats{
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:8px 0;
-border-top:1px solid var(--border-subtle);
-border-bottom:1px solid var(--border-subtle);
-margin-bottom:8px;
-}
-
-.likesInfo{
-display:flex;
-align-items:center;
-gap:8px;
-cursor:pointer;
-transition:opacity 0.2s ease;
-}
-
-.likesInfo:hover{
-opacity:0.7;
-}
-
-.likeIcons{
-display:flex;
-align-items:center;
-}
-
-.likeIconGroup{
-display:flex;
-align-items:center;
-margin-right:-4px;
-}
-
-.likeIconCircle{
-width:24px;
-height:24px;
-border-radius:50%;
-background:var(--blue-primary);
-color:white;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:10px;
-font-weight:600;
-border:2px solid var(--bg-primary);
-margin-right:-6px;
-transition:transform 0.2s ease;
-}
-
-.likeIconCircle:hover{
-transform:scale(1.2);
-z-index:5;
-}
-
-.likeIconHeart{
-color:var(--delete-color);
-font-size:20px;
-margin-right:4px;
-animation:heartBeat 1.5s ease infinite;
-}
-
-@keyframes heartBeat{
-0%{ transform:scale(1); }
-14%{ transform:scale(1.3); }
-28%{ transform:scale(1); }
-42%{ transform:scale(1.3); }
-70%{ transform:scale(1); }
-}
-
-.likesCount{
-font-size:13px;
-color:var(--text-secondary);
-}
-
-.likesCount strong{
-color:var(--text-primary);
-}
-
-.commentsInfo{
-display:flex;
-align-items:center;
-gap:4px;
-font-size:13px;
-color:var(--text-secondary);
-cursor:pointer;
-transition:opacity 0.2s ease;
-}
-
-.commentsInfo:hover{
-opacity:0.7;
-}
-
-.commentsInfo strong{
-color:var(--text-primary);
-margin-left:4px;
-}
-
-/* FEED ACTIONS - Icons with text BELOW */
-.feedActions{
-display:flex;
-justify-content:space-around;
-padding:8px 0;
-}
-
-.feedActionBtn{
-flex:1;
-display:flex;
-flex-direction:column;
-align-items:center;
-justify-content:center;
-gap:4px;
-background:none;
-border:none;
-padding:8px;
-border-radius:12px;
-font-size:11px;
-font-weight:500;
-color:var(--text-secondary);
-cursor:pointer;
-transition:all 0.2s ease;
-}
-
-.feedActionBtn svg{
-width:22px;
-height:22px;
-stroke:currentColor;
-transition:transform 0.2s ease;
-}
-
-.feedActionBtn:hover{
-background:var(--icon-bg);
-transform:translateY(-2px);
-}
-
-.feedActionBtn:hover svg{
-transform:scale(1.1);
-}
-
-.feedActionBtn:active{
-transform:scale(0.95);
-}
-
-.feedActionBtn.active{
-color:var(--blue-primary);
-}
-
-.feedActionBtn.active svg{
-stroke:var(--blue-primary);
-}
-
-.feedActionBtn.saved {
-    color: var(--save-color);
-}
-
-.feedActionBtn.saved svg {
-    stroke: var(--save-color);
-    fill: var(--save-color);
-}
-
-/* COMMENTS SECTION */
-
-.commentsSection{
-margin-top:12px;
-padding-top:12px;
-border-top:1px solid var(--border-subtle);
-display:none;
-animation:fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn{
-from{ opacity:0; }
-to{ opacity:1; }
-}
-
-.commentsSection.show{
-display:block;
-}
-
-.commentItem{
-display:flex;
-gap:10px;
-margin-bottom:12px;
-position:relative;
-animation:slideInRight 0.3s ease;
-}
-
-@keyframes slideInRight{
-from{ opacity:0; transform:translateX(-10px); }
-to{ opacity:1; transform:translateX(0); }
-}
-
-.commentAvatar{
-width:36px;
-height:36px;
-border-radius:50%;
-background:var(--icon-bg);
-color:var(--text-primary);
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:14px;
-font-weight:500;
-flex-shrink:0;
-overflow:hidden;
-position:relative;
-}
-
-.commentAvatar img{
-width:100%;
-height:100%;
-object-fit:cover;
-}
-
-.commentAvatar .statusDotOutside{
-width:12px;
-height:12px;
-top:-2px;
-right:-4px;
-border-width:2px;
-}
-
-.commentContent{
-flex:1;
-background:var(--icon-bg);
-padding:10px 12px;
-border-radius:16px;
-}
-
-.commentHeader{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:4px;
-}
-
-.commentAuthor{
-font-weight:600;
-font-size:13px;
-color:var(--text-primary);
-display:flex;
-align-items:center;
-gap:4px;
-}
-
-.commentAuthor .verifiedBadge{
-font-size:8px;
-padding:2px 4px;
-}
-
-.commentTime{
-font-size:10px;
-color:var(--text-secondary);
-}
-
-.commentText{
-font-size:12px;
-color:var(--text-primary);
-margin-bottom:4px;
-word-wrap:break-word;
-}
-
-.commentSeen {
+.commentTime {
     font-size: 10px;
     color: var(--text-secondary);
-    text-align: right;
-    margin-top: 2px;
 }
 
-.commentDelete{
-color:var(--text-secondary);
-font-size:14px;
-cursor:pointer;
-padding:4px;
-transition:color 0.2s ease, transform 0.2s ease;
-}
-
-.commentDelete:hover{
-color:var(--delete-color);
-transform:scale(1.2);
-}
-
-.addComment{
-display:flex;
-gap:8px;
-margin-top:12px;
-}
-
-.commentInput{
-flex:1;
-height:40px;
-padding:0 14px;
-border:1px solid var(--border-subtle);
-border-radius:20px;
-font-size:13px;
-outline:none;
-background:var(--input-bg);
-color:var(--text-primary);
-transition:all 0.3s ease;
-}
-
-.commentInput:focus{
-border-color:var(--blue-primary);
-background:var(--card-bg);
-box-shadow:0 0 0 3px rgba(59,130,246,0.1);
-}
-
-.commentInput::placeholder{
-color:var(--text-secondary);
-}
-
-.commentSendBtn{
-background:var(--blue-primary);
-border:none;
-width:40px;
-height:40px;
-border-radius:50%;
-display:flex;
-align-items:center;
-justify-content:center;
-cursor:pointer;
-color:white;
-flex-shrink:0;
-transition:all 0.2s ease;
-}
-
-.commentSendBtn:hover{
-background:var(--blue-secondary);
-transform:scale(1.1) rotate(90deg);
-}
-
-.commentSendBtn:active{
-transform:scale(0.95);
-}
-
-.commentSendBtn svg{
-width:16px;
-height:16px;
-stroke:white;
-fill:none;
-}
-
-/* LIKES MODAL - Show who liked */
-.modalOverlay{
-display:none;
-position:fixed;
-top:0;
-left:0;
-right:0;
-bottom:0;
-background:rgba(0,0,0,0.8);
-backdrop-filter:blur(4px);
-z-index:2000;
-align-items:flex-end;
-justify-content:center;
-}
-
-.modalOverlay.active{
-display:flex;
-}
-
-.modalContent{
-background:var(--modal-bg);
-border-radius:30px 30px 0 0;
-width:100%;
-max-height:80vh;
-overflow-y:auto;
-padding:24px 20px;
-padding-bottom:max(24px, env(safe-area-inset-bottom, 24px));
-animation:slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-@keyframes slideUp{
-from{ transform:translateY(100%); }
-to{ transform:translateY(0); }
-}
-
-.modalHeader{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:20px;
-}
-
-.modalTitle{
-font-weight:600;
-font-size:18px;
-color:var(--text-primary);
-}
-
-.modalClose{
-font-size:24px;
-color:var(--text-secondary);
-cursor:pointer;
-padding:4px;
-transition:transform 0.2s ease, color 0.2s ease;
-}
-
-.modalClose:hover{
-color:var(--blue-primary);
-transform:rotate(90deg);
-}
-
-.modalUserItem{
-display:flex;
-align-items:center;
-gap:12px;
-padding:12px 0;
-border-bottom:1px solid var(--border-subtle);
-animation:fadeInRight 0.3s ease;
-}
-
-@keyframes fadeInRight{
-from{ opacity:0; transform:translateX(20px); }
-to{ opacity:1; transform:translateX(0); }
-}
-
-.modalUserAvatar{
-width:44px;
-height:44px;
-border-radius:50%;
-background:var(--blue-primary);
-color:white;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:18px;
-font-weight:500;
-overflow:hidden;
-position:relative;
-}
-
-.modalUserAvatar img{
-width:100%;
-height:100%;
-object-fit:cover;
-}
-
-.modalUserInfo{
-flex:1;
-}
-
-.modalUserName{
-font-weight:600;
-color:var(--text-primary);
-margin-bottom:4px;
-}
-
-.modalUserRank{
-font-size:12px;
-color:var(--text-secondary);
-}
-
-.modalUserStatus{
-width:10px;
-height:10px;
-border-radius:50%;
-margin-left:8px;
-}
-
-/* POST MODAL */
-
-#postModal .modalContent{
-border-radius:30px 30px 0 0;
-}
-
-.modalTextarea{
-width:100%;
-min-height:120px;
-padding:16px;
-border:1px solid var(--border-subtle);
-border-radius:16px;
-font-size:15px;
-margin-bottom:16px;
-resize:vertical;
-background:var(--input-bg);
-color:var(--text-primary);
-transition:border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.modalTextarea:focus{
-outline:none;
-border-color:var(--blue-primary);
-box-shadow:0 0 0 3px rgba(59,130,246,0.1);
-}
-
-.modalTextarea::placeholder{
-color:var(--text-secondary);
-}
-
-.modalImagePreview{
-margin-bottom:16px;
-display:none;
-animation:fadeIn 0.3s ease;
-}
-
-.modalImagePreview img{
-width:100%;
-border-radius:12px;
-max-height:200px;
-object-fit:cover;
-}
-
-.modalButtons{
-display:flex;
-gap:12px;
-margin-top:20px;
-}
-
-.modalBtn{
-flex:1;
-padding:16px;
-border:none;
-border-radius:40px;
-font-weight:600;
-font-size:15px;
-cursor:pointer;
-transition:all 0.2s ease;
-}
-
-.modalBtn.primary{
-background:var(--blue-primary);
-color:white;
-}
-
-.modalBtn.primary:hover{
-background:var(--blue-secondary);
-transform:translateY(-2px);
-box-shadow:0 4px 12px rgba(59,130,246,0.3);
-}
-
-.modalBtn.primary:active{
-transform:scale(0.95);
-}
-
-.modalBtn.secondary{
-background:var(--icon-bg);
-color:var(--text-primary);
-}
-
-.modalBtn.secondary:hover{
-background:var(--border-subtle);
-transform:translateY(-2px);
-}
-
-.modalBtn.secondary:active{
-transform:scale(0.95);
-}
-
-/* IMAGE VIEW MODAL */
-
-.imageModal{
-display:none;
-position:fixed;
-top:0;
-left:0;
-right:0;
-bottom:0;
-background:rgba(0,0,0,0.9);
-z-index:2100;
-justify-content:center;
-align-items:center;
-}
-
-.imageModal.active{
-display:flex;
-}
-
-.imageModal img{
-max-width:100%;
-max-height:100%;
-object-fit:contain;
-animation:zoomIn 0.3s ease;
-}
-
-@keyframes zoomIn{
-from{ transform:scale(0.8); opacity:0; }
-to{ transform:scale(1); opacity:1; }
-}
-
-.closeImageBtn{
-position:absolute;
-top:20px;
-right:20px;
-color:white;
-font-size:30px;
-cursor:pointer;
-width:44px;
-height:44px;
-display:flex;
-align-items:center;
-justify-content:center;
-background:rgba(0,0,0,0.3);
-border-radius:50%;
-transition:all 0.2s ease;
-}
-
-.closeImageBtn:hover{
-background:rgba(0,0,0,0.5);
-transform:rotate(90deg);
-}
-
-/* NAVIGATION */
-
-.navIcon{
-width:22px;
-height:22px;
-margin-bottom:3px;
-stroke:var(--text-secondary);
-stroke-width:1.8;
-transition:all 0.3s ease;
-}
-
-.navAvatar{
-width:22px;
-height:22px;
-border-radius:50%;
-object-fit:cover;
-margin-bottom:3px;
-border:2px solid var(--blue-primary);
-transition:all 0.3s ease;
-}
-
-.bottomnav{
-position:fixed;
-left:20px;
-right:20px;
-bottom:20px;
-height:64px;
-background:var(--nav-bg);
-border-radius:32px;
-display:flex;
-align-items:center;
-justify-content:space-around;
-box-shadow:0 8px 24px rgba(0,0,0,0.08);
-z-index:999;
-transition:transform 0.35s ease, box-shadow 0.3s ease;
-border:1px solid var(--border-subtle);
-padding:0 8px;
-}
-
-.bottomnav:hover{
-box-shadow:0 12px 28px rgba(0,0,0,0.15);
-}
-
-.bottomnav button{
-flex:1;
-background:none;
-border:none;
-cursor:pointer;
-display:flex;
-flex-direction:column;
-align-items:center;
-justify-content:center;
-font-size:11px;
-font-weight:500;
-color:var(--text-secondary);
-transition:all 0.2s ease;
-padding:8px 0;
-border-radius:24px;
-}
-
-.bottomnav button:hover .navIcon{
-stroke:var(--blue-primary);
-transform:translateY(-2px);
-}
-
-.bottomnav button:hover .navAvatar{
-transform:scale(1.1);
-border-color:var(--blue-primary);
-}
-
-.bottomnav button.active{
-color:var(--blue-primary);
-}
-
-.bottomnav button.active .navIcon{
-stroke:var(--blue-primary);
-stroke-width:2.2;
-}
-
-.bottomnav button.active .navAvatar{
-border:2px solid var(--blue-primary);
-}
-
-/* TOAST */
-.toast{
-position:fixed;
-bottom:100px;
-left:20px;
-right:20px;
-background:var(--text-primary);
-color:var(--bg-primary);
-padding:16px;
-border-radius:30px;
-text-align:center;
-font-size:14px;
-font-weight:500;
-z-index:3000;
-display:none;
-animation:slideUpToast 0.3s ease;
-}
-
-.toast.show{
-display:block;
-}
-
-@keyframes slideUpToast{
-from{ transform:translateY(20px); opacity:0; }
-to{ transform:translateY(0); opacity:1; }
-}
-
-/* LOADING */
-.loadingContainer{
-display:flex;
-justify-content:center;
-padding:40px;
-}
-
-.emptyState{
-text-align:center;
-padding:60px 20px;
-color:var(--text-secondary);
-}
-
-.emptyState .icon{
-font-size:60px;
-margin-bottom:16px;
-opacity:0.5;
-}
-
-.emptyState h3{
-font-weight:600;
-margin-bottom:8px;
-color:var(--text-primary);
-}
-
-.emptyState p{
-font-size:14px;
-margin-bottom:20px;
-}
-
-.emptyBtn{
-background:var(--icon-bg);
-border:none;
-padding:12px 30px;
-border-radius:40px;
-font-weight:500;
-color:var(--text-primary);
-cursor:pointer;
-transition:all 0.2s ease;
-}
-
-.emptyBtn:hover{
-background:var(--border-subtle);
-transform:translateY(-2px);
-box-shadow:0 4px 8px rgba(0,0,0,0.1);
-}
-
-.emptyBtn:active{
-transform:scale(0.95);
-}
-
-/* Loading more indicator */
-.loading-more {
-    text-align: center;
-    padding: 20px;
-    color: var(--text-secondary);
-}
-
-.loading-more .loader {
-    display: inline-block;
-    margin-right: 8px;
-}
-
-/* Debug Panel */
-.debug-panel {
-    position: fixed;
-    bottom: 80px;
-    right: 10px;
-    background: var(--card-bg);
-    border: 1px solid var(--border-subtle);
-    border-radius: 10px;
-    padding: 10px;
-    max-width: 300px;
-    max-height: 400px;
-    overflow: auto;
-    display: none;
-    z-index: 5000;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-}
-
-.debug-panel.show {
-    display: block;
-}
-
-.debug-panel h4 {
-    margin: 0 0 10px 0;
+.commentText {
+    font-size: 13px;
+    color: var(--text-primary);
+    line-height: 1.4;
+    word-wrap: break-word;
+}
+
+.commentDelete {
+    color: var(--delete-color);
+    font-size: 16px;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.commentDelete:hover {
+    background: var(--delete-color);
+    color: white;
+}
+
+.commentInputArea {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+    align-items: center;
+}
+
+.commentInput {
+    flex: 1;
+    padding: 12px 16px;
+    border: 2px solid var(--border-subtle);
+    border-radius: 40px;
+    font-size: 13px;
+    outline: none;
+    background: var(--input-bg);
     color: var(--text-primary);
 }
 
-.debug-log {
-    font-size: 12px;
-    color: var(--text-secondary);
+.commentInput:focus {
+    border-color: var(--blue-primary);
+    background: var(--card-bg);
+}
+
+.commentSend {
+    background: var(--blue-primary);
+    color: white;
+    border: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.commentSend:hover:not(:disabled) {
+    background: var(--blue-secondary);
+    transform: scale(1.05);
+}
+
+.commentSend:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* REACTION MODAL */
+.reactionModal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.8);
+    z-index: 3000;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.reactionModal.active {
+    display: flex;
+}
+
+.reactionModalContent {
+    background: var(--modal-bg);
+    border-radius: 30px 30px 0 0;
+    width: 100%;
+    max-width: 400px;
+    padding: 24px 20px;
+    padding-bottom: max(24px, env(safe-area-inset-bottom, 24px));
+}
+
+.reactionModalTitle {
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--text-primary);
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.reactionGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin: 20px 0;
+    padding: 20px 0;
+    border-top: 1px solid var(--border-subtle);
     border-bottom: 1px solid var(--border-subtle);
-    padding: 5px 0;
-    word-break: break-all;
+}
+
+.reactionOption {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--icon-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin: 0 auto;
+}
+
+.reactionOption:hover {
+    transform: scale(1.2);
+    background: var(--blue-primary);
+}
+
+.reactionCancel {
+    width: 100%;
+    padding: 16px;
+    background: var(--icon-bg);
+    border: none;
+    border-radius: 40px;
+    font-weight: 600;
+    color: var(--text-primary);
+    cursor: pointer;
+}
+
+/* DELETE CONFIRM MODAL */
+.deleteModal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.8);
+    z-index: 3500;
+    align-items: center;
+    justify-content: center;
+}
+
+.deleteModal.active {
+    display: flex;
+}
+
+.deleteModalContent {
+    background: var(--modal-bg);
+    border-radius: 30px;
+    width: 300px;
+    padding: 30px;
+    text-align: center;
+}
+
+.deleteModalIcon {
+    font-size: 50px;
+    margin-bottom: 20px;
+}
+
+.deleteModalTitle {
+    font-weight: 700;
+    font-size: 20px;
+    color: var(--delete-color);
+    margin-bottom: 10px;
+}
+
+.deleteModalText {
+    color: var(--text-secondary);
+    margin-bottom: 25px;
+    font-size: 14px;
+}
+
+.deleteModalButtons {
+    display: flex;
+    gap: 10px;
+}
+
+.deleteConfirm {
+    flex: 1;
+    background: var(--delete-color);
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 40px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.deleteCancel {
+    flex: 1;
+    background: var(--icon-bg);
+    color: var(--text-primary);
+    border: none;
+    padding: 14px;
+    border-radius: 40px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* NAVIGATION */
+.navIcon {
+    width: 22px;
+    height: 22px;
+    margin-bottom: 3px;
+    stroke: var(--text-secondary);
+    stroke-width: 1.8;
+}
+
+.navAvatar {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 3px;
+    border: 2px solid var(--blue-primary);
+}
+
+.bottomnav {
+    position: fixed;
+    left: 20px;
+    right: 20px;
+    bottom: 20px;
+    height: 64px;
+    background: var(--nav-bg);
+    border-radius: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    z-index: 999;
+    transition: transform 0.35s ease;
+    padding: 0 8px;
+    border: 1px solid var(--border-subtle);
+}
+
+.bottomnav button {
+    flex: 1;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    transition: all 0.2s;
+    padding: 8px 0;
+    border-radius: 24px;
+}
+
+.bottomnav button.active {
+    color: var(--blue-primary);
+}
+
+.bottomnav button.active .navIcon {
+    stroke: var(--blue-primary);
+}
+
+/* TOAST */
+.toast {
+    position: fixed;
+    bottom: 100px;
+    left: 20px;
+    right: 20px;
+    background: var(--text-primary);
+    color: var(--bg-primary);
+    padding: 16px;
+    border-radius: 30px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 4000;
+    display: none;
+}
+
+.toast.show {
+    display: block;
+    animation: slideUp 0.3s ease;
+}
+
+/* LOADING */
+.loadingContainer {
+    display: flex;
+    justify-content: center;
+    padding: 60px 20px;
+}
+
+.loadingSpinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--border-subtle);
+    border-top: 4px solid var(--blue-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.emptyState {
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--text-secondary);
+    background: var(--card-bg);
+    border-radius: 0;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.emptyState .emoji {
+    font-size: 60px;
+    margin-bottom: 20px;
+    opacity: 0.6;
+}
+
+.emptyState h3 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: var(--text-primary);
+}
+
+.emptyState p {
+    font-size: 15px;
+    margin-bottom: 25px;
+}
+
+.emptyStateBtn {
+    background: var(--blue-primary);
+    color: white;
+    border: none;
+    padding: 14px 36px;
+    border-radius: 40px;
+    font-weight: 600;
+    cursor: pointer;
 }
 </style>
 </head>
 
-<body data-theme="light">
+<body data-theme="light" id="body">
 
 <div id="pullLoader">
-<div class="loader"></div>
+    <div class="loader"></div>
 </div>
 
 <div class="appHeader">
-
-<button class="fileBtn" onclick="openFiles()">
-<svg class="headerIcon" viewBox="0 0 24 24" fill="none" stroke-width="2">
-<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-<polyline points="14 2 14 8 20 8"/>
-</svg>
-Files
-</button>
-
-<div class="logo">SEA CONNECT</div>
-
-<button class="settingsBtn" onclick="openSettings()">
-<svg class="headerIcon" viewBox="0 0 24 24" fill="none" stroke-width="2">
-<circle cx="12" cy="12" r="3"></circle>
-<path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82
-l.06.06a2 2 0 1 1-2.83 2.83
-l-.06-.06a1.65 1.65 0 0 0-1.82-.33
-1.65 1.65 0 0 0-1 1.51V21
-a2 2 0 1 1-4 0v-.09
-a1.65 1.65 0 0 0-1-1.51
-1.65 1.65 0 0 0-1.82.33
-l-.06.06a2 2 0 1 1-2.83-2.83
-l.06-.06a1.65 1.65 0 0 0 .33-1.82
-1.65 1.65 0 0 0-1.51-1H3
-a2 2 0 1 1 0-4h.09
-a1.65 1.65 0 0 0 1.51-1
-1.65 1.65 0 0 0-.33-1.82
-l-.06-.06a2 2 0 1 1 2.83-2.83
-l.06.06a1.65 1.65 0 0 0 1.82.33H9
-a1.65 1.65 0 0 0 1-1.51V3
-a2 2 0 1 1 4 0v.09
-a1.65 1.65 0 0 0 1 1.51
-1.65 1.65 0 0 0 1.82-.33
-l.06-.06a2 2 0 1 1 2.83 2.83
-l-.06.06a1.65 1.65 0 0 0-.33 1.82V9
-c0 .66.39 1.26 1 1.51H21
-a2 2 0 1 1 0 4h-.09
-c-.66 0-1.26.39-1.51 1z"/>
-</svg>
-Settings
-</button>
-
+    <button class="fileBtn" onclick="openFiles()">
+        <svg class="headerIcon" viewBox="0 0 24 24" fill="none" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+        </svg>
+        Files
+    </button>
+    <div class="logo">SEA CONNECT</div>
+    <button class="settingsBtn" onclick="openSettings()">
+        <svg class="headerIcon" viewBox="0 0 24 24" fill="none" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c0 .66.39 1.26 1 1.51H21a2 2 0 0 1 0 4h-.09c-.66 0-1.26.39-1.51 1z"/>
+        </svg>
+        Settings
+    </button>
 </div>
 
-<div class="page" id="page">
-
-<!-- DEBUG PANEL (press F2 to show) -->
-<div class="debug-panel" id="debugPanel">
-    <h4>Debug Logs 
-        <button onclick="clearDebugLogs()" style="float:right; font-size:10px;">Clear</button>
-        <button onclick="testImgBB()" style="float:right; font-size:10px; margin-right:5px;">Test API</button>
-        <button onclick="testIOSCompatibility()" style="float:right; font-size:10px; margin-right:5px;">Test iOS</button>
-        <button onclick="checkLastPost()" style="float:right; font-size:10px; margin-right:5px;">Check Post</button>
-        <button onclick="testDirectUpload()" style="float:right; font-size:10px; margin-right:5px;">Test Upload</button>
-    </h4>
-    <div id="debugLogs"></div>
-</div>
-
-<!-- CREATE POST CARD -->
-<div class="createPostCard" id="createPostCard">
-    <div class="createPostRow">
-        <div class="createPostAvatar" id="currentUserAvatar">
-            <span>👤</span>
+<div class="page">
+    <!-- CREATE POST CARD -->
+    <div class="createCard">
+        <div class="createHeader">
+            <img src="" class="createAvatar" id="currentUserAvatar">
+            <span class="createTitle">Share with the crew...</span>
         </div>
-        <input type="text" class="createPostInput" id="postInput" placeholder="Share something with the crew..." onclick="openPostModal()" readonly>
+        
+        <textarea class="createInput" id="feedInput" placeholder="What's happening on board?" rows="3"></textarea>
+        
+        <input type="file" class="createFile" id="feedPhoto" accept="image/*">
+        
+        <div class="createActions">
+            <button class="createButton" id="postBtn" onclick="createPost()">Post Update</button>
+        </div>
     </div>
-    <div class="createPostActions">
-        <button class="postAction" onclick="openPostModal('photo')">
-            <span>📷</span>
-            <span>Photo</span>
-        </button>
-        <button class="postAction" onclick="openPostModal('status')">
-            <span>⚓</span>
-            <span>Status</span>
-        </button>
-        <button class="postAction" onclick="openPostModal('checkin')">
-            <span>📍</span>
-            <span>Check-in</span>
-        </button>
-    </div>
-</div>
 
-<!-- IMAGE PREVIEW BAR (for posts) -->
-<div class="imagePreviewBar" id="postImagePreviewBar">
-    <div class="previewContainer">
-        <img id="postPreviewImage" src="" alt="Preview">
-        <span class="removeImageBtn" onclick="removePostImage()">✕</span>
-    </div>
-    <div class="previewFilename" id="postPreviewFilename"></div>
-</div>
-
-<!-- FILTER BAR -->
-<div class="filterBar">
-    <button class="filterBtn active" onclick="filterPosts('all')">All</button>
-    <button class="filterBtn" onclick="filterPosts('text')">📝 Text</button>
-    <button class="filterBtn" onclick="filterPosts('photo')">📷 Photos</button>
-    <button class="filterBtn" onclick="filterPosts('checkin')">📍 Check-ins</button>
-</div>
-
-<!-- FEEDS CONTAINER -->
-<div id="feedsContainer">
-    <div class="loadingContainer">
-        <div class="loader"></div>
+    <!-- FEEDS LIST -->
+    <div class="feedsContainer" id="feedsList">
+        <div class="loadingContainer">
+            <div class="loadingSpinner"></div>
+        </div>
     </div>
 </div>
 
-<!-- Loading More Indicator -->
-<div id="loadingMore" class="loading-more" style="display: none;">
-    <span class="loader"></span> Loading more posts...
+<!-- REACTION MODAL -->
+<div class="reactionModal" id="reactionModal">
+    <div class="reactionModalContent">
+        <div class="reactionModalTitle">Add Reaction</div>
+        <div class="reactionGrid">
+            <div class="reactionOption" onclick="addReaction('👍')">👍</div>
+            <div class="reactionOption" onclick="addReaction('❤️')">❤️</div>
+            <div class="reactionOption" onclick="addReaction('😂')">😂</div>
+            <div class="reactionOption" onclick="addReaction('😮')">😮</div>
+            <div class="reactionOption" onclick="addReaction('😢')">😢</div>
+            <div class="reactionOption" onclick="addReaction('🙏')">🙏</div>
+            <div class="reactionOption" onclick="addReaction('⚓')">⚓</div>
+            <div class="reactionOption" onclick="addReaction('🌊')">🌊</div>
+        </div>
+        <button class="reactionCancel" onclick="closeReactionModal()">Cancel</button>
+    </div>
 </div>
 
+<!-- DELETE CONFIRM MODAL -->
+<div class="deleteModal" id="deleteModal">
+    <div class="deleteModalContent">
+        <div class="deleteModalIcon">🗑️</div>
+        <div class="deleteModalTitle">Delete Post?</div>
+        <div class="deleteModalText">This action cannot be undone.</div>
+        <div class="deleteModalButtons">
+            <button class="deleteCancel" onclick="closeDeleteModal()">Cancel</button>
+            <button class="deleteConfirm" id="confirmDeleteBtn">Delete</button>
+        </div>
+    </div>
 </div>
 
+<!-- BOTTOM NAVIGATION -->
 <div class="bottomnav">
-
-<button onclick="location.href='feeds.html'" id="navFeeds" class="active">
-<svg class="navIcon" viewBox="0 0 24 24" fill="none" stroke-width="2">
-<rect x="3" y="3" width="7" height="7"></rect>
-<rect x="14" y="3" width="7" height="7"></rect>
-<rect x="14" y="14" width="7" height="7"></rect>
-<rect x="3" y="14" width="7" height="7"></rect>
-</svg>
-Feeds
-</button>
-
-<button onclick="location.href='friends.html'" id="navFriends">
-<svg class="navIcon" viewBox="0 0 24 24" fill="none" stroke-width="2">
-<circle cx="12" cy="7" r="4"></circle>
-<path d="M5.5 21a6.5 6.5 0 0 1 13 0"></path>
-</svg>
-Friends
-</button>
-
-<button onclick="location.href='messages.html'" id="navMessages">
-<svg class="navIcon" viewBox="0 0 24 24" fill="none" stroke-width="2">
-<path d="M21 15a4 4 0 0 1-4 4H7l-4 4V5a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"></path>
-</svg>
-Messages
-</button>
-
-<button onclick="location.href='profile.html'" id="navProfile">
-<div class="navAvatarContainer">
-    <img src="https://i.ibb.co/2kRZ7Z6/avatar.png" class="navAvatar" id="navAvatar">
-</div>
-Profile
-</button>
-
-</div>
-
-<!-- CREATE POST MODAL -->
-<div class="modalOverlay" id="postModal">
-    <div class="modalContent">
-        <div class="modalHeader">
-            <div class="modalTitle">Create Post</div>
-            <span class="modalClose" onclick="closePostModal()">&times;</span>
-        </div>
-        <textarea class="modalTextarea" id="postText" placeholder="What's on your mind? Use #hashtags"></textarea>
-        
-        <div class="modalImagePreview" id="imagePreview">
-            <img src="" alt="Preview">
-        </div>
-        
-        <div class="modalButtons">
-            <button class="modalBtn secondary" onclick="document.getElementById('postImage').click()">📷 Add Photo</button>
-            <button class="modalBtn primary" id="postActionBtn" onclick="createPost()">Post</button>
-        </div>
-    </div>
-</div>
-
-<!-- LIKES MODAL - Shows who liked -->
-<div class="modalOverlay" id="likesModal">
-    <div class="modalContent">
-        <div class="modalHeader">
-            <div class="modalTitle" id="likesModalTitle">Likes</div>
-            <span class="modalClose" onclick="closeLikesModal()">&times;</span>
-        </div>
-        <div id="likesList" class="modalBody">
-            <!-- Likes will be loaded here -->
-        </div>
-    </div>
-</div>
-
-<!-- COMMENTS MODAL - Shows who commented -->
-<div class="modalOverlay" id="commentsModal">
-    <div class="modalContent">
-        <div class="modalHeader">
-            <div class="modalTitle" id="commentsModalTitle">Comments</div>
-            <span class="modalClose" onclick="closeCommentsModal()">&times;</span>
-        </div>
-        <div id="commentsList" class="modalBody">
-            <!-- Comments will be loaded here -->
-        </div>
-    </div>
-</div>
-
-<!-- IMAGE VIEW MODAL -->
-<div class="imageModal" id="imageViewModal" onclick="closeImageView()">
-    <span class="closeImageBtn">&times;</span>
-    <img id="viewImage" src="">
+    <button onclick="location.href='feeds.html'" id="navFeeds" class="active">
+        <svg class="navIcon" viewBox="0 0 24 24" fill="none" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"/>
+            <rect x="14" y="3" width="7" height="7"/>
+            <rect x="14" y="14" width="7" height="7"/>
+            <rect x="3" y="14" width="7" height="7"/>
+        </svg>
+        Feeds
+    </button>
+    <button onclick="location.href='friends.html'" id="navFriends">
+        <svg class="navIcon" viewBox="0 0 24 24" fill="none" stroke-width="2">
+            <circle cx="12" cy="7" r="4"/>
+            <path d="M5.5 21a6.5 6.5 0 0 1 13 0"/>
+        </svg>
+        Friends
+    </button>
+    <button onclick="location.href='messages.html'" id="navMessages">
+        <svg class="navIcon" viewBox="0 0 24 24" fill="none" stroke-width="2">
+            <path d="M21 15a4 4 0 0 1-4 4H7l-4 4V5a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/>
+        </svg>
+        Messages
+    </button>
+    <button onclick="location.href='profile.html'" id="navProfile">
+        <img src="" class="navAvatar" id="navAvatar">
+        Profile
+    </button>
 </div>
 
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
-
-<!-- Hidden file input -->
-<input type="file" id="postImage" accept="image/*" style="display:none;">
 
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
@@ -1694,928 +1183,446 @@ const IMGBB_API_KEY = '7a6b8c43b67ce45e354763c86371b2e1';
 
 let currentUser = null;
 let currentUserData = null;
-let postsUnsubscribe = null;
-let selectedPostImageFile = null;
 let currentPostId = null;
-let editingPostId = null;
-let lastDoc = null;
-let loadingMore = false;
-let currentFilter = 'all';
-let savedPosts = new Set();
+let unsubscribeFeeds = null;
 
-// Debug logging
-function debugLog(message, data = null) {
-    const timestamp = new Date().toLocaleTimeString();
-    const logMessage = `[${timestamp}] ${message}`;
-    console.log(logMessage, data || '');
-    
-    const debugLogs = document.getElementById('debugLogs');
-    if (debugLogs) {
-        const logEntry = document.createElement('div');
-        logEntry.className = 'debug-log';
-        logEntry.textContent = logMessage + (data ? ' ' + JSON.stringify(data).substring(0, 200) : '');
-        debugLogs.insertBefore(logEntry, debugLogs.firstChild);
-        
-        while (debugLogs.children.length > 20) {
-            debugLogs.removeChild(debugLogs.lastChild);
-        }
-    }
+// Toast function
+function showToast(message, isError = false) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.style.background = isError ? '#ef4444' : '#0b1e33';
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
-function clearDebugLogs() {
-    document.getElementById('debugLogs').innerHTML = '';
-}
+// Navigation
+function openFiles() { location.href = 'files.html'; }
+function openSettings() { location.href = 'settings.html'; }
 
-// Toggle debug panel with F2
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'F2') {
-        e.preventDefault();
-        document.getElementById('debugPanel').classList.toggle('show');
-    }
-});
-
-// iOS Compatibility Test
-function testIOSCompatibility() {
-    debugLog('📱 iOS Device Test:');
-    debugLog('- User Agent:', navigator.userAgent);
-    debugLog('- Platform:', navigator.platform);
-    debugLog('- Vendor:', navigator.vendor);
-    
-    if (window.FileReader) {
-        debugLog('✅ FileReader supported');
-    } else {
-        debugLog('❌ FileReader not supported');
-    }
-    
-    if (window.FormData) {
-        debugLog('✅ FormData supported');
-    } else {
-        debugLog('❌ FormData not supported');
-    }
-    
-    if (window.fetch) {
-        debugLog('✅ Fetch supported');
-    } else {
-        debugLog('❌ Fetch not supported');
-    }
-    
-    showToast('📱 iOS test complete. Check debug panel.');
-}
-
-// Test ImgBB connection
-async function testImgBB() {
-    debugLog('🔍 Testing ImgBB connection...');
-    showToast('🔍 Testing ImgBB...');
-    
-    try {
-        if (!IMGBB_API_KEY) {
-            debugLog('❌ API Key missing');
-            showToast('❌ API Key missing');
-            return;
-        }
-        
-        debugLog('✅ API Key exists', { length: IMGBB_API_KEY.length });
-        showToast('✅ API Key exists');
-        
-    } catch (error) {
-        debugLog('❌ Test error', error.message);
-        showToast('❌ Cannot reach ImgBB');
-    }
-}
-
-// Test direct upload to ImgBB
-async function testDirectUpload() {
-    debugLog('🧪 Testing direct file upload...');
-    showToast('🧪 Testing upload...');
-    
-    // Create a small test image
-    const canvas = document.createElement('canvas');
-    canvas.width = 100;
-    canvas.height = 100;
-    const ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#0a4b7a';
-    ctx.fillRect(0, 0, 100, 100);
-    ctx.fillStyle = 'white';
-    ctx.font = '20px Arial';
-    ctx.fillText('Test', 20, 55);
-    
-    canvas.toBlob(async (blob) => {
-        const testFile = new File([blob], 'test.jpg', { type: 'image/jpeg' });
-        
-        const formData = new FormData();
-        formData.append('key', IMGBB_API_KEY);
-        formData.append('image', testFile);
-        
-        try {
-            const response = await fetch('https://api.imgbb.com/1/upload', {
-                method: 'POST',
-                body: formData
-            });
-            
-            const result = await response.json();
-            
-            if (result.success) {
-                debugLog('✅ Test successful!', {
-                    url: result.data.url,
-                    display_url: result.data.display_url,
-                    delete_url: result.data.delete_url
-                });
-                showToast('✅ ImgBB working!');
-            } else {
-                debugLog('❌ Test failed', result);
-                showToast('❌ Upload test failed');
-            }
-        } catch (error) {
-            debugLog('❌ Test error', error.message);
-            showToast('❌ Cannot reach ImgBB');
-        }
-    }, 'image/jpeg');
-}
-
-// Check last post in Firestore
-async function checkLastPost() {
-    try {
-        const snapshot = await db.collection('posts')
-            .orderBy('timestamp', 'desc')
-            .limit(1)
-            .get();
-        
-        if (!snapshot.empty) {
-            const post = snapshot.docs[0].data();
-            debugLog('📋 Last post in DB:', {
-                id: snapshot.docs[0].id,
-                text: post.text,
-                hasImage: !!post.imageUrl,
-                imageUrl: post.imageUrl ? post.imageUrl.substring(0, 50) + '...' : null,
-                timestamp: post.timestamp
-            });
-            
-            if (post.imageUrl) {
-                showToast('✅ Image URL found');
-            } else {
-                showToast('❌ No image URL in post');
-            }
-        } else {
-            showToast('📭 No posts found');
-        }
-    } catch (error) {
-        debugLog('❌ Error checking post', error.message);
-        showToast('❌ Error checking post');
-    }
-}
-
-// Run test on load
-setTimeout(testImgBB, 2000);
-
-// Load user theme from settings
-function loadUserTheme() {
+// Load user theme from Firestore
+async function loadUserTheme() {
     if (!currentUser) return;
-    db.collection('users').doc(currentUser.uid).get().then((doc) => {
-        if (doc.exists) {
-            const data = doc.data();
+    try {
+        const userDoc = await db.collection('users').doc(currentUser.uid).get();
+        if (userDoc.exists) {
+            const data = userDoc.data();
             if (data.appearance && data.appearance.theme) {
-                if (data.appearance.theme === 'Dark') {
-                    document.body.setAttribute('data-theme', 'dark');
-                } else {
-                    document.body.setAttribute('data-theme', 'light');
-                }
-            }
-            if (data.savedPosts) {
-                savedPosts = new Set(data.savedPosts);
+                const theme = data.appearance.theme;
+                document.body.setAttribute('data-theme', theme.toLowerCase());
+                document.getElementById('body').setAttribute('data-theme', theme.toLowerCase());
             }
         }
-    });
+    } catch (error) {
+        console.error('Error loading theme:', error);
+    }
 }
 
 // Check auth state
-auth.onAuthStateChanged((user) => {
+auth.onAuthStateChanged(async (user) => {
     if (!user) {
         window.location.href = 'login.html';
         return;
     }
     
     currentUser = user;
-    debugLog('✅ User authenticated', user.email);
-    loadUserTheme();
-    loadUserData();
-    loadPosts(true);
+    
+    try {
+        const userDoc = await db.collection('users').doc(user.uid).get();
+        
+        if (!userDoc.exists) {
+            window.location.href = 'login.html';
+            return;
+        }
+        
+        currentUserData = userDoc.data();
+        
+        // Check if verified
+        if (!currentUserData.verified && currentUserData.status !== 'approved') {
+            window.location.href = 'pending.html';
+            return;
+        }
+        
+        // Load user theme
+        await loadUserTheme();
+        
+        // Update avatars
+        updateAvatars();
+        
+        // Load feeds
+        loadFeeds();
+        
+    } catch (error) {
+        console.error('Auth error:', error);
+        showToast('Error loading feeds', true);
+    }
 });
 
-// Load current user data
-function loadUserData() {
-    db.collection('users').doc(currentUser.uid).get().then((doc) => {
-        if (doc.exists) {
-            currentUserData = doc.data();
-            debugLog('✅ User data loaded', currentUserData.name);
-            
-            const avatarEl = document.getElementById('currentUserAvatar');
-            if (currentUserData.photoURL) {
-                avatarEl.innerHTML = `<img src="${currentUserData.photoURL}" alt="Avatar">`;
-            } else {
-                const initials = (currentUserData.name || 'U').charAt(0).toUpperCase();
-                avatarEl.innerHTML = `<span>${initials}</span>`;
-            }
-            
-            const navAvatar = document.getElementById('navAvatar');
-            if (currentUserData.photoURL) {
-                navAvatar.src = currentUserData.photoURL;
-            }
-        }
-    });
+// Update avatars and user info
+function updateAvatars() {
+    const avatarEl = document.getElementById('currentUserAvatar');
+    const navAvatar = document.getElementById('navAvatar');
+    
+    if (currentUserData?.photoURL) {
+        avatarEl.src = currentUserData.photoURL;
+        navAvatar.src = currentUserData.photoURL;
+    } else {
+        const name = currentUserData?.name || 'U';
+        avatarEl.src = `https://ui-avatars.com/api/?name=${name.charAt(0)}&background=0a4b7a&color=fff&size=100`;
+        navAvatar.src = `https://ui-avatars.com/api/?name=${name.charAt(0)}&background=0a4b7a&color=fff&size=50`;
+    }
 }
 
 // Format time
 function formatTime(timestamp) {
     if (!timestamp) return 'just now';
     
-    let date;
     try {
-        date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+        const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+        const now = new Date();
+        const diff = Math.floor((now - date) / 1000);
+        
+        if (diff < 60) return 'just now';
+        if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+        if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+        if (diff < 604800) return Math.floor(diff / 86400) + 'd ago';
+        
+        return date.toLocaleDateString();
     } catch (e) {
-        return 'just now';
+        return 'recently';
     }
-    
-    const now = new Date();
-    const diff = Math.floor((now - date) / 1000);
-    
-    if (diff < 60) return 'just now';
-    if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
-    if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
-    if (diff < 604800) return Math.floor(diff / 86400) + 'd ago';
-    return date.toLocaleDateString();
 }
 
-// Parse hashtags in text
-function parseHashtags(text) {
-    if (!text) return text;
-    return text.replace(/#(\w+)/g, '<span class="hashtag" onclick="searchHashtag(\'$1\')">#$1</span>');
-}
+// Create post
+async function createPost() {
+    const text = document.getElementById('feedInput').value.trim();
+    const file = document.getElementById('feedPhoto').files[0];
 
-// Search by hashtag
-function searchHashtag(tag) {
-    showToast(`🔍 Searching for #${tag}`);
-    filterPosts('hashtag', tag);
-}
+    if (!text && !file) {
+        showToast('Please enter text or select an image');
+        return;
+    }
 
-// Load posts with pagination - WITH duplicate check
-function loadPosts(reset = false) {
-    if (reset) {
-        lastDoc = null;
-        document.getElementById('feedsContainer').innerHTML = '<div class="loadingContainer"><div class="loader"></div></div>';
-    }
-    
-    if (postsUnsubscribe) {
-        postsUnsubscribe();
-    }
-    
-    let query = db.collection('posts').orderBy('timestamp', 'desc').limit(10);
-    
-    if (lastDoc && !reset) {
-        query = query.startAfter(lastDoc);
-    }
-    
-    postsUnsubscribe = query.onSnapshot((snapshot) => {
-        if (reset) {
-            document.getElementById('feedsContainer').innerHTML = '';
-        }
-        
-        if (snapshot.empty && reset) {
-            document.getElementById('feedsContainer').innerHTML = `
-                <div class="emptyState">
-                    <div class="icon">🌊</div>
-                    <h3>No posts yet</h3>
-                    <p>Be the first to share something!</p>
-                    <button class="emptyBtn" onclick="openPostModal()">Create Post</button>
-                </div>
-            `;
-            return;
-        }
-        
-        lastDoc = snapshot.docs[snapshot.docs.length - 1];
-        
-        snapshot.forEach((doc) => {
-            // Skip if post already exists
-            if (document.getElementById(`post-${doc.id}`)) {
+    const postBtn = document.getElementById('postBtn');
+    postBtn.disabled = true;
+    postBtn.textContent = 'Posting...';
+
+    try {
+        let photoURL = '';
+
+        if (file) {
+            if (file.size > 10 * 1024 * 1024) {
+                showToast('Image too large (max 10MB)', true);
+                postBtn.disabled = false;
+                postBtn.textContent = 'Post Update';
                 return;
             }
             
-            const post = doc.data();
-            post.id = doc.id;
+            showToast('Uploading image...');
             
-            if (post.imageUrl) {
-                debugLog('📸 Post has image', { id: doc.id, url: post.imageUrl.substring(0, 50) });
-            }
-            
-            if (currentFilter !== 'all') {
-                if (currentFilter === 'text' && post.imageUrl) return;
-                if (currentFilter === 'photo' && !post.imageUrl) return;
-                if (currentFilter === 'checkin' && !post.location) return;
-            }
-            
-            document.getElementById('feedsContainer').insertAdjacentHTML('beforeend', renderPost(post));
-            
-            loadPostAuthor(doc.id, post.authorId);
-            loadPostLikes(doc.id);
-            loadPostComments(doc.id);
-            loadPostReactions(doc.id);
-        });
-        
-        document.getElementById('loadingMore').style.display = 'none';
-        loadingMore = false;
-    });
-}
+            const formData = new FormData();
+            formData.append('image', file);
 
-// Load more posts on scroll
-window.addEventListener('scroll', () => {
-    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500) {
-        if (!loadingMore && lastDoc) {
-            loadingMore = true;
-            document.getElementById('loadingMore').style.display = 'block';
-            loadPosts();
-        }
-    }
-});
-
-// Filter posts
-function filterPosts(filter, hashtag = null) {
-    document.querySelectorAll('.filterBtn').forEach(btn => btn.classList.remove('active'));
-    event.currentTarget.classList.add('active');
-    
-    currentFilter = filter;
-    loadPosts(true);
-    
-    if (hashtag) {
-        showToast(`🔍 Showing posts with #${hashtag}`);
-    }
-}
-
-// Render post HTML with image error handling - UPDATED imageHtml without cache busting
-function renderPost(post) {
-    const time = post.timestamp ? formatTime(post.timestamp) : 'just now';
-    const isAuthor = currentUser && post.authorId === currentUser.uid;
-    const isSaved = savedPosts.has(post.id);
-    
-    const parsedText = parseHashtags(post.text);
-    
-    const locationHtml = post.location ? `
-        <div class="postLocation">
-            <span>📍</span> ${post.location.name}
-        </div>
-    ` : '';
-    
-    // UPDATED imageHtml without cache busting
-    const imageHtml = post.imageUrl ? `
-        <img src="${post.imageUrl}" 
-             class="feedImage"
-             onclick="viewImage('${post.imageUrl}')"
-             onerror="this.onerror=null;this.src='https://via.placeholder.com/400x300?text=Image+Error';"
-             style="max-width:100%;max-height:300px;object-fit:contain;border-radius:12px;">
-    ` : '';
-    
-    return `
-        <div class="feedCard" id="post-${post.id}">
-            <div class="feedHeader">
-                <div class="feedAvatarWrapper">
-                    <div class="feedAvatar" id="post-avatar-${post.id}">
-                        <span>👤</span>
-                    </div>
-                    <div class="statusDotOutside" id="post-status-${post.id}"></div>
-                </div>
-                <div class="feedAuthorInfo">
-                    <div class="feedAuthor">
-                        <span id="post-author-${post.id}">Loading...</span>
-                        <span class="verifiedBadge" id="post-verified-${post.id}" style="display:none;">Verified</span>
-                    </div>
-                    <div class="feedMeta">
-                        <span class="feedRank" id="post-rank-${post.id}"></span>
-                        <span class="feedTime">
-                            <span>🕒</span>
-                            <span id="post-time-${post.id}">${time}</span>
-                        </span>
-                    </div>
-                </div>
-                <div class="feedMenu">
-                    <button class="feedMenuBtn" onclick="toggleMenu('${post.id}')">⋯</button>
-                    <div class="feedMenuDropdown" id="menu-${post.id}">
-                        ${isAuthor ? `
-                            <div class="dropdownItem edit" onclick="editPost('${post.id}')">✏️ Edit Post</div>
-                            <div class="dropdownItem delete" onclick="deletePost('${post.id}')">🗑️ Delete Post</div>
-                        ` : ''}
-                        <div class="dropdownItem" onclick="sharePost('${post.id}')">📤 Share Post</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="feedContent">
-                <div class="feedText">${parsedText || ''}</div>
-                ${imageHtml}
-                ${locationHtml}
-            </div>
-            
-            <div class="postReactions" id="post-reactions-${post.id}"></div>
-            
-            <div class="feedStats">
-                <div class="likesInfo" onclick="showLikes('${post.id}')">
-                    <div class="likeIcons" id="like-icons-${post.id}">
-                        <span class="likeIconHeart">❤️</span>
-                    </div>
-                    <span class="likesCount" id="likes-count-${post.id}">0</span>
-                </div>
-                <div class="commentsInfo" onclick="showComments('${post.id}')">
-                    <span>💬</span>
-                    <span id="comments-count-${post.id}">0</span>
-                    <strong>Comments</strong>
-                </div>
-            </div>
-            
-            <div class="feedActions">
-                <button class="feedActionBtn" id="like-btn-${post.id}" onclick="toggleLike('${post.id}')">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                    </svg>
-                    <span>Like</span>
-                </button>
-                <button class="feedActionBtn" onclick="toggleComments('${post.id}')">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 15a4 4 0 0 1-4 4H7l-4 4V5a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"></path>
-                    </svg>
-                    <span>Comment</span>
-                </button>
-                <button class="feedActionBtn ${isSaved ? 'saved' : ''}" onclick="savePost('${post.id}')">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
-                    </svg>
-                    <span>Save</span>
-                </button>
-            </div>
-            
-            <div class="commentsSection" id="comments-${post.id}">
-                <div id="comments-list-${post.id}"></div>
-                <div class="addComment">
-                    <input type="text" class="commentInput" id="comment-input-${post.id}" placeholder="Write a comment...">
-                    <button class="commentSendBtn" onclick="addComment('${post.id}')">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="22" y1="2" x2="11" y2="13"></line>
-                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        </div>
-    `;
-}
-
-// Load post author data
-async function loadPostAuthor(postId, authorId) {
-    try {
-        const userDoc = await db.collection('users').doc(authorId).get();
-        if (userDoc.exists) {
-            const user = userDoc.data();
-            
-            document.getElementById(`post-author-${postId}`).textContent = user.name || 'Sailor';
-            
-            const verifiedEl = document.getElementById(`post-verified-${postId}`);
-            if (user.verified) {
-                verifiedEl.style.display = 'inline-flex';
-            }
-            
-            document.getElementById(`post-rank-${postId}`).textContent = user.rank || 'Seafarer';
-            
-            const avatarEl = document.getElementById(`post-avatar-${postId}`);
-            if (user.photoURL) {
-                avatarEl.innerHTML = `<img src="${user.photoURL}" alt="Avatar">`;
-            }
-            
-            const statusDot = document.getElementById(`post-status-${postId}`);
-            if (user.status === 'online' || user.status === 'Online') statusDot.className = 'statusDotOutside statusOnline';
-            else if (user.status === 'atSea' || user.status === 'At Sea') statusDot.className = 'statusDotOutside statusAtSea';
-            else if (user.status === 'inPort' || user.status === 'In Port') statusDot.className = 'statusDotOutside statusInPort';
-            else statusDot.className = 'statusDotOutside statusOffline';
-        }
-    } catch (error) {
-        console.error('Error loading author:', error);
-    }
-}
-
-// Load post likes
-function loadPostLikes(postId) {
-    const postRef = db.collection('posts').doc(postId);
-    
-    postRef.onSnapshot((doc) => {
-        if (!doc.exists) return;
-        
-        const post = doc.data();
-        const likes = post.likes || [];
-        const count = likes.length;
-        
-        document.getElementById(`likes-count-${postId}`).innerHTML = count;
-        
-        const likeBtn = document.getElementById(`like-btn-${postId}`);
-        if (likeBtn && likes.includes(currentUser?.uid)) {
-            likeBtn.classList.add('active');
-        } else if (likeBtn) {
-            likeBtn.classList.remove('active');
-        }
-        
-        const likeIcons = document.getElementById(`like-icons-${postId}`);
-        if (likeIcons && count > 0) {
-            Promise.all(likes.slice(0, 3).map(async (userId) => {
-                const userDoc = await db.collection('users').doc(userId).get();
-                return userDoc.exists ? userDoc.data() : null;
-            })).then((users) => {
-                let iconsHtml = '<span class="likeIconHeart">❤️</span>';
-                users.filter(u => u).forEach((user, index) => {
-                    const initial = (user.name || 'U').charAt(0).toUpperCase();
-                    iconsHtml += `<div class="likeIconCircle" style="background:${user.photoURL ? 'transparent' : 'var(--blue-primary)'}; margin-left:${index === 0 ? '-4px' : '-6px'};">`;
-                    if (user.photoURL) {
-                        iconsHtml += `<img src="${user.photoURL}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
-                    } else {
-                        iconsHtml += initial;
-                    }
-                    iconsHtml += '</div>';
-                });
-                likeIcons.innerHTML = iconsHtml;
+            const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                method: 'POST',
+                body: formData
             });
-        }
-    });
-}
 
-// Load post reactions
-function loadPostReactions(postId) {
-    const postRef = db.collection('posts').doc(postId);
-    
-    postRef.onSnapshot((doc) => {
-        if (!doc.exists) return;
-        
-        const post = doc.data();
-        const reactions = post.reactions || [];
-        
-        if (reactions.length === 0) {
-            document.getElementById(`post-reactions-${postId}`).innerHTML = '';
-            return;
+            const data = await res.json();
+
+            if (data.success) {
+                photoURL = data.data.url;
+            } else {
+                throw new Error('Image upload failed');
+            }
         }
-        
-        const counts = {};
-        reactions.forEach(r => {
-            counts[r.emoji] = (counts[r.emoji] || 0) + 1;
+
+        // Create post
+        await db.collection('feeds').add({
+            uid: currentUser.uid,
+            name: currentUserData?.name || 'Sailor',
+            rank: currentUserData?.rank || 'Seafarer',
+            verified: currentUserData?.verified || false,
+            photoProfile: currentUserData?.photoURL || '',
+            text: text,
+            photo: photoURL,
+            likes: [],
+            reactions: [],
+            comments: 0,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
-        
-        let html = '';
-        for (let [emoji, count] of Object.entries(counts)) {
-            html += `
-                <div class="postReaction" onclick="togglePostReaction('${postId}', '${emoji}')">
-                    <span>${emoji}</span>
-                    ${count > 1 ? `<span class="count">${count}</span>` : ''}
-                </div>
-            `;
-        }
-        
-        document.getElementById(`post-reactions-${postId}`).innerHTML = html;
-    });
-}
 
-// Toggle post reaction
-async function togglePostReaction(postId, emoji) {
-    if (!currentUser) return;
-    
-    const postRef = db.collection('posts').doc(postId);
-    const post = await postRef.get();
-    
-    if (!post.exists) return;
-    
-    const reactions = post.data().reactions || [];
-    const existing = reactions.findIndex(r => r.userId === currentUser.uid && r.emoji === emoji);
-    
-    if (existing >= 0) {
-        reactions.splice(existing, 1);
-    } else {
-        reactions.push({ userId: currentUser.uid, emoji, timestamp: Date.now() });
+        // Clear form
+        document.getElementById('feedInput').value = '';
+        document.getElementById('feedPhoto').value = '';
+        
+        showToast('Post created!');
+
+    } catch (error) {
+        console.error('Error creating post:', error);
+        showToast('Failed to create post', true);
+    } finally {
+        postBtn.disabled = false;
+        postBtn.textContent = 'Post Update';
     }
-    
-    await postRef.update({ reactions });
 }
 
-// Load comments for a post
-function loadPostComments(postId) {
-    db.collection('posts').doc(postId).collection('comments')
-        .orderBy('timestamp', 'asc')
-        .onSnapshot((snapshot) => {
-            const commentsList = document.getElementById(`comments-list-${postId}`);
-            if (!commentsList) return;
-            
-            let html = '';
-            snapshot.forEach((doc) => {
-                const comment = doc.data();
-                const time = comment.timestamp ? formatTime(comment.timestamp) : 'just now';
-                const isAuthor = currentUser && comment.authorId === currentUser.uid;
-                
-                html += `
-                    <div class="commentItem">
-                        <div class="commentAvatar">
-                            ${comment.authorPhoto ? `<img src="${comment.authorPhoto}">` : '👤'}
-                        </div>
-                        <div class="commentContent">
-                            <div class="commentHeader">
-                                <span class="commentAuthor">
-                                    ${comment.authorName || 'User'}
-                                    ${comment.authorVerified ? '<span class="verifiedBadge">✓</span>' : ''}
-                                </span>
-                                <span class="commentTime">${time}</span>
-                            </div>
-                            <div class="commentText">${comment.text}</div>
-                            ${comment.seen ? '<div class="commentSeen">✓ Seen</div>' : ''}
-                        </div>
-                        ${isAuthor ? `
-                            <span class="commentDelete" onclick="deleteComment('${postId}', '${doc.id}')">🗑️</span>
-                        ` : ''}
+// Load feeds
+function loadFeeds() {
+    if (unsubscribeFeeds) {
+        unsubscribeFeeds();
+    }
+
+    const feedsList = document.getElementById('feedsList');
+    
+    unsubscribeFeeds = db.collection('feeds')
+        .orderBy('createdAt', 'desc')
+        .onSnapshot(async (snapshot) => {
+            if (snapshot.empty) {
+                feedsList.innerHTML = `
+                    <div class="emptyState">
+                        <div class="emoji">🌊</div>
+                        <h3>No posts yet</h3>
+                        <p>Be the first to share something with the crew!</p>
+                        <button class="emptyStateBtn" onclick="document.getElementById('feedInput').focus()">Create Post</button>
                     </div>
                 `;
-            });
-            
-            commentsList.innerHTML = html || '<p style="text-align:center; padding:10px; color:var(--text-secondary);">No comments yet</p>';
-            
-            document.getElementById(`comments-count-${postId}`).textContent = snapshot.size;
-            db.collection('posts').doc(postId).update({ commentCount: snapshot.size }).catch(() => {});
-        });
-}
+                return;
+            }
 
-// Show likes modal
-async function showLikes(postId) {
-    currentPostId = postId;
-    
-    const postDoc = await db.collection('posts').doc(postId).get();
-    if (!postDoc.exists) return;
-    
-    const likes = postDoc.data().likes || [];
-    
-    if (likes.length === 0) {
-        showToast('No likes yet');
-        return;
-    }
-    
-    let html = '';
-    for (const userId of likes) {
-        const userDoc = await db.collection('users').doc(userId).get();
-        if (userDoc.exists) {
-            const user = userDoc.data();
-            const statusClass = user.status === 'online' ? 'statusOnline' : 
-                               user.status === 'atSea' ? 'statusAtSea' : 
-                               user.status === 'inPort' ? 'statusInPort' : 'statusOffline';
+            let html = '';
             
-            html += `
-                <div class="modalUserItem">
-                    <div class="modalUserAvatar">
-                        ${user.photoURL ? `<img src="${user.photoURL}">` : (user.name ? user.name.charAt(0).toUpperCase() : '👤')}
-                        <div class="modalUserStatus ${statusClass}"></div>
+            // Get all user data for status dots
+            const usersSnapshot = await db.collection('users').get();
+            const userStatusMap = {};
+            usersSnapshot.forEach(doc => {
+                userStatusMap[doc.id] = doc.data().status || 'offline';
+            });
+
+            for (const doc of snapshot.docs) {
+                const post = doc.data();
+                const postId = doc.id;
+                const time = formatTime(post.createdAt);
+                
+                // Check if user liked this post
+                const isLiked = post.likes?.includes(currentUser.uid) || false;
+                
+                // Get user status for status dot
+                const userStatus = userStatusMap[post.uid] || 'offline';
+                let statusClass = 'statusOffline';
+                if (userStatus === 'online') statusClass = 'statusOnline';
+                else if (userStatus === 'atSea') statusClass = 'statusAtSea';
+                else if (userStatus === 'inPort') statusClass = 'statusInPort';
+                
+                // Get reactions
+                const reactions = post.reactions || [];
+                const reactionCounts = {};
+                reactions.forEach(r => {
+                    reactionCounts[r.emoji] = (reactionCounts[r.emoji] || 0) + 1;
+                });
+
+                html += `
+                    <div class="feedCard" id="post-${postId}">
+                        <div class="feedHeader">
+                            <div class="avatarContainer">
+                                <div class="feedAvatar">
+                                    <img src="${post.photoProfile || `https://ui-avatars.com/api/?name=${(post.name || 'U').charAt(0)}&background=0a4b7a&color=fff&size=100`}">
+                                </div>
+                                <div class="statusDot ${statusClass}"></div>
+                            </div>
+                            <div class="feedAuthorInfo">
+                                <div class="feedAuthor">
+                                    ${post.name || 'User'}
+                                    <span class="authorBadge">${post.rank || 'Crew'}</span>
+                                    ${post.verified ? '<span class="verifiedBadge">Verified Seafarer</span>' : ''}
+                                </div>
+                                <div class="feedMeta">
+                                    <span class="feedTime">${time}</span>
+                                </div>
+                            </div>
+                            ${post.uid === currentUser.uid ? `
+                                <div class="feedMenu">
+                                    <button class="feedMenuBtn" onclick="toggleMenu('${postId}')">⋯</button>
+                                    <div class="feedMenuDropdown" id="menu-${postId}">
+                                        <div class="dropdownItem delete" onclick="showDeleteModal('${postId}')">
+                                            <span>🗑️</span>
+                                            Delete Post
+                                        </div>
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+
+                        <div class="feedContent">
+                            ${post.text ? `<div class="feedText">${post.text}</div>` : ''}
+                            ${post.photo ? `<img src="${post.photo}" class="feedImage" onclick="window.open('${post.photo}', '_blank')">` : ''}
+                        </div>
+
+                        <!-- Reactions Row -->
+                        <div class="reactionsRow" id="reactions-${postId}">
+                            ${Object.entries(reactionCounts).map(([emoji, count]) => `
+                                <div class="reaction ${reactions.some(r => r.userId === currentUser.uid && r.emoji === emoji) ? 'active' : ''}" 
+                                     onclick="toggleReaction('${postId}', '${emoji}')">
+                                    <span>${emoji}</span>
+                                    ${count > 1 ? `<span class="count">${count}</span>` : ''}
+                                </div>
+                            `).join('')}
+                            <div class="reaction" onclick="openReactionModal('${postId}')">
+                                <span>➕</span>
+                            </div>
+                        </div>
+
+                        <div class="feedStats">
+                            <div class="likesInfo" onclick="showLikes('${postId}')">
+                                <span class="likeIcon">❤️</span>
+                                <span class="likesCount">${post.likes?.length || 0} likes</span>
+                            </div>
+                            <div class="commentsInfo" onclick="toggleComments('${postId}')">
+                                <span>💬</span>
+                                <span class="commentsCount" id="comments-count-${postId}">${post.comments || 0} comments</span>
+                            </div>
+                        </div>
+
+                        <div class="feedActions">
+                            <button class="feedActionBtn ${isLiked ? 'active' : ''}" onclick="toggleLike('${postId}')">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                                </svg>
+                                Like
+                            </button>
+                            <button class="feedActionBtn" onclick="toggleComments('${postId}')">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M21 15a4 4 0 0 1-4 4H7l-4 4V5a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/>
+                                </svg>
+                                Comment
+                            </button>
+                        </div>
+
+                        <!-- Comments Section -->
+                        <div class="commentsSection" id="comments-${postId}">
+                            <div id="comments-list-${postId}"></div>
+                            <div class="commentInputArea">
+                                <input type="text" class="commentInput" id="comment-${postId}" placeholder="Write a comment...">
+                                <button class="commentSend" onclick="addComment('${postId}')">➤</button>
+                            </div>
+                        </div>
                     </div>
-                    <div class="modalUserInfo">
-                        <div class="modalUserName">${user.name || 'User'}</div>
-                        <div class="modalUserRank">${user.rank || 'Seafarer'}</div>
-                    </div>
+                `;
+
+                // Load comments for this post
+                loadComments(postId);
+            }
+
+            feedsList.innerHTML = html;
+        }, (error) => {
+            console.error('Error loading feeds:', error);
+            feedsList.innerHTML = `
+                <div class="emptyState" style="color: #ef4444;">
+                    <div class="emoji">❌</div>
+                    <h3>Error loading feeds</h3>
+                    <p>${error.message}</p>
+                    <button class="emptyStateBtn" onclick="location.reload()">Retry</button>
                 </div>
             `;
-        }
-    }
-    
-    document.getElementById('likesList').innerHTML = html;
-    document.getElementById('likesModal').classList.add('active');
-}
-
-// Show comments modal
-async function showComments(postId) {
-    currentPostId = postId;
-    
-    const commentsSnap = await db.collection('posts').doc(postId).collection('comments')
-        .orderBy('timestamp', 'desc')
-        .get();
-    
-    if (commentsSnap.empty) {
-        showToast('No comments yet');
-        return;
-    }
-    
-    let html = '';
-    commentsSnap.forEach((doc) => {
-        const comment = doc.data();
-        const time = comment.timestamp ? formatTime(comment.timestamp) : 'just now';
-        
-        html += `
-            <div class="modalUserItem">
-                <div class="modalUserAvatar">
-                    ${comment.authorPhoto ? `<img src="${comment.authorPhoto}">` : '👤'}
-                </div>
-                <div class="modalUserInfo">
-                    <div class="modalUserName">${comment.authorName || 'User'}</div>
-                    <div style="font-size:13px; color:var(--text-primary); margin:4px 0;">${comment.text}</div>
-                    <div style="font-size:10px; color:var(--text-secondary);">${time}</div>
-                </div>
-            </div>
-        `;
-    });
-    
-    document.getElementById('commentsList').innerHTML = html;
-    document.getElementById('commentsModal').classList.add('active');
+        });
 }
 
 // Toggle like
 async function toggleLike(postId) {
     if (!currentUser) return;
-    
-    const postRef = db.collection('posts').doc(postId);
-    
-    try {
-        await db.runTransaction(async (transaction) => {
-            const postDoc = await transaction.get(postRef);
-            if (!postDoc.exists) return;
-            
-            const post = postDoc.data();
-            const likes = post.likes || [];
-            
-            if (likes.includes(currentUser.uid)) {
-                transaction.update(postRef, {
-                    likes: firebase.firestore.FieldValue.arrayRemove(currentUser.uid)
-                });
-            } else {
-                transaction.update(postRef, {
-                    likes: firebase.firestore.FieldValue.arrayUnion(currentUser.uid)
-                });
-            }
-        });
-        
-    } catch (error) {
-        console.error('Error toggling like:', error);
-        showToast('❌ Failed to like post');
-    }
-}
 
-// Save post
-async function savePost(postId) {
-    if (!currentUser) return;
-    
-    const userRef = db.collection('users').doc(currentUser.uid);
-    const userDoc = await userRef.get();
-    
-    if (userDoc.exists) {
-        const saved = userDoc.data().savedPosts || [];
+    const postRef = db.collection('feeds').doc(postId);
+    const post = await postRef.get();
+
+    if (post.exists) {
+        const likes = post.data().likes || [];
         
-        if (saved.includes(postId)) {
-            await userRef.update({
-                savedPosts: firebase.firestore.FieldValue.arrayRemove(postId)
+        if (likes.includes(currentUser.uid)) {
+            await postRef.update({
+                likes: firebase.firestore.FieldValue.arrayRemove(currentUser.uid)
             });
-            savedPosts.delete(postId);
-            showToast('📌 Post removed from saved');
         } else {
-            await userRef.update({
-                savedPosts: firebase.firestore.FieldValue.arrayUnion(postId)
+            await postRef.update({
+                likes: firebase.firestore.FieldValue.arrayUnion(currentUser.uid)
             });
-            savedPosts.add(postId);
-            showToast('📌 Post saved');
-        }
-        
-        const saveBtn = document.querySelector(`#post-${postId} .feedActionBtn:last-child`);
-        if (saveBtn) {
-            saveBtn.classList.toggle('saved');
         }
     }
 }
 
-// Share post
-function sharePost(postId) {
-    if (navigator.share) {
-        navigator.share({
-            title: 'Sea Connect Post',
-            text: 'Check out this post on Sea Connect!',
-            url: window.location.href + '?post=' + postId
-        }).catch(() => {
-            copyPostLink(postId);
-        });
-    } else {
-        copyPostLink(postId);
-    }
+// Reaction functions
+let selectedPostForReaction = null;
+
+function openReactionModal(postId) {
+    selectedPostForReaction = postId;
+    document.getElementById('reactionModal').classList.add('active');
 }
 
-function copyPostLink(postId) {
-    const dummy = document.createElement('textarea');
-    dummy.value = window.location.href + '?post=' + postId;
-    document.body.appendChild(dummy);
-    dummy.select();
-    document.execCommand('copy');
-    document.body.removeChild(dummy);
-    showToast('🔗 Post link copied!');
+function closeReactionModal() {
+    document.getElementById('reactionModal').classList.remove('active');
+    selectedPostForReaction = null;
 }
 
-// Toggle comments section
-function toggleComments(postId) {
-    const commentsSection = document.getElementById(`comments-${postId}`);
-    commentsSection.classList.toggle('show');
+async function addReaction(emoji) {
+    if (!selectedPostForReaction) return;
+    await toggleReaction(selectedPostForReaction, emoji);
+    closeReactionModal();
 }
 
-// Add comment
-async function addComment(postId) {
+async function toggleReaction(postId, emoji) {
     if (!currentUser) return;
-    
-    const input = document.getElementById(`comment-input-${postId}`);
-    const text = input.value.trim();
-    
-    if (!text) return;
-    
-    try {
-        await db.collection('posts').doc(postId).collection('comments').add({
-            text: text,
-            authorId: currentUser.uid,
-            authorName: currentUserData?.name || currentUser.email?.split('@')[0] || 'User',
-            authorPhoto: currentUserData?.photoURL || null,
-            authorVerified: currentUserData?.verified || false,
-            seen: false,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        
-        input.value = '';
-        showToast('✅ Comment added');
-        
-    } catch (error) {
-        console.error('Error adding comment:', error);
-        showToast('❌ Failed to add comment');
-    }
-}
 
-// Delete comment
-async function deleteComment(postId, commentId) {
-    if (!confirm('Delete this comment?')) return;
-    
-    try {
-        await db.collection('posts').doc(postId).collection('comments').doc(commentId).delete();
-        showToast('✅ Comment deleted');
-    } catch (error) {
-        console.error('Error deleting comment:', error);
-        showToast('❌ Failed to delete comment');
+    const postRef = db.collection('feeds').doc(postId);
+    const post = await postRef.get();
+
+    if (!post.exists) return;
+
+    const reactions = post.data().reactions || [];
+    const existingIndex = reactions.findIndex(r => r.userId === currentUser.uid && r.emoji === emoji);
+
+    if (existingIndex >= 0) {
+        reactions.splice(existingIndex, 1);
+    } else {
+        reactions.push({
+            userId: currentUser.uid,
+            emoji: emoji,
+            timestamp: Date.now()
+        });
     }
+
+    await postRef.update({ reactions });
 }
 
 // Delete post
-async function deletePost(postId) {
-    if (!confirm('Delete this post?')) return;
+let postToDelete = null;
+
+function showDeleteModal(postId) {
+    postToDelete = postId;
+    document.getElementById('deleteModal').classList.add('active');
+}
+
+function closeDeleteModal() {
+    document.getElementById('deleteModal').classList.remove('active');
+    postToDelete = null;
+}
+
+// Set up delete confirmation
+document.getElementById('confirmDeleteBtn').onclick = async () => {
+    if (!postToDelete) return;
     
     try {
-        await db.collection('posts').doc(postId).delete();
-        showToast('✅ Post deleted');
+        await db.collection('feeds').doc(postToDelete).delete();
+        showToast('Post deleted');
     } catch (error) {
         console.error('Error deleting post:', error);
-        showToast('❌ Failed to delete post');
-    }
-}
-
-// Edit post
-async function editPost(postId) {
-    const postRef = db.collection('posts').doc(postId);
-    const post = await postRef.get();
-    
-    if (!post.exists) return;
-    
-    const data = post.data();
-    editingPostId = postId;
-    
-    document.getElementById('postText').value = data.text || '';
-    document.getElementById('postActionBtn').textContent = 'Update';
-    document.getElementById('postActionBtn').onclick = () => updatePost(postId);
-    
-    openPostModal();
-}
-
-// Update post
-async function updatePost(postId) {
-    const text = document.getElementById('postText').value.trim();
-    
-    if (!text) {
-        showToast('❌ Please enter text');
-        return;
+        showToast('Failed to delete post', true);
     }
     
-    try {
-        await db.collection('posts').doc(postId).update({
-            text: text
-        });
-        
-        showToast('✅ Post updated');
-        closePostModal();
-        editingPostId = null;
-        document.getElementById('postActionBtn').textContent = 'Post';
-        document.getElementById('postActionBtn').onclick = createPost;
-        
-    } catch (error) {
-        console.error('Error updating post:', error);
-        showToast('❌ Failed to update post');
-    }
-}
+    closeDeleteModal();
+};
 
 // Toggle menu
 function toggleMenu(postId) {
     const menu = document.getElementById(`menu-${postId}`);
     menu.classList.toggle('show');
-    
-    document.querySelectorAll('.feedMenuDropdown').forEach(m => {
-        if (m.id !== `menu-${postId}`) m.classList.remove('show');
-    });
 }
 
 // Close menus when clicking outside
@@ -2625,213 +1632,187 @@ document.addEventListener('click', (e) => {
     }
 });
 
-// Post modal functions
-function openPostModal(type = 'text') {
-    document.getElementById('postModal').classList.add('active');
+// Toggle comments
+function toggleComments(postId) {
+    const commentsSection = document.getElementById(`comments-${postId}`);
+    commentsSection.classList.toggle('show');
 }
 
-function closePostModal() {
-    document.getElementById('postModal').classList.remove('active');
-    document.getElementById('postText').value = '';
-    document.getElementById('imagePreview').style.display = 'none';
-    document.getElementById('postImagePreviewBar').classList.remove('active');
-    selectedPostImageFile = null;
-    editingPostId = null;
-    document.getElementById('postActionBtn').textContent = 'Post';
-    document.getElementById('postActionBtn').onclick = createPost;
-}
-
-// Handle image selection from gallery
-document.getElementById('postImage').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    
-    debugLog('📷 Image selected from gallery', { name: file.name, size: file.size, type: file.type });
-    
-    if (file.size > 10 * 1024 * 1024) {
-        showToast('❌ Image too large (max 10MB)');
-        debugLog('❌ Image too large', file.size);
-        this.value = '';
-        return;
-    }
-    
-    if (!file.type.startsWith('image/')) {
-        showToast('❌ Please select an image file');
-        debugLog('❌ Not an image', file.type);
-        this.value = '';
-        return;
-    }
-    
-    selectedPostImageFile = file;
-    
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        debugLog('✅ Image preview loaded');
-        document.getElementById('postPreviewImage').src = e.target.result;
-        document.getElementById('postPreviewFilename').textContent = file.name.length > 30 ? file.name.substring(0, 27) + '...' : file.name;
-        document.getElementById('postImagePreviewBar').classList.add('active');
-        
-        const modalPreview = document.getElementById('imagePreview');
-        modalPreview.querySelector('img').src = e.target.result;
-        modalPreview.style.display = 'block';
-    };
-    
-    reader.onerror = (error) => {
-        debugLog('❌ FileReader error', error);
-        showToast('❌ Error reading file');
-        selectedPostImageFile = null;
-        this.value = '';
-    };
-    
-    reader.readAsDataURL(file);
-});
-
-function removePostImage() {
-    selectedPostImageFile = null;
-    document.getElementById('postImagePreviewBar').classList.remove('active');
-    document.getElementById('imagePreview').style.display = 'none';
-    document.getElementById('postImage').value = '';
-    debugLog('🗑️ Image removed');
-}
-
-// SIMPLIFIED CREATE POST FUNCTION - WITH display_url fallback
-async function createPost() {
-    const text = document.getElementById("postText").value.trim();
-
-    if (!text && !selectedPostImageFile) {
-        showToast("❌ Please enter text or select an image");
+// Add comment
+async function addComment(postId) {
+    if (!currentUser) {
+        showToast('Please log in', true);
         return;
     }
 
-    closePostModal();
-    showToast("⏳ Posting...");
+    const input = document.getElementById(`comment-${postId}`);
+    if (!input) {
+        console.error('Comment input not found');
+        return;
+    }
+
+    const text = input.value.trim();
+    if (!text) {
+        showToast('Please enter a comment');
+        return;
+    }
+
+    // Find the send button
+    const sendBtn = document.querySelector(`#comments-${postId} .commentSend`);
+    if (sendBtn) sendBtn.disabled = true;
 
     try {
-        let imageUrl = null;
-
-        /* IMAGE UPLOAD */
-        if (selectedPostImageFile) {
-            debugLog("📤 Uploading image...");
-
-            const formData = new FormData();
-            formData.append("key", IMGBB_API_KEY);
-            formData.append("image", selectedPostImageFile);
-
-            const response = await fetch("https://api.imgbb.com/1/upload", {
-                method: "POST",
-                body: formData
-            });
-
-            const result = await response.json();
-            debugLog("ImgBB response", result);
-
-            if (result.success) {
-                // Use display_url with fallback to url
-                imageUrl = result.data.display_url || result.data.url;
-                debugLog("✅ Image uploaded", imageUrl);
-            } else {
-                throw new Error("Image upload failed");
-            }
-        }
-
-        /* CREATE POST DATA */
-        const postData = {
+        // Add comment to Firestore
+        await db.collection('comments').add({
+            feedId: postId,
+            uid: currentUser.uid,
+            name: currentUserData?.name || 'User',
+            photoProfile: currentUserData?.photoURL || '',
             text: text,
-            authorId: currentUser.uid,
-            likes: [],
-            reactions: [],
-            commentCount: 0,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-            createdAt: new Date().toISOString()
-        };
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
 
-        if (imageUrl) {
-            postData.imageUrl = imageUrl;
-        }
+        // Increment comment count on post
+        await db.collection('feeds').doc(postId).update({
+            comments: firebase.firestore.FieldValue.increment(1)
+        });
 
-        /* LOCATION */
-        if (currentUserData?.currentPort) {
-            postData.location = {
-                name: currentUserData.currentPort,
-                timestamp: new Date().toISOString()
-            };
-        }
-
-        /* SAVE POST */
-        const docRef = await db.collection("posts").add(postData);
-
-        debugLog("Post created", docRef.id);
-
-        showToast("✅ Post created!");
-
-        removePostImage();
-        document.getElementById("postText").value = "";
-
-        setTimeout(() => loadPosts(true), 500);
+        // Clear input
+        input.value = '';
+        showToast('Comment added');
 
     } catch (error) {
-        debugLog("❌ Post error", error.message);
-        showToast("❌ Failed: " + error.message);
+        console.error('Error adding comment:', error);
+        showToast('Failed to add comment: ' + error.message, true);
+    } finally {
+        if (sendBtn) sendBtn.disabled = false;
     }
 }
 
-// Close modals
-function closeLikesModal() {
-    document.getElementById('likesModal').classList.remove('active');
+// Load comments
+function loadComments(postId) {
+    db.collection('comments')
+        .where('feedId', '==', postId)
+        .orderBy('createdAt', 'asc')
+        .onSnapshot((snapshot) => {
+            const commentsDiv = document.getElementById(`comments-list-${postId}`);
+            if (!commentsDiv) return;
+
+            if (snapshot.empty) {
+                commentsDiv.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-secondary);">No comments yet</div>';
+                return;
+            }
+
+            let html = '';
+            snapshot.forEach((doc) => {
+                const comment = doc.data();
+                const isAuthor = comment.uid === currentUser?.uid;
+                const time = formatTime(comment.createdAt);
+                const avatar = comment.photoProfile || `https://ui-avatars.com/api/?name=${(comment.name || 'U').charAt(0)}&background=0a4b7a&color=fff&size=50`;
+
+                html += `
+                    <div class="comment">
+                        <img src="${avatar}" class="commentAvatar">
+                        <div class="commentContent">
+                            <div class="commentHeader">
+                                <span class="commentAuthor">${comment.name || 'User'}</span>
+                                <span class="commentTime">${time}</span>
+                            </div>
+                            <div class="commentText">${comment.text}</div>
+                        </div>
+                        ${isAuthor ? `
+                            <div class="commentDelete" onclick="deleteComment('${doc.id}', '${postId}')">🗑️</div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+
+            commentsDiv.innerHTML = html;
+            
+            // Update comment count
+            const countEl = document.getElementById(`comments-count-${postId}`);
+            if (countEl) {
+                countEl.textContent = `${snapshot.size} comments`;
+            }
+        }, (error) => {
+            console.error('Error loading comments:', error);
+        });
 }
 
-function closeCommentsModal() {
-    document.getElementById('commentsModal').classList.remove('active');
+// Delete comment
+async function deleteComment(commentId, postId) {
+    if (!confirm('Delete this comment?')) return;
+    
+    try {
+        await db.collection('comments').doc(commentId).delete();
+        
+        // Decrement comment count
+        await db.collection('feeds').doc(postId).update({
+            comments: firebase.firestore.FieldValue.increment(-1)
+        });
+        
+        showToast('Comment deleted');
+    } catch (error) {
+        console.error('Error deleting comment:', error);
+        showToast('Failed to delete comment', true);
+    }
 }
 
-// Image view
-function viewImage(url) {
-    document.getElementById('viewImage').src = url;
-    document.getElementById('imageViewModal').classList.add('active');
+// Show likes
+async function showLikes(postId) {
+    const post = await db.collection('feeds').doc(postId).get();
+    const likes = post.data()?.likes || [];
+    
+    if (likes.length === 0) {
+        showToast('No likes yet');
+        return;
+    }
+    
+    if (likes.length === 1) {
+        showToast('❤️ 1 like');
+    } else {
+        showToast(`❤️ ${likes.length} likes`);
+    }
 }
 
-function closeImageView() {
-    document.getElementById('imageViewModal').classList.remove('active');
-}
-
-// Toast
-function showToast(message) {
-    const toast = document.getElementById('toast');
-    toast.innerText = message;
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 3000);
-}
-
-// Navigation
-function openFiles() { location.href = 'files.html'; }
-function openSettings() { location.href = 'settings.html'; }
-
-/* HIDE HEADER + NAV ON SCROLL */
+// ============================================
+// SCROLL HANDLER - FIXED FOR NAV HIDING (USING TRANSFORM)
+// ============================================
 let lastScroll = 0;
 const header = document.querySelector(".appHeader");
 const nav = document.querySelector(".bottomnav");
+let ticking = false;
 
 window.addEventListener("scroll", function() {
-    const currentScroll = window.pageYOffset;
-    
-    if (currentScroll < 50) {
-        header.style.transform = "translateY(0)";
-        nav.style.transform = "translateY(0)";
-        return;
+    if (!ticking) {
+        window.requestAnimationFrame(function() {
+            const currentScroll = window.pageYOffset;
+            
+            // Always show at the top
+            if (currentScroll < 50) {
+                header.style.transform = "translateY(0)";
+                nav.style.transform = "translateY(0)";
+            } 
+            // Scrolling down - hide (only if scrolled past 100px)
+            else if (currentScroll > lastScroll && currentScroll > 100) {
+                header.style.transform = "translateY(-100%)";
+                nav.style.transform = "translateY(120%)";
+            } 
+            // Scrolling up - show
+            else if (currentScroll < lastScroll) {
+                header.style.transform = "translateY(0)";
+                nav.style.transform = "translateY(0)";
+            }
+            
+            lastScroll = currentScroll;
+            ticking = false;
+        });
+        
+        ticking = true;
     }
-    
-    if (currentScroll > lastScroll) {
-        header.style.transform = "translateY(-100%)";
-        nav.style.transform = "translateY(120%)";
-    } else {
-        header.style.transform = "translateY(0)";
-        nav.style.transform = "translateY(0)";
-    }
-    
-    lastScroll = currentScroll;
 });
 
-/* PULL TO REFRESH */
+// Pull to refresh
 let startY = 0;
 let pulling = false;
 const loader = document.getElementById("pullLoader");
@@ -2856,20 +1837,12 @@ window.addEventListener("touchend", () => {
     const top = parseInt(loader.style.top);
     if (top > 10) {
         loader.style.top = "10px";
-        setTimeout(() => { location.reload(); }, 400);
+        setTimeout(() => location.reload(), 400);
     } else {
         loader.style.top = "-60px";
     }
     pulling = false;
 });
-
-// Clean up
-window.addEventListener('beforeunload', () => {
-    if (postsUnsubscribe) postsUnsubscribe();
-});
-
-// Set active nav
-document.getElementById('navFeeds').classList.add('active');
 </script>
 
 </body>

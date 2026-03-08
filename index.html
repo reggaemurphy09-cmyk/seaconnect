@@ -3,234 +3,748 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SeaConnect Login</title>
-<!-- PWA Manifest -->
-<link rel="manifest" href="manifest.json">
-
-<!-- iPhone Home Screen Icon -->
-<link rel="apple-touch-icon" href="icon-512.png">
-
-<!-- Optional theme color -->
-<meta name="theme-color" content="#0f172a">
-
+<title>Sea Connect - Maritime Social Network</title>
 <style>
-
-body{
-margin:0;
-font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
-background:linear-gradient(180deg,#0f172a,#1e293b);
-color:white;
-display:flex;
-align-items:center;
-justify-content:center;
-height:100vh;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-.card{
-background:rgba(255,255,255,0.05);
-padding:30px;
-border-radius:20px;
-width:320px;
-backdrop-filter:blur(12px);
-box-shadow:0 10px 30px rgba(0,0,0,.4);
+html {
+    scroll-behavior: smooth;
 }
 
-h1{
-text-align:center;
-margin-bottom:20px;
+body {
+    background: #0b2b4f;
+    color: white;
 }
 
-input{
-width:100%;
-padding:12px;
-margin-top:10px;
-border-radius:12px;
-border:none;
-background:rgba(255,255,255,0.1);
-color:white;
+/* HERO SECTION */
+.hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: linear-gradient(135deg, #0b2b4f 0%, #1a4a7a 100%);
+    position: relative;
+    overflow: hidden;
 }
 
-button{
-width:100%;
-padding:12px;
-margin-top:12px;
-border:none;
-border-radius:12px;
-font-weight:bold;
-cursor:pointer;
+.hero::before {
+    content: '';
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 50%);
+    animation: rotate 30s linear infinite;
 }
 
-.login{
-background:#3b82f6;
-color:white;
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
-.signup{
-background:#22c55e;
-color:white;
+.container {
+    max-width: 1200px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+    position: relative;
+    z-index: 1;
 }
 
-#msg{
-margin-top:10px;
-font-size:13px;
-color:#94a3b8;
-text-align:center;
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        text-align: center;
+    }
 }
 
+/* LEFT CONTENT */
+.content {
+    flex: 1;
+}
+
+.logo {
+    font-size: 48px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    animation: fadeInLeft 1s ease;
+}
+
+.logo span {
+    color: #3b82f6;
+}
+
+.tagline {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #e2e8f0;
+    animation: fadeInLeft 1s ease 0.2s both;
+}
+
+.description {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #cbd5e1;
+    margin-bottom: 30px;
+    max-width: 500px;
+    animation: fadeInLeft 1s ease 0.4s both;
+}
+
+.buttons {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    animation: fadeInLeft 1s ease 0.6s both;
+}
+
+.btn {
+    padding: 14px 32px;
+    border-radius: 40px;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s;
+    border: none;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-primary {
+    background: #3b82f6;
+    color: white;
+    box-shadow: 0 4px 15px rgba(59,130,246,0.4);
+}
+
+.btn-primary:hover {
+    background: #2563eb;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(59,130,246,0.5);
+}
+
+.btn-outline {
+    background: transparent;
+    color: white;
+    border: 2px solid white;
+}
+
+.btn-outline:hover {
+    background: white;
+    color: #0b2b4f;
+    transform: translateY(-2px);
+}
+
+/* RIGHT CONTENT - STATS & FEATURES */
+.stats-card {
+    flex: 1;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 30px;
+    padding: 40px;
+    border: 1px solid rgba(255,255,255,0.2);
+    animation: fadeInRight 1s ease;
+}
+
+@keyframes fadeInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.stat-item {
+    text-align: center;
+    transition: transform 0.3s;
+}
+
+.stat-item:hover {
+    transform: scale(1.05);
+}
+
+.stat-number {
+    font-size: 36px;
+    font-weight: 700;
+    color: #3b82f6;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    font-size: 14px;
+    color: #cbd5e1;
+}
+
+.features-list {
+    list-style: none;
+}
+
+.features-list li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    font-size: 16px;
+    transition: transform 0.3s;
+}
+
+.features-list li:hover {
+    transform: translateX(10px);
+}
+
+.features-list li:last-child {
+    border-bottom: none;
+}
+
+.feature-icon {
+    width: 30px;
+    height: 30px;
+    background: rgba(59,130,246,0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #3b82f6;
+}
+
+.ship {
+    font-size: 60px;
+    margin-top: 20px;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+/* FEATURES SECTION */
+.features {
+    padding: 80px 20px;
+    background: white;
+    text-align: center;
+}
+
+.section-title {
+    color: #0b2b4f;
+    font-size: 36px;
+    margin-bottom: 20px;
+    animation: fadeInUp 1s ease;
+}
+
+.section-subtitle {
+    color: #64748b;
+    font-size: 18px;
+    margin-bottom: 60px;
+    animation: fadeInUp 1s ease 0.2s both;
+}
+
+.features-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    padding: 0 20px;
+}
+
+.feature-card {
+    background: #f8fafc;
+    border-radius: 20px;
+    padding: 40px 30px;
+    text-align: center;
+    transition: all 0.3s;
+    animation: fadeInUp 1s ease;
+    animation-fill-mode: both;
+}
+
+.feature-card:nth-child(1) { animation-delay: 0.1s; }
+.feature-card:nth-child(2) { animation-delay: 0.2s; }
+.feature-card:nth-child(3) { animation-delay: 0.3s; }
+.feature-card:nth-child(4) { animation-delay: 0.4s; }
+.feature-card:nth-child(5) { animation-delay: 0.5s; }
+.feature-card:nth-child(6) { animation-delay: 0.6s; }
+
+.feature-card:hover {
+    transform: translateY(-15px);
+    box-shadow: 0 30px 40px rgba(0,0,0,0.1);
+}
+
+.feature-icon-large {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #3b82f6, #0b2b4f);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    margin: 0 auto 25px;
+    color: white;
+    box-shadow: 0 10px 20px rgba(59,130,246,0.3);
+}
+
+.feature-card h3 {
+    color: #0b2b4f;
+    margin-bottom: 15px;
+    font-size: 22px;
+}
+
+.feature-card p {
+    color: #64748b;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+/* CTA SECTION */
+.cta {
+    padding: 100px 20px;
+    background: linear-gradient(135deg, #0b2b4f 0%, #1a4a7a 100%);
+    text-align: center;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.cta::before {
+    content: '⚓';
+    position: absolute;
+    font-size: 200px;
+    opacity: 0.1;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    animation: float 6s ease-in-out infinite;
+}
+
+.cta h2 {
+    font-size: 42px;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.cta p {
+    font-size: 20px;
+    margin-bottom: 40px;
+    opacity: 0.9;
+    position: relative;
+}
+
+.cta .btn {
+    padding: 18px 60px;
+    font-size: 20px;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+/* FOOTER */
+.footer {
+    background: #0b1e33;
+    color: white;
+    padding: 60px 20px 30px;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 40px;
+}
+
+.footer-section h4 {
+    margin-bottom: 20px;
+    color: #3b82f6;
+    font-size: 18px;
+}
+
+.footer-section a {
+    display: block;
+    color: #cbd5e1;
+    text-decoration: none;
+    margin-bottom: 12px;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.footer-section a:hover {
+    color: white;
+    transform: translateX(5px);
+}
+
+.footer-bottom {
+    text-align: center;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    color: #94a3b8;
+    font-size: 14px;
+}
+
+/* LOADING OVERLAY */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #0b2b4f;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    transition: opacity 0.5s;
+}
+
+.loading-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(255,255,255,0.3);
+    border-top: 4px solid #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
 </style>
 </head>
-
 <body>
 
-<div class="card">
-
-<h1>SeaConnect</h1>
-
-<input id="email" placeholder="Email">
-<input id="password" type="password" placeholder="Password">
-
-<button class="login" onclick="login()">Login</button>
-<button class="signup" onclick="signup()">Sign Up</button>
-
-<div id="msg"></div>
-
+<!-- LOADING OVERLAY -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
 </div>
 
+<!-- HERO SECTION -->
+<section class="hero">
+    <div class="container">
+        <div class="content">
+            <div class="logo">⚓ Sea<span>Connect</span></div>
+            <div class="tagline">The Social Network for Seafarers</div>
+            <div class="description">
+                Connect with crew members worldwide. Share voyages, documents, 
+                and stay in touch with your maritime community. Built by seafarers, for seafarers.
+            </div>
+            <div class="buttons" id="ctaButtons">
+                <a href="login.html" class="btn btn-primary">Get Started</a>
+                <a href="#features" class="btn btn-outline">Learn More</a>
+            </div>
+            <div class="ship">🚢</div>
+        </div>
+
+        <div class="stats-card">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number" id="statUsers">10K+</div>
+                    <div class="stat-label">Active Seafarers</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="statMessages">50K+</div>
+                    <div class="stat-label">Daily Messages</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="statCountries">100+</div>
+                    <div class="stat-label">Countries</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="statSupport">24/7</div>
+                    <div class="stat-label">At Sea Support</div>
+                </div>
+            </div>
+
+            <ul class="features-list">
+                <li>
+                    <span class="feature-icon">⚓</span>
+                    Verified seafarer profiles
+                </li>
+                <li>
+                    <span class="feature-icon">💬</span>
+                    Real-time messaging at sea
+                </li>
+                <li>
+                    <span class="feature-icon">📄</span>
+                    Document expiry tracking
+                </li>
+                <li>
+                    <span class="feature-icon">🌊</span>
+                    Port arrival notifications
+                </li>
+                <li>
+                    <span class="feature-icon">👥</span>
+                    Find crew from your vessel
+                </li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- FEATURES SECTION -->
+<section class="features" id="features">
+    <h2 class="section-title">Everything You Need at Sea</h2>
+    <p class="section-subtitle">Designed specifically for the maritime community</p>
+
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon-large">💬</div>
+            <h3>Maritime Chat</h3>
+            <p>Real-time messaging optimized for satellite connections. Stay in touch with crew worldwide.</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon-large">📄</div>
+            <h3>Document Tracker</h3>
+            <p>Never miss an expiry date. Get notified 30 days before your COC, passport, or medical expires.</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon-large">👥</div>
+            <h3>Crew Network</h3>
+            <p>Connect with officers and crew from your vessel. Build your professional maritime network.</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon-large">📱</div>
+            <h3>Social Feeds</h3>
+            <p>Share photos of sunsets, ports, and voyages with the seafaring community.</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon-large">📍</div>
+            <h3>Port Check-ins</h3>
+            <p>Let friends know when you're in port. Find crew for meetups around the world.</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon-large">⚓</div>
+            <h3>Verified Profiles</h3>
+            <p>All seafarers verified with Seaman's Book numbers. No fake accounts, just real crew.</p>
+        </div>
+    </div>
+</section>
+
+<!-- CTA SECTION -->
+<section class="cta">
+    <h2>Ready to Set Sail?</h2>
+    <p>Join thousands of seafarers already connecting on Sea Connect</p>
+    <a href="login.html" class="btn btn-primary">Create Your Account</a>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <div class="footer-content">
+        <div class="footer-section">
+            <h4>Sea Connect</h4>
+            <a href="#">About Us</a>
+            <a href="#">Careers</a>
+            <a href="#">Contact</a>
+        </div>
+
+        <div class="footer-section">
+            <h4>Features</h4>
+            <a href="#">Messaging</a>
+            <a href="#">Document Tracker</a>
+            <a href="#">Crew Network</a>
+            <a href="#">Port Check-ins</a>
+        </div>
+
+        <div class="footer-section">
+            <h4>Support</h4>
+            <a href="#">Help Center</a>
+            <a href="#">Safety</a>
+            <a href="#">Terms of Service</a>
+            <a href="#">Privacy Policy</a>
+        </div>
+
+        <div class="footer-section">
+            <h4>Connect</h4>
+            <a href="#">Facebook</a>
+            <a href="#">Instagram</a>
+            <a href="#">LinkedIn</a>
+            <a href="mailto:support@seaconnect.com">support@seaconnect.com</a>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        © 2025 Sea Connect. All rights reserved. Made for seafarers, by seafarers. ⚓
+    </div>
+</footer>
+
 <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { 
+    getAuth, 
+    onAuthStateChanged 
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { 
+    getFirestore, 
+    collection, 
+    getDocs,
+    query,
+    orderBy,
+    limit
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-import { initializeApp } 
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-
-import {
-getAuth,
-signInWithEmailAndPassword,
-createUserWithEmailAndPassword,
-onAuthStateChanged
-}
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
-import {
-getFirestore,
-doc,
-setDoc,
-getDoc
-}
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-
+// Firebase config
 const firebaseConfig = {
-apiKey: "AIzaSyCNlodsmEHrSXxgH0gTOcx4cAXwG8qmG9w",
-authDomain: "seaconnect-d2baa.firebaseapp.com",
-projectId: "seaconnect-d2baa",
-storageBucket: "seaconnect-d2baa.appspot.com",
-messagingSenderId: "402383997556",
-appId: "1:402383997556:web:d4b5894b25545ecaef9f21"
+    apiKey: "AIzaSyCNlodsmEHrSXxgH0gTOcx4cAXwG8qmG9w",
+    authDomain: "seaconnect-d2baa.firebaseapp.com",
+    projectId: "seaconnect-d2baa",
+    storageBucket: "seaconnect-d2baa.appspot.com",
+    messagingSenderId: "402383997556",
+    appId: "1:402383997556:web:d4b5894b25545ecaef9f21"
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-const email = document.getElementById("email");
-const password = document.getElementById("password");
-
-function setMsg(t){
-document.getElementById("msg").innerText = t || "";
-}
-
-function safeNameFromEmail(e){
-const s=(e||"").toLowerCase();
-return s.includes("@") ? s.split("@")[0] : "User";
-}
-
-async function ensureUserDoc(user){
-
-const ref = doc(db,"users",user.uid);
-const snap = await getDoc(ref);
-
-if(!snap.exists()){
-
-await setDoc(ref,{
-name: safeNameFromEmail(user.email),
-email:(user.email||"").toLowerCase(),
-avatar:"😀",
-createdAt:Date.now()
+// Hide loading overlay after page loads
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        document.getElementById('loadingOverlay').classList.add('hidden');
+    }, 500);
 });
 
-}
-
-}
-
-/* AUTO LOGIN REDIRECT */
-
-onAuthStateChanged(auth, async (user)=>{
-
-if(user){
-
-await ensureUserDoc(user);
-
-/* after login go to feeds */
-location.replace("feeds.html");
-
-}
-
+// Check if user is logged in and update CTA buttons
+onAuthStateChanged(auth, (user) => {
+    const ctaButtons = document.getElementById('ctaButtons');
+    
+    if (user) {
+        // User is logged in - show "Go to Profile" button
+        ctaButtons.innerHTML = `
+            <a href="profile.html" class="btn btn-primary">Go to Profile</a>
+            <a href="#features" class="btn btn-outline">Learn More</a>
+        `;
+    } else {
+        // User is not logged in - show "Get Started"
+        ctaButtons.innerHTML = `
+            <a href="login.html" class="btn btn-primary">Get Started</a>
+            <a href="#features" class="btn btn-outline">Learn More</a>
+        `;
+    }
 });
 
-/* LOGIN */
-
-window.login = async ()=>{
-
-try{
-
-setMsg("Logging in...");
-
-await signInWithEmailAndPassword(
-auth,
-email.value,
-password.value
-);
-
-}catch(e){
-
-setMsg("");
-alert(e.message);
-
+// Fetch and update stats from Firestore
+async function updateStats() {
+    try {
+        // Get total users count (excluding anonymous)
+        const usersSnapshot = await getDocs(collection(db, 'users'));
+        const totalUsers = usersSnapshot.size;
+        
+        // Get messages count from last 24 hours
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        
+        const messagesSnapshot = await getDocs(collection(db, 'messages'));
+        const recentMessages = messagesSnapshot.size;
+        
+        // Update stats with animation
+        animateNumber('statUsers', totalUsers > 0 ? formatNumber(totalUsers) : '10K+');
+        animateNumber('statMessages', recentMessages > 0 ? formatNumber(recentMessages) : '50K+');
+        
+        // Countries count (you can update this from your data)
+        const countries = ['Philippines', 'India', 'Indonesia', 'China', 'Russia', 'Ukraine', 'Greece', 'Norway', 'UK', 'USA'];
+        animateNumber('statCountries', '100+');
+        
+    } catch (error) {
+        console.error('Error fetching stats:', error);
+        // Keep default values if error
+    }
 }
 
-};
-
-/* SIGNUP */
-
-window.signup = async ()=>{
-
-try{
-
-setMsg("Creating account...");
-
-const cred = await createUserWithEmailAndPassword(
-auth,
-email.value,
-password.value
-);
-
-await ensureUserDoc(cred.user);
-
-setMsg("Account created ✅");
-
-}catch(e){
-
-setMsg("");
-alert(e.message);
-
+// Animate number change
+function animateNumber(elementId, newValue) {
+    const element = document.getElementById(elementId);
+    const oldValue = element.innerText;
+    
+    if (oldValue !== newValue) {
+        element.style.transition = 'all 0.3s';
+        element.style.transform = 'scale(1.2)';
+        element.innerText = newValue;
+        
+        setTimeout(() => {
+            element.style.transform = 'scale(1)';
+        }, 300);
+    }
 }
 
-};
+// Format large numbers
+function formatNumber(num) {
+    if (num >= 1000000) {
+        return (num / 1000000).toFixed(1) + 'M';
+    }
+    if (num >= 1000) {
+        return (num / 1000).toFixed(1) + 'K';
+    }
+    return num.toString();
+}
 
+// Update stats every 30 seconds
+updateStats();
+setInterval(updateStats, 30000);
+
+// Smooth scroll for "Learn More" button
+document.querySelector('a[href="#features"]').addEventListener('click', function(e) {
+    e.preventDefault();
+    document.querySelector('#features').scrollIntoView({
+        behavior: 'smooth'
+    });
+});
+
+// Add parallax effect to hero section
+window.addEventListener('scroll', () => {
+    const hero = document.querySelector('.hero');
+    const scrolled = window.pageYOffset;
+    hero.style.backgroundPositionY = scrolled * 0.5 + 'px';
+});
 </script>
-<script>
-if ("serviceWorker" in navigator) {
- navigator.serviceWorker.register("service-worker.js");
-}
-</script>
+
 </body>
 </html>

@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SeaConnect Login</title>
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #0b2b4f 0%, #1a4a7a 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+
+.container {
+    width: 100%;
+    max-width: 400px;
+}
+
+.card {
+    background: white;
+    border-radius: 30px;
+    padding: 30px 24px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+}
+
+.logo {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.logo h1 {
+    font-size: 32px;
+    color: #0b2b4f;
+}
+
+.logo span {
+    color: #3b82f6;
+}
+
+.tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    background: #f1f5f9;
+    padding: 4px;
+    border-radius: 40px;
+}
+
+.tab {
+    flex: 1;
+    text-align: center;
+    padding: 12px;
+    border-radius: 40px;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.tab.active {
+    background: white;
+    color: #0b2b4f;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.form {
+    display: none;
+}
+
+.form.active {
+    display: block;
+}
+
+.input-group {
+    margin-bottom: 16px;
+}
+
+.label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 6px;
+}
+
+.input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 30px;
+    font-size: 15px;
+    outline: none;
+    background: #f8fafc;
+    transition: all 0.3s;
+}
+
+.input:focus {
+    border-color: #3b82f6;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+}
+
+.btn {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 8px;
+}
+
+.btn-primary {
+    background: #0b2b4f;
+    color: white;
+}
+
+.btn-primary:active {
+    background: #1a4a7a;
+    transform: scale(0.98);
+}
+
+.btn-google {
+    background: white;
+    color: #333;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn-google img {
+    width: 20px;
+    height: 20px;
+}
+
+.btn-guest {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 20px 0;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.divider span {
+    padding: 0 15px;
+    color: #94a3b8;
+    font-size: 13px;
+}
+
+.forgot-password {
+    text-align: right;
+    margin: 8px 0 16px;
+}
+
+.forgot-password a {
+    color: #3b82f6;
+    text-decoration: none;
+    font-size: 13px;
+}
+
+.message {
+    text-align: center;
+    margin: 16px 0;
+    font-size: 14px;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.message.info {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.message.success {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.message.error {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.message.warning {
+    background: #fed7aa;
+    color: #92400e;
+}
+
+.seaman-note {
+    font-size: 12px;
+    color: #64748b;
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.seaman-note span {
+    color: #3b82f6;
+    font-weight: 600;
+}
+
+.terms {
+    text-align: center;
+    font-size: 12px;
+    color: #94a3b8;
+    margin-top: 20px;
+}
+
+.terms a {
+    color: #3b82f6;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.back-home {
+    text-align: center;
+    margin-top: 16px;
+}
+
+.back-home a {
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+.back-home a:hover {
+    opacity: 1;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+    <div class="card">
+        <div class="logo">
+            <h1>⚓ Sea<span>Connect</span></h1>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('login')">Login</div>
+            <div class="tab" onclick="switchTab('signup')">Sign Up</div>
+        </div>
+
+        <!-- LOGIN FORM -->
+        <div id="loginForm" class="form active">
+            <div class="input-group">
+                <label class="label">Email Address</label>
+                <input type="email" class="input" id="loginEmail" placeholder="your@email.com">
+            </div>
+
+            <div class="input-group">
+                <label class="label">Password</label>
+                <input type="password" class="input" id="loginPassword" placeholder="••••••••">
+            </div>
+
+            <div class="forgot-password">
+                <a href="#" onclick="forgotPassword()">Forgot password?</a>
+            </div>
+
+            <button class="btn btn-primary" onclick="login()">Login</button>
+
+            <div class="divider">
+                <span>OR</span>
+            </div>
+
+            <button class="btn btn-google" onclick="loginWithGoogle()">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+                Continue with Google
+            </button>
+
+            <button class="btn btn-guest" onclick="loginAsGuest()">
+                Continue as Guest
+            </button>
+
+            <div id="loginMessage" class="message"></div>
+        </div>
+
+        <!-- SIGNUP FORM (with Seaman's Book) -->
+        <div id="signupForm" class="form">
+            <div class="input-group">
+                <label class="label">Full Name</label>
+                <input type="text" class="input" id="signupName" placeholder="John Smith">
+            </div>
+
+            <div class="input-group">
+                <label class="label">Email Address</label>
+                <input type="email" class="input" id="signupEmail" placeholder="your@email.com">
+            </div>
+
+            <div class="input-group">
+                <label class="label">Password</label>
+                <input type="password" class="input" id="signupPassword" placeholder="Min. 6 characters">
+            </div>
+
+            <div class="input-group">
+                <label class="label">Confirm Password</label>
+                <input type="password" class="input" id="signupConfirmPassword" placeholder="Re-enter password">
+            </div>
+
+            <!-- SEAMAN'S BOOK NUMBER - REQUIRED -->
+            <div class="input-group">
+                <label class="label">
+                    Seaman's Book Number <span style="color:#ef4444;">*</span>
+                </label>
+                <input type="text" class="input" id="seamanNumber" placeholder="SB-12345-6789">
+                <div class="seaman-note">
+                    <span>⚓ Required</span> for maritime verification
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label class="label">Rank / Position</label>
+                <select class="input" id="signupRank">
+                    <option value="">Select your rank</option>
+                    <option value="Captain">Captain / Master</option>
+                    <option value="Chief Mate">Chief Mate</option>
+                    <option value="2nd Officer">2nd Officer</option>
+                    <option value="3rd Officer">3rd Officer</option>
+                    <option value="Chief Engineer">Chief Engineer</option>
+                    <option value="2nd Engineer">2nd Engineer</option>
+                    <option value="3rd Engineer">3rd Engineer</option>
+                    <option value="4th Engineer">4th Engineer</option>
+                    <option value="Bosun">Bosun</option>
+                    <option value="Able Seaman">Able Seaman</option>
+                    <option value="Ordinary Seaman">Ordinary Seaman</option>
+                    <option value="Cadet">Cadet / Trainee</option>
+                </select>
+            </div>
+
+            <div class="terms">
+                By signing up, you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a>
+            </div>
+
+            <button class="btn btn-primary" onclick="signup()">Create Account</button>
+
+            <div id="signupMessage" class="message"></div>
+        </div>
+
+        <div class="back-home">
+            <a href="index.html">← Back to Home</a>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { 
+    getAuth, 
+    signInWithEmailAndPassword, 
+    createUserWithEmailAndPassword,
+    signInWithPopup,
+    GoogleAuthProvider,
+    signInAnonymously,
+    sendPasswordResetEmail,
+    onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { 
+    getFirestore, 
+    doc, 
+    setDoc, 
+    getDoc,
+    serverTimestamp 
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// Firebase config
+const firebaseConfig = {
+    apiKey: "AIzaSyCNlodsmEHrSXxgH0gTOcx4cAXwG8qmG9w",
+    authDomain: "seaconnect-d2baa.firebaseapp.com",
+    projectId: "seaconnect-d2baa",
+    storageBucket: "seaconnect-d2baa.appspot.com",
+    messagingSenderId: "402383997556",
+    appId: "1:402383997556:web:d4b5894b25545ecaef9f21"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
+
+// Tab switching
+window.switchTab = function(tab) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.form').forEach(f => f.classList.remove('active'));
+    
+    if (tab === 'login') {
+        document.querySelector('.tab').classList.add('active');
+        document.getElementById('loginForm').classList.add('active');
+    } else {
+        document.querySelectorAll('.tab')[1].classList.add('active');
+        document.getElementById('signupForm').classList.add('active');
+    }
+};
+
+// Check if logged in
+onAuthStateChanged(auth, async (user) => {
+    if (user && !user.isAnonymous) {
+        // Check if user is approved
+        try {
+            const userDoc = await getDoc(doc(db, 'users', user.uid));
+            
+            if (userDoc.exists()) {
+                const userData = userDoc.data();
+                
+                // Check if rejected
+                if (userData.status === 'rejected') {
+                    await auth.signOut();
+                    showMessage('loginMessage', '❌ Your account has been rejected by admin', 'error');
+                    return;
+                }
+                
+                // Check if pending approval
+                if (userData.status === 'pending' || !userData.verified) {
+                    window.location.href = 'pending.html';
+                } else {
+                    window.location.href = 'profile.html';
+                }
+            }
+        } catch (error) {
+            console.error('Auth check error:', error);
+        }
+    }
+});
+
+// Show message helper
+function showMessage(elementId, text, type) {
+    const el = document.getElementById(elementId);
+    el.innerText = text;
+    el.className = 'message ' + type;
+}
+
+// LOGIN FUNCTION
+window.login = function() {
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    
+    if (!email || !password) {
+        showMessage('loginMessage', '❌ Please enter email and password', 'error');
+        return;
+    }
+    
+    showMessage('loginMessage', '⏳ Logging in...', 'info');
+    
+    signInWithEmailAndPassword(auth, email, password)
+        .catch((error) => {
+            let message = error.message;
+            if (error.code === 'auth/invalid-credential') {
+                message = 'Invalid email or password';
+            }
+            showMessage('loginMessage', '❌ ' + message, 'error');
+        });
+};
+
+// SIGNUP FUNCTION with pending status
+window.signup = function() {
+    const name = document.getElementById('signupName').value.trim();
+    const email = document.getElementById('signupEmail').value.trim();
+    const password = document.getElementById('signupPassword').value;
+    const confirmPassword = document.getElementById('signupConfirmPassword').value;
+    const seamanNumber = document.getElementById('seamanNumber').value.trim();
+    const rank = document.getElementById('signupRank').value;
+    
+    // VALIDATION
+    if (!name) {
+        showMessage('signupMessage', '❌ Please enter your full name', 'error');
+        return;
+    }
+    
+    if (!email) {
+        showMessage('signupMessage', '❌ Please enter your email', 'error');
+        return;
+    }
+    
+    if (!password) {
+        showMessage('signupMessage', '❌ Please enter a password', 'error');
+        return;
+    }
+    
+    if (password.length < 6) {
+        showMessage('signupMessage', '❌ Password must be at least 6 characters', 'error');
+        return;
+    }
+    
+    if (password !== confirmPassword) {
+        showMessage('signupMessage', '❌ Passwords do not match', 'error');
+        return;
+    }
+    
+    // SEAMAN'S BOOK VALIDATION
+    if (!seamanNumber) {
+        showMessage('signupMessage', '❌ Seaman\'s Book number is required', 'error');
+        return;
+    }
+    
+    if (seamanNumber.length < 5) {
+        showMessage('signupMessage', '❌ Please enter a valid Seaman\'s Book number', 'error');
+        return;
+    }
+    
+    if (!rank) {
+        showMessage('signupMessage', '❌ Please select your rank', 'error');
+        return;
+    }
+    
+    showMessage('signupMessage', '⏳ Creating account...', 'info');
+    
+    // Create account
+    createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+            const user = userCredential.user;
+            
+            // Save user data with PENDING status
+            return setDoc(doc(db, 'users', user.uid), {
+                name: name,
+                email: email,
+                seamanBook: seamanNumber,
+                rank: rank,
+                status: 'pending',
+                verified: false,
+                createdAt: new Date().toISOString(),
+                lastSeen: new Date().toISOString(),
+                photoURL: '',
+                notifications: {
+                    messages: true,
+                    feeds: true,
+                    friends: true,
+                    ports: false
+                },
+                privacy: {
+                    profile: 'Friends Only',
+                    shareLocation: true,
+                    showStatus: true
+                },
+                appearance: {
+                    theme: 'Light',
+                    language: 'EN',
+                    fontSize: 'medium'
+                }
+            });
+        })
+        .then(() => {
+            showMessage('signupMessage', '✅ Account created! Redirecting to pending approval...', 'success');
+            setTimeout(() => {
+                window.location.href = 'pending.html';
+            }, 2000);
+        })
+        .catch((error) => {
+            let message = error.message;
+            if (error.code === 'auth/email-already-in-use') {
+                message = 'Email already in use';
+            }
+            showMessage('signupMessage', '❌ ' + message, 'error');
+        });
+};
+
+// GOOGLE LOGIN
+window.loginWithGoogle = function() {
+    signInWithPopup(auth, provider)
+        .then((result) => {
+            const user = result.user;
+            
+            // Check if user exists in Firestore
+            return getDoc(doc(db, 'users', user.uid)).then((docSnap) => {
+                if (!docSnap.exists()) {
+                    // For Google signup, need to complete profile
+                    showMessage('loginMessage', '⚠️ Please complete registration with Seaman\'s Book', 'warning');
+                    setTimeout(() => {
+                        window.location.href = 'complete-profile.html';
+                    }, 2000);
+                }
+            });
+        })
+        .catch((error) => {
+            showMessage('loginMessage', '❌ ' + error.message, 'error');
+        });
+};
+
+// GUEST LOGIN
+window.loginAsGuest = function() {
+    signInAnonymously(auth)
+        .then(() => {
+            window.location.href = 'feeds.html';
+        })
+        .catch((error) => {
+            showMessage('loginMessage', '❌ ' + error.message, 'error');
+        });
+};
+
+// FORGOT PASSWORD
+window.forgotPassword = function() {
+    const email = document.getElementById('loginEmail').value;
+    
+    if (!email) {
+        showMessage('loginMessage', '⚠️ Please enter your email first', 'warning');
+        return;
+    }
+    
+    sendPasswordResetEmail(auth, email)
+        .then(() => {
+            showMessage('loginMessage', '✅ Password reset email sent!', 'success');
+        })
+        .catch((error) => {
+            showMessage('loginMessage', '❌ ' + error.message, 'error');
+        });
+};
+</script>
+
+</body>
+</html>

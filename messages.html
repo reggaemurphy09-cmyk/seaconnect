@@ -1329,15 +1329,18 @@ Profile
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
+<!-- Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
 <script>
-// Firebase config
+// Firebase config with Singapore URL
 const firebaseConfig = {
     apiKey: "AIzaSyCNlodsmEHrSXxgH0gTOcx4cAXwG8qmG9w",
     authDomain: "seaconnect-d2baa.firebaseapp.com",
+    databaseURL: "https://seaconnect-d2baa-default-rtdb.asia-southeast1.firebasedatabase.app",
     projectId: "seaconnect-d2baa",
     storageBucket: "seaconnect-d2baa.appspot.com",
     messagingSenderId: "402383997556",
@@ -1345,9 +1348,16 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-firebase.initializeApp(firebaseConfig);
+try {
+    firebase.initializeApp(firebaseConfig);
+    console.log('Firebase initialized');
+} catch (e) {
+    console.error('Firebase init error:', e);
+}
+
 const auth = firebase.auth();
 const db = firebase.firestore();
+const rtdb = firebase.database();
 
 // ImgBB API Key
 const IMGBB_API_KEY = '7a6b8c43b67ce45e354763c86371b2e1';
@@ -1369,6 +1379,9 @@ let swipedItem = null;
 let touchStartX = 0;
 let touchCurrentX = 0;
 let isSwiping = false;
+
+// Store real-time status for users
+const userStatusMap = new Map();
 
 // Disable system menus
 document.addEventListener('contextmenu', (e) => e.preventDefault());
@@ -1446,7 +1459,7 @@ function loadUserTheme() {
                 document.getElementById('navAvatar').src = data.photoURL;
             }
         }
-    });
+    }).catch(err => console.log('Theme error:', err));
 }
 
 // Load current user data
@@ -1459,7 +1472,7 @@ function loadCurrentUserData() {
                 document.getElementById('navAvatar').src = currentUserData.photoURL;
             }
         }
-    });
+    }).catch(err => console.log('User data error:', err));
 }
 
 // Toast helper
@@ -1490,8 +1503,55 @@ function checkUrlForChat() {
     }
 }
 
+// Listen to real-time status from Realtime Database
+function listenToUserStatus(userId) {
+    if (!userId) return;
+    
+    const statusRef = rtdb.ref('/status/' + userId);
+    
+    statusRef.on('value', (snapshot) => {
+        const data = snapshot.val();
+        if (data && data.state) {
+            userStatusMap.set(userId, data.state);
+            
+            // Update status dot in chat list
+            const statusDot = document.querySelector(`.chat-item-wrapper[data-user-id="${userId}"] .chatStatusDot`);
+            if (statusDot) {
+                statusDot.className = 'chatStatusDot';
+                if (data.state === 'online') statusDot.classList.add('statusOnline');
+                else if (data.state === 'atSea') statusDot.classList.add('statusAtSea');
+                else if (data.state === 'inPort') statusDot.classList.add('statusInPort');
+                else statusDot.classList.add('statusOffline');
+            }
+            
+            // Update chat header if this is the current chat
+            if (userId === currentChatPartnerId) {
+                let statusClass = 'statusOffline';
+                let statusText = 'Offline';
+                
+                if (data.state === 'online') {
+                    statusClass = 'statusOnline';
+                    statusText = 'Online';
+                } else if (data.state === 'atSea') {
+                    statusClass = 'statusAtSea';
+                    statusText = 'At Sea';
+                } else if (data.state === 'inPort') {
+                    statusClass = 'statusInPort';
+                    statusText = 'In Port';
+                }
+                
+                document.getElementById('chatHeaderStatusDot').className = `chatHeaderStatusDot ${statusClass}`;
+                document.getElementById('chatHeaderStatus').innerHTML = `<span class="${statusClass}" style="width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px;"></span> ${statusText}`;
+            }
+            
+            console.log(`Status updated for ${userId}: ${data.state}`);
+        }
+    });
+}
+
 // Check auth state
 auth.onAuthStateChanged((user) => {
+    console.log('Auth state:', user ? 'logged in' : 'not logged in');
     if (!user) {
         window.location.href = 'login.html';
         return;
@@ -1521,6 +1581,7 @@ function loadAllUsers() {
                 rank: data.rank || 'Seafarer'
             });
         });
+        console.log('Loaded users:', allUsers.length);
     });
 }
 
@@ -1579,25 +1640,36 @@ function loadChats() {
                 const user = allUsers.find(u => u.email === email);
                 if (!user) continue;
                 
+                // Get status from Realtime Database
+                let status = 'offline';
+                try {
+                    const statusSnapshot = await rtdb.ref('/status/' + user.id).once('value');
+                    const statusData = statusSnapshot.val();
+                    status = statusData ? statusData.state : 'offline';
+                    userStatusMap.set(user.id, status);
+                } catch (e) {
+                    console.log('Error getting status for', user.email);
+                }
+                
                 const time = chatData.lastMsg.createdAt ? formatTime(chatData.lastMsg.createdAt) : '';
                 const lastMsg = chatData.lastMsg.text || (chatData.lastMsg.photo ? '📷 Photo' : '');
                 
                 let statusClass = 'statusOffline';
-                if (user.status === 'online') statusClass = 'statusOnline';
-                else if (user.status === 'atSea') statusClass = 'statusAtSea';
-                else if (user.status === 'inPort') statusClass = 'statusInPort';
+                if (status === 'online') statusClass = 'statusOnline';
+                else if (status === 'atSea') statusClass = 'statusAtSea';
+                else if (status === 'inPort') statusClass = 'statusInPort';
                 
                 const chatId = [currentUser.uid, user.id].sort().join('_');
                 const unreadCount = chatData.unread || 0;
                 
                 allChats.push({
                     email, userId: user.id, name: user.name, photo: user.photo,
-                    status: user.status, verified: user.verified,
+                    status, verified: user.verified,
                     unread: unreadCount, lastMsg, time, chatId, rank: user.rank
                 });
                 
                 html += `
-                    <div class="chat-item-wrapper" data-chat-id="${chatId}">
+                    <div class="chat-item-wrapper" data-chat-id="${chatId}" data-user-id="${user.id}">
                         <div class="delete-overlay" onclick="deleteChat('${chatId}')">
                             <span>Delete</span>
                         </div>
@@ -1622,6 +1694,9 @@ function loadChats() {
                         </div>
                     </div>
                 `;
+                
+                // Start listening to real-time status updates
+                listenToUserStatus(user.id);
             }
             chatList.innerHTML = html;
         }, error => {
@@ -1785,9 +1860,14 @@ function searchChats() {
     
     let html = '';
     filtered.forEach(chat => {
-        let statusClass = chat.status === 'online' ? 'statusOnline' : 'statusOffline';
+        // Get latest status from map
+        const status = userStatusMap.get(chat.userId) || chat.status || 'offline';
+        let statusClass = status === 'online' ? 'statusOnline' : 
+                         (status === 'atSea' ? 'statusAtSea' : 
+                         (status === 'inPort' ? 'statusInPort' : 'statusOffline'));
+        
         html += `
-            <div class="chat-item-wrapper" data-chat-id="${chat.chatId}">
+            <div class="chat-item-wrapper" data-chat-id="${chat.chatId}" data-user-id="${chat.userId}">
                 <div class="delete-overlay" onclick="deleteChat('${chat.chatId}')">
                     <span>Delete</span>
                 </div>
@@ -1836,34 +1916,41 @@ function openChat(userId, email) {
     // Mark messages as read when opening chat
     markMessagesAsRead(email);
     
+    // Get user data from Firestore (name, photo)
     db.collection('users').doc(userId).get().then(doc => {
         if (doc.exists) {
             const data = doc.data();
             document.getElementById('chatHeaderName').textContent = data.name || email.split('@')[0] || 'Sailor';
             document.getElementById('chatHeaderAvatar').src = data.photoURL || 'https://i.ibb.co/2kRZ7Z6/avatar.png';
-            
-            let statusClass = 'statusOffline';
-            let statusText = 'Offline';
-            if (data.status === 'online') {
-                statusClass = 'statusOnline';
-                statusText = 'Online';
-            } else if (data.status === 'atSea') {
-                statusClass = 'statusAtSea';
-                statusText = 'At Sea';
-            } else if (data.status === 'inPort') {
-                statusClass = 'statusInPort';
-                statusText = 'In Port';
-            }
-            document.getElementById('chatHeaderStatusDot').className = `chatHeaderStatusDot ${statusClass}`;
-            document.getElementById('chatHeaderStatus').innerHTML = `<span class="${statusClass}" style="width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px;"></span> ${statusText}`;
         } else {
             document.getElementById('chatHeaderName').textContent = email.split('@')[0] || 'Sailor';
             document.getElementById('chatHeaderAvatar').src = 'https://i.ibb.co/2kRZ7Z6/avatar.png';
-            document.getElementById('chatHeaderStatusDot').className = 'chatHeaderStatusDot statusOffline';
-            document.getElementById('chatHeaderStatus').innerHTML = '<span class="statusOffline" style="width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px;"></span> Offline';
         }
     }).catch(error => {
         console.error('Error loading user:', error);
+    });
+    
+    // Get status from Realtime Database
+    rtdb.ref('/status/' + userId).once('value').then((snapshot) => {
+        const statusData = snapshot.val();
+        const status = statusData ? statusData.state : 'offline';
+        
+        let statusClass = 'statusOffline';
+        let statusText = 'Offline';
+        
+        if (status === 'online') {
+            statusClass = 'statusOnline';
+            statusText = 'Online';
+        } else if (status === 'atSea') {
+            statusClass = 'statusAtSea';
+            statusText = 'At Sea';
+        } else if (status === 'inPort') {
+            statusClass = 'statusInPort';
+            statusText = 'In Port';
+        }
+        
+        document.getElementById('chatHeaderStatusDot').className = `chatHeaderStatusDot ${statusClass}`;
+        document.getElementById('chatHeaderStatus').innerHTML = `<span class="${statusClass}" style="width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px;"></span> ${statusText}`;
     });
     
     document.getElementById('chatListView').style.display = 'none';
@@ -1882,7 +1969,7 @@ function closeChat() {
     removeSelectedImage();
 }
 
-// Load messages with reactions - FIXED to prevent auto-scroll
+// Load messages with reactions
 function loadMessages() {
     const container = document.getElementById('messagesContainer');
     
@@ -1893,7 +1980,6 @@ function loadMessages() {
     messagesListener = db.collection('messages')
         .orderBy('createdAt', 'asc')
         .onSnapshot(snapshot => {
-            // Store scroll position before update
             const oldScrollTop = container.scrollTop;
             const oldScrollHeight = container.scrollHeight;
             const clientHeight = container.clientHeight;
@@ -1915,16 +2001,13 @@ function loadMessages() {
                     const isSent = msg.from === currentUser.email;
                     const timeStr = formatTime(msg.createdAt);
                     
-                    // Add seen indicator for sent messages
                     let seenIndicator = '';
                     if (isSent) {
                         seenIndicator = msg.seen ? ' ✓✓' : ' ✓';
                     }
                     
-                    // Build reactions HTML
                     let reactionsHtml = '';
                     if (msg.reactions && msg.reactions.length > 0) {
-                        // Group reactions by emoji and count them
                         const reactionMap = new Map();
                         msg.reactions.forEach(r => {
                             if (!reactionMap.has(r.emoji)) {
@@ -1979,16 +2062,12 @@ function loadMessages() {
             } else {
                 container.innerHTML = html;
                 
-                // Restore scroll position
                 requestAnimationFrame(() => {
                     const newScrollHeight = container.scrollHeight;
                     
-                    // If user was at bottom, scroll to bottom
                     if (wasAtBottom) {
                         container.scrollTop = container.scrollHeight;
-                    } 
-                    // Otherwise, maintain relative position
-                    else {
+                    } else {
                         const heightDiff = newScrollHeight - oldScrollHeight;
                         container.scrollTop = oldScrollTop + heightDiff;
                     }
@@ -2045,7 +2124,6 @@ function reactToImage(emoji) {
     }
 }
 
-// Toggle reaction - FIXED
 async function toggleReaction(messageId, emoji) {
     if (!currentUser) return;
     
@@ -2059,10 +2137,8 @@ async function toggleReaction(messageId, emoji) {
         const existingIndex = reactions.findIndex(r => r.userId === currentUser.uid && r.emoji === emoji);
         
         if (existingIndex >= 0) {
-            // Remove reaction
             reactions.splice(existingIndex, 1);
         } else {
-            // Add reaction
             reactions.push({ 
                 userId: currentUser.uid, 
                 emoji, 
@@ -2070,7 +2146,6 @@ async function toggleReaction(messageId, emoji) {
             });
         }
         
-        // Update Firestore - this will trigger the onSnapshot and update the UI
         await msgRef.update({ reactions });
         
     } catch (error) {
@@ -2168,7 +2243,6 @@ function attachFile() {
     input.click();
 }
 
-// Send message with instant posting
 async function sendMessage() {
     const input = document.getElementById('messageInput');
     const text = input.value.trim();
@@ -2283,33 +2357,27 @@ document.addEventListener('touchstart', (e) => {
 function openFiles() { location.href = 'files.html'; }
 function openSettings() { location.href = 'settings.html'; }
 
-// ============================================
-// FIXED SCROLL HANDLER - USING TRANSFORM DIRECTLY
-// ============================================
+// Scroll handler
 let lastScroll = 0;
 const header = document.querySelector(".appHeader");
 const nav = document.querySelector(".bottomnav");
 let ticking = false;
 
 window.addEventListener("scroll", function() {
-    // Don't hide when chat view is active
     if (document.getElementById('chatView').classList.contains('active')) return;
     
     if (!ticking) {
         window.requestAnimationFrame(function() {
             const currentScroll = window.pageYOffset;
             
-            // Always show at the top
             if (currentScroll < 50) {
                 header.style.transform = "translateY(0)";
                 nav.style.transform = "translateY(0)";
             } 
-            // Scrolling down - hide (only if scrolled past 100px)
             else if (currentScroll > lastScroll && currentScroll > 100) {
                 header.style.transform = "translateY(-100%)";
                 nav.style.transform = "translateY(120%)";
             } 
-            // Scrolling up - show
             else if (currentScroll < lastScroll) {
                 header.style.transform = "translateY(0)";
                 nav.style.transform = "translateY(0)";

@@ -1174,11 +1174,11 @@ Profile
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
 <script>
-// Firebase config
+// Firebase config - UPDATE TO SINGAPORE URL
 const firebaseConfig = {
     apiKey: "AIzaSyCNlodsmEHrSXxgH0gTOcx4cAXwG8qmG9w",
     authDomain: "seaconnect-d2baa.firebaseapp.com",
-    databaseURL: "https://seaconnect-d2baa-default-rtdb.firebaseio.com",
+    databaseURL: "https://seaconnect-d2baa-default-rtdb.asia-southeast1.firebasedatabase.app", // UPDATED
     projectId: "seaconnect-d2baa",
     storageBucket: "seaconnect-d2baa.appspot.com",
     messagingSenderId: "402383997556",
@@ -1197,7 +1197,7 @@ const IMGBB_API_KEY = '7a6b8c43b67ce45e354763c86371b2e1';
 let currentUser = null;
 let currentStatus = 'online';
 
-// ========== SINGLE AUTH STATE HANDLER ==========
+// ========== AUTH STATE HANDLER WITH OFFLINE DETECTION ==========
 auth.onAuthStateChanged((user) => {
     
     if (!user) {
@@ -1207,39 +1207,60 @@ auth.onAuthStateChanged((user) => {
 
     currentUser = user;
 
-    // Load user profile
+    // Load user profile from Firestore
     loadUserData(user);
     loadUserTheme(user);
 
-    // ===== PRESENCE SYSTEM =====
+    // ===== COMPLETE PRESENCE SYSTEM WITH OFFLINE DETECTION =====
+    setupPresenceSystem(user);
+});
+
+// ===== PRESENCE SYSTEM - THIS MAKES YOU SHOW OFFLINE WHEN APP CLOSES =====
+function setupPresenceSystem(user) {
     const uid = user.uid;
     const userStatusRef = rtdb.ref("/status/" + uid);
-
-    const online = {
-        state: "online",
-        last_changed: firebase.database.ServerValue.TIMESTAMP
-    };
-
-    const offline = {
-        state: "offline",
-        last_changed: firebase.database.ServerValue.TIMESTAMP
-    };
-
-    const connectedRef = rtdb.ref(".info/connected");
-
-    connectedRef.on("value", function(snapshot) {
-        
-        if (snapshot.val() === false) {
-            return;
+    const lastOnlineRef = rtdb.ref("/lastOnline/" + uid);
+    
+    // Get current status from Firestore or use default
+    db.collection('users').doc(uid).get().then((doc) => {
+        if (doc.exists && doc.data().status) {
+            currentStatus = doc.data().status;
         }
-
-        userStatusRef.onDisconnect().set(offline).then(function() {
-            userStatusRef.set(online);
+        
+        // Monitor connection state
+        const connectedRef = rtdb.ref(".info/connected");
+        
+        connectedRef.on("value", (snapshot) => {
+            if (snapshot.val() === false) {
+                console.log("Not connected to Realtime Database");
+                return;
+            }
+            
+            console.log("✅ Connected to Realtime Database (Singapore)");
+            
+            // THIS IS THE KEY PART - When disconnected (app closed), set status to offline
+            userStatusRef.onDisconnect().set({
+                state: "offline",
+                last_changed: firebase.database.ServerValue.TIMESTAMP,
+                email: user.email,
+                displayName: user.email.split('@')[0]
+            }).then(() => {
+                console.log("✅ onDisconnect set - will go offline when app closes");
+            });
+            
+            // Also update last online timestamp when disconnected
+            lastOnlineRef.onDisconnect().set(firebase.database.ServerValue.TIMESTAMP);
+            
+            // Set current status (using the user's selected status)
+            return userStatusRef.set({
+                state: currentStatus,
+                last_changed: firebase.database.ServerValue.TIMESTAMP,
+                email: user.email,
+                displayName: user.email.split('@')[0]
+            });
         });
-
     });
-
-});
+}
 
 // Load user data from Firestore
 function loadUserData(user) {
@@ -1332,13 +1353,28 @@ function updateStatusDisplay(status) {
     }
 }
 
-// Save data to Firestore
+// Save data to Firestore AND update Realtime Database status
 function saveToFirestore(updates) {
     if (!currentUser) return;
     
     db.collection('users').doc(currentUser.uid).update(updates)
         .then(() => {
             console.log('Saved to Firestore:', updates);
+            
+            // If status was updated, also update Realtime Database
+            if (updates.status) {
+                currentStatus = updates.status;
+                return rtdb.ref('status/' + currentUser.uid).update({
+                    state: updates.status,
+                    last_changed: firebase.database.ServerValue.TIMESTAMP,
+                    email: currentUser.email
+                });
+            }
+        })
+        .then(() => {
+            if (updates.status) {
+                console.log('✅ Status also updated in Realtime Database');
+            }
             showToast('✅ Saved');
         })
         .catch(error => {
@@ -1457,7 +1493,7 @@ function handleImageUpload(event) {
             document.getElementById('profilePhoto').src = imageUrl;
             document.getElementById('navAvatar').src = imageUrl;
             
-            // SAVE TO FIRESTORE - THIS MAKES IT PERMANENT
+            // SAVE TO FIRESTORE
             saveToFirestore({ photoURL: imageUrl });
             
             showToast('✅ Photo uploaded and saved!');
@@ -1512,16 +1548,8 @@ function selectStatus(status) {
     // Update display
     updateStatusDisplay(statusValue);
     
-    // Save to Firestore
+    // Save to Firestore (which will also update Realtime Database)
     saveToFirestore({ status: statusValue });
-    
-    // Save to Realtime Database (for messages/friends/feeds)
-    if (currentUser) {
-        rtdb.ref('status/' + currentUser.uid).update({
-            state: statusValue,
-            last_changed: firebase.database.ServerValue.TIMESTAMP
-        }).catch(console.error);
-    }
     
     // Show toast
     showToast(`⚓ Status updated to ${statusText}`);

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-<title>Messages | Sea Connect - PURPLE FIXED</title>
+<title>Messages | Sea Connect</title>
 
 <style>
 /* Theme Variables */
@@ -51,101 +51,6 @@
     --inport-color: #3b82f6;
     --onleave-color: #c084fc;
     --offline-color: #666666;
-}
-
-/* DEBUG PANEL STYLES */
-.debug-panel {
-    position: fixed;
-    bottom: 100px;
-    left: 10px;
-    right: 10px;
-    background: rgba(0,0,0,0.95);
-    color: #0f0;
-    padding: 12px;
-    border-radius: 16px;
-    font-family: monospace;
-    font-size: 11px;
-    z-index: 10000;
-    max-height: 250px;
-    overflow-y: auto;
-    display: none;
-    border: 3px solid #a855f7;
-    box-shadow: 0 0 30px #a855f7;
-}
-
-.debug-panel.active {
-    display: block;
-}
-
-.debug-title {
-    color: #a855f7;
-    font-weight: bold;
-    margin-bottom: 8px;
-    text-align: center;
-    font-size: 14px;
-    letter-spacing: 1px;
-}
-
-.debug-entry {
-    border-bottom: 1px solid #333;
-    padding: 4px 0;
-    word-break: break-all;
-}
-
-.debug-purple {
-    color: #c084fc;
-    font-weight: bold;
-    background: rgba(168, 85, 247, 0.1);
-    padding: 2px 4px;
-    border-radius: 4px;
-}
-
-.debug-button {
-    position: fixed;
-    bottom: 180px;
-    right: 10px;
-    background: #a855f7;
-    color: white;
-    border: none;
-    border-radius: 40px;
-    padding: 12px 20px;
-    font-size: 14px;
-    font-weight: bold;
-    z-index: 10001;
-    cursor: pointer;
-    box-shadow: 0 0 30px #a855f7;
-    animation: debugPulse 1.5s infinite;
-    border: 2px solid white;
-}
-
-.purple-force-btn {
-    position: fixed;
-    bottom: 240px;
-    right: 10px;
-    background: linear-gradient(135deg, #a855f7, #6b21a5);
-    color: white;
-    border: none;
-    border-radius: 40px;
-    padding: 12px 20px;
-    font-size: 14px;
-    font-weight: bold;
-    z-index: 10001;
-    cursor: pointer;
-    box-shadow: 0 0 30px #a855f7;
-    animation: pulsePurple 1s infinite;
-    border: 2px solid white;
-}
-
-@keyframes pulsePurple {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); box-shadow: 0 0 50px #a855f7; }
-    100% { transform: scale(1); }
-}
-
-@keyframes debugPulse {
-    0% { transform: scale(1); box-shadow: 0 0 20px #a855f7; }
-    50% { transform: scale(1.1); box-shadow: 0 0 40px #c084fc; }
-    100% { transform: scale(1); box-shadow: 0 0 20px #a855f7; }
 }
 
 /* Disable system menus */
@@ -1226,18 +1131,6 @@ body {
 
 <body data-theme="light">
 
-<!-- DEBUG BUTTONS -->
-<button class="debug-button" onclick="toggleDebugPanel()">🔍 DEBUG PURPLE</button>
-<button class="purple-force-btn" onclick="forceAllPurple()">💜 FORCE PURPLE NOW</button>
-
-<!-- DEBUG PANEL -->
-<div class="debug-panel" id="debugPanel">
-    <div class="debug-title">🔮 PURPLE SIGNAL DEBUG</div>
-    <div id="debugContent">
-        <div class="debug-entry">Initializing debug...</div>
-    </div>
-</div>
-
 <div id="pullLoader">
 <div class="loader"></div>
 </div>
@@ -1498,170 +1391,6 @@ const userStatusMap = new Map();
 let connectedListener = null;
 let beforeUnloadHandler = null;
 
-// Debug variables
-let debugLogs = [];
-let purpleSignalDetected = false;
-
-// Debug functions
-function addDebug(message, isPurple = false) {
-    const time = new Date().toLocaleTimeString();
-    const logEntry = `[${time}] ${message}`;
-    debugLogs.unshift(logEntry);
-    
-    console.log(isPurple ? '%c' + logEntry : logEntry, isPurple ? 'color: #a855f7; font-weight: bold;' : '');
-    
-    const debugContent = document.getElementById('debugContent');
-    if (debugContent) {
-        const className = isPurple ? 'debug-purple' : '';
-        debugContent.innerHTML = `<div class="debug-entry ${className}">${logEntry}</div>` + debugContent.innerHTML;
-        
-        // Keep only last 20 entries
-        while (debugContent.children.length > 20) {
-            debugContent.removeChild(debugContent.lastChild);
-        }
-    }
-}
-
-function toggleDebugPanel() {
-    const panel = document.getElementById('debugPanel');
-    panel.classList.toggle('active');
-}
-
-// FORCE ALL DOTS TO PURPLE
-function forceAllPurple() {
-    addDebug('💜💜💜 FORCING ALL DOTS TO PURPLE', true);
-    
-    // Update all status dots to purple
-    document.querySelectorAll('.chatStatusDot').forEach((dot, index) => {
-        dot.className = 'chatStatusDot statusOnLeave';
-        dot.style.setProperty('background', '#a855f7', 'important');
-        dot.style.setProperty('background-color', '#a855f7', 'important');
-        dot.style.setProperty('box-shadow', '0 0 20px #a855f7', 'important');
-        addDebug(`✅ Dot ${index} forced to purple`, true);
-    });
-    
-    // Force header if chat is open
-    const headerDot = document.getElementById('chatHeaderStatusDot');
-    if (headerDot) {
-        headerDot.className = 'chatHeaderStatusDot statusOnLeave';
-        headerDot.style.setProperty('background', '#a855f7', 'important');
-        headerDot.style.setProperty('box-shadow', '0 0 15px #a855f7', 'important');
-        document.getElementById('chatHeaderStatus').innerHTML = 
-            `<span style="width:8px;height:8px;border-radius:50%;display:inline-block;background:#a855f7;margin-right:4px; box-shadow:0 0 10px #a855f7;"></span> On Leave (FORCED PURPLE)`;
-    }
-    
-    showToast('💜 Purple forced!');
-    addDebug('✅ Purple force complete!', true);
-}
-
-// ===== FIXED: Listen to real-time status with ALL 5 COLORS =====
-function listenToUserStatus(userId) {
-    if (!userId) return;
-    
-    addDebug(`🔊 Setting up listener for user: ${userId}`);
-    
-    const statusRef = rtdb.ref('/status/' + userId);
-    
-    // Listen for real-time changes
-    statusRef.on('value', (snapshot) => {
-        const data = snapshot.val();
-        
-        addDebug(`📡 RAW SIGNAL from Firebase: ${JSON.stringify(data)}`);
-        
-        if (!data || !data.state) {
-            addDebug(`⚠️ No status data for ${userId}`);
-            return;
-        }
-        
-        const status = data.state;
-        addDebug(`🎯 EXTRACTED STATUS: "${status}"`, status === 'onLeave');
-        
-        // Check if it's purple/onLeave
-        if (status === 'onLeave') {
-            purpleSignalDetected = true;
-            addDebug(`💜💜💜 PURPLE SIGNAL DETECTED! Status: onLeave`, true);
-        }
-        
-        userStatusMap.set(userId, status);
-        
-        // Update status dot in chat list
-        const wrapper = document.querySelector(`.chat-item-wrapper[data-user-id="${userId}"]`);
-        if (wrapper) {
-            const statusDot = wrapper.querySelector('.chatStatusDot');
-            if (statusDot) {
-                addDebug(`   → Found status dot for ${userId}, updating to ${status}`);
-                
-                // Clear all classes
-                statusDot.className = 'chatStatusDot';
-                
-                if (status === 'online') {
-                    statusDot.classList.add('statusOnline');
-                    addDebug(`   → Applied ONLINE (green)`);
-                } 
-                else if (status === 'atSea') {
-                    statusDot.classList.add('statusAtSea');
-                    addDebug(`   → Applied AT SEA (orange)`);
-                }
-                else if (status === 'inPort') {
-                    statusDot.classList.add('statusInPort');
-                    addDebug(`   → Applied IN PORT (blue)`);
-                }
-                else if (status === 'onLeave') {
-                    statusDot.classList.add('statusOnLeave');
-                    statusDot.style.setProperty('background', '#a855f7', 'important');
-                    statusDot.style.setProperty('box-shadow', '0 0 15px #a855f7', 'important');
-                    addDebug(`   ✅ Applied ON LEAVE (purple) 💜`, true);
-                }
-                else {
-                    statusDot.classList.add('statusOffline');
-                    addDebug(`   → Applied OFFLINE (gray)`);
-                }
-            }
-        }
-        
-        // Update chat header if this is the current chat
-        if (userId === currentChatPartnerId) {
-            addDebug(`🔄 Updating chat header for current chat`);
-            
-            const headerDot = document.getElementById('chatHeaderStatusDot');
-            if (headerDot) {
-                headerDot.className = 'chatHeaderStatusDot';
-                
-                let statusText = 'Offline';
-                let statusColor = '#94a3b8';
-                
-                if (status === 'online') {
-                    headerDot.classList.add('statusOnline');
-                    statusText = 'Online';
-                    statusColor = '#10b981';
-                } else if (status === 'atSea') {
-                    headerDot.classList.add('statusAtSea');
-                    statusText = 'At Sea';
-                    statusColor = '#f59e0b';
-                } else if (status === 'inPort') {
-                    headerDot.classList.add('statusInPort');
-                    statusText = 'In Port';
-                    statusColor = '#3b82f6';
-                } else if (status === 'onLeave') {
-                    headerDot.classList.add('statusOnLeave');
-                    statusText = 'On Leave';
-                    statusColor = '#a855f7';
-                    headerDot.style.setProperty('background', '#a855f7', 'important');
-                    headerDot.style.setProperty('box-shadow', '0 0 12px #a855f7', 'important');
-                    addDebug(`💜 Setting header to PURPLE`, true);
-                } else {
-                    headerDot.classList.add('statusOffline');
-                }
-                
-                document.getElementById('chatHeaderStatus').innerHTML = 
-                    `<span style="width:8px;height:8px;border-radius:50%;display:inline-block;background:${statusColor};margin-right:4px; box-shadow: ${status === 'onLeave' ? '0 0 10px #a855f7' : ''}"></span> ${statusText}`;
-            }
-        }
-    }, (error) => {
-        addDebug(`❌ Firebase listener error: ${error.message}`);
-    });
-}
-
 document.addEventListener('contextmenu', (e) => e.preventDefault());
 
 function formatTime(timestamp) {
@@ -1862,6 +1591,71 @@ function setupAutoOffline() {
     });
 }
 
+// ===== FIXED: Listen to real-time status with ALL 5 COLORS =====
+function listenToUserStatus(userId) {
+    if (!userId) return;
+    const statusRef = rtdb.ref('/status/' + userId);
+    
+    statusRef.on('value', (snapshot) => {
+        const data = snapshot.val();
+        if (data && data.state) {
+            userStatusMap.set(userId, data.state);
+            
+            console.log(`📡 RECEIVED signal: User ${userId} is now ${data.state}`);
+            
+            // Update status dot in chat list - 5 COLORS
+            const statusDot = document.querySelector(`.chat-item-wrapper[data-user-id="${userId}"] .chatStatusDot`);
+            if (statusDot) {
+                statusDot.className = 'chatStatusDot';
+                
+                if (data.state === 'online') {
+                    statusDot.classList.add('statusOnline');
+                    console.log(`   → Setting dot to ONLINE (green)`);
+                } 
+                else if (data.state === 'atSea') {
+                    statusDot.classList.add('statusAtSea');
+                    console.log(`   → Setting dot to AT SEA (orange)`);
+                }
+                else if (data.state === 'inPort') {
+                    statusDot.classList.add('statusInPort');
+                    console.log(`   → Setting dot to IN PORT (blue)`);
+                }
+                else if (data.state === 'onLeave') {
+                    statusDot.classList.add('statusOnLeave');
+                    console.log(`   → Setting dot to ON LEAVE (purple) 💜`);
+                }
+                else {
+                    statusDot.classList.add('statusOffline');
+                    console.log(`   → Setting dot to OFFLINE (gray)`);
+                }
+            }
+            
+            // Update chat header if this is the current chat - 5 COLORS
+            if (userId === currentChatPartnerId) {
+                let statusClass = 'statusOffline';
+                let statusText = 'Offline';
+                
+                if (data.state === 'online') {
+                    statusClass = 'statusOnline';
+                    statusText = 'Online';
+                } else if (data.state === 'atSea') {
+                    statusClass = 'statusAtSea';
+                    statusText = 'At Sea';
+                } else if (data.state === 'inPort') {
+                    statusClass = 'statusInPort';
+                    statusText = 'In Port';
+                } else if (data.state === 'onLeave') {
+                    statusClass = 'statusOnLeave';
+                    statusText = 'On Leave';
+                }
+                
+                document.getElementById('chatHeaderStatusDot').className = `chatHeaderStatusDot ${statusClass}`;
+                document.getElementById('chatHeaderStatus').innerHTML = `<span class="${statusClass}" style="width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px;"></span> ${statusText}`;
+            }
+        }
+    });
+}
+
 // ===== AUTH STATE HANDLER =====
 auth.onAuthStateChanged((user) => {
     console.log('Auth state:', user ? 'logged in' : 'not logged in');
@@ -1869,8 +1663,6 @@ auth.onAuthStateChanged((user) => {
         window.location.href = 'login.html';
         return;
     }
-    
-    addDebug(`✅ Logged in as: ${user.uid}`);
     
     if (currentUser && currentUser.uid === user.uid) {
         cleanupPresence();
@@ -1887,20 +1679,6 @@ auth.onAuthStateChanged((user) => {
         setupAutoOffline();
         loadChats();
         checkUrlForChat();
-        
-        // After 3 seconds, check all users' status
-        setTimeout(() => {
-            addDebug('🔍 Checking all users status...');
-            allUsers.forEach(u => {
-                rtdb.ref('/status/' + u.id).once('value')
-                    .then(s => {
-                        const data = s.val();
-                        if (data && data.state === 'onLeave') {
-                            addDebug(`💜 User ${u.name} has onLeave status!`, true);
-                        }
-                    });
-            });
-        }, 3000);
     });
 });
 
@@ -1963,22 +1741,18 @@ function loadChats() {
                 const user = allUsers.find(u => u.email === email);
                 if (!user) continue;
                 
-                // Get initial status
                 let status = 'offline';
                 try {
                     const statusSnapshot = await rtdb.ref('/status/' + user.id).once('value');
                     const statusData = statusSnapshot.val();
                     status = statusData ? statusData.state : 'offline';
                     userStatusMap.set(user.id, status);
-                    addDebug(`📋 Loaded initial status for ${user.name}: ${status}`, status === 'onLeave');
-                } catch (e) { 
-                    console.log('Error getting status for', user.email);
-                }
+                } catch (e) { console.log('Error getting status for', user.email); }
                 
                 const time = chatData.lastMsg.createdAt ? formatTime(chatData.lastMsg.createdAt) : '';
                 const lastMsg = chatData.lastMsg.text || (chatData.lastMsg.photo ? '📷 Photo' : '');
                 
-                // Set status class for 5 colors
+                // FIXED: Set status class for 5 colors
                 let statusClass = 'statusOffline';
                 if (status === 'online') statusClass = 'statusOnline';
                 else if (status === 'atSea') statusClass = 'statusAtSea';
@@ -2121,7 +1895,7 @@ function resetSwipe(chatId) {
     swipedItem = null;
 }
 
-// Search chats with 5 colors
+// FIXED: Search chats with 5 colors
 function searchChats() {
     const term = document.getElementById('searchInput').value.toLowerCase();
     const filtered = allChats.filter(c => c.name.toLowerCase().includes(term));
@@ -2190,40 +1964,30 @@ function openChat(userId, email) {
         }
     }).catch(error => console.error('Error loading user:', error));
     
-    // Get initial status with proper class
     rtdb.ref('/status/' + userId).once('value').then((snapshot) => {
         const statusData = snapshot.val();
         const status = statusData ? statusData.state : 'offline';
         
-        // Set chat header with 5 colors
-        const headerDot = document.getElementById('chatHeaderStatusDot');
-        headerDot.className = 'chatHeaderStatusDot';
-        
+        // FIXED: Set chat header with 5 colors
+        let statusClass = 'statusOffline';
         let statusText = 'Offline';
-        let statusColor = '#94a3b8';
         
         if (status === 'online') {
-            headerDot.classList.add('statusOnline');
+            statusClass = 'statusOnline';
             statusText = 'Online';
-            statusColor = '#10b981';
         } else if (status === 'atSea') {
-            headerDot.classList.add('statusAtSea');
+            statusClass = 'statusAtSea';
             statusText = 'At Sea';
-            statusColor = '#f59e0b';
         } else if (status === 'inPort') {
-            headerDot.classList.add('statusInPort');
+            statusClass = 'statusInPort';
             statusText = 'In Port';
-            statusColor = '#3b82f6';
         } else if (status === 'onLeave') {
-            headerDot.classList.add('statusOnLeave');
+            statusClass = 'statusOnLeave';
             statusText = 'On Leave';
-            statusColor = '#a855f7';
-            headerDot.style.setProperty('background', '#a855f7', 'important');
-            headerDot.style.setProperty('box-shadow', '0 0 12px #a855f7', 'important');
         }
         
-        document.getElementById('chatHeaderStatus').innerHTML = 
-            `<span style="width:8px;height:8px;border-radius:50%;display:inline-block;background:${statusColor};margin-right:4px; box-shadow: ${status === 'onLeave' ? '0 0 10px #a855f7' : ''}"></span> ${statusText}`;
+        document.getElementById('chatHeaderStatusDot').className = `chatHeaderStatusDot ${statusClass}`;
+        document.getElementById('chatHeaderStatus').innerHTML = `<span class="${statusClass}" style="width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px;"></span> ${statusText}`;
     });
     
     document.getElementById('chatListView').style.display = 'none';
@@ -2532,11 +2296,6 @@ window.addEventListener("touchend", () => {
 });
 
 document.getElementById('navMessages').classList.add('active');
-
-// Console commands
-console.log('%c🔮 DEBUG COMMANDS:', 'color: #a855f7; font-size: 16px; font-weight: bold;');
-console.log('%c   forceAllPurple() - Force all dots to purple', 'color: #a855f7;');
-console.log('%c   toggleDebugPanel() - Show/hide debug panel', 'color: #a855f7;');
 </script>
 
 </body>

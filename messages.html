@@ -1415,8 +1415,10 @@ const userStatusMap = new Map();
 let connectedListener = null;
 let beforeUnloadHandler = null;
 
-// Track last status for real-time updates
-let lastStatusUpdate = Date.now();
+// HEARTBEAT SYSTEM FOR INSTANT OFFLINE DETECTION
+let heartbeatInterval = null;
+let lastHeartbeat = Date.now();
+let userActive = true;
 
 document.addEventListener('contextmenu', (e) => e.preventDefault());
 
@@ -1534,6 +1536,58 @@ function cleanupPresence() {
         window.removeEventListener('beforeunload', beforeUnloadHandler);
         beforeUnloadHandler = null;
     }
+    if (heartbeatInterval) {
+        clearInterval(heartbeatInterval);
+        heartbeatInterval = null;
+    }
+}
+
+// HEARTBEAT FUNCTION - sends signal every 2 seconds that user is active
+function startHeartbeat() {
+    if (!currentUser) return;
+    
+    // Clear existing heartbeat
+    if (heartbeatInterval) {
+        clearInterval(heartbeatInterval);
+    }
+    
+    userActive = true;
+    lastHeartbeat = Date.now();
+    
+    // Send heartbeat every 2 seconds
+    heartbeatInterval = setInterval(async () => {
+        if (!currentUser || !userActive) return;
+        
+        try {
+            // Update heartbeat timestamp and ensure status is online
+            await rtdb.ref('/status/' + currentUser.uid).update({
+                last_heartbeat: firebase.database.ServerValue.TIMESTAMP,
+                state: 'online', // Keep status as online
+                last_changed: firebase.database.ServerValue.TIMESTAMP
+            });
+            lastHeartbeat = Date.now();
+            console.log('❤️ Heartbeat sent');
+        } catch (error) {
+            console.log('Heartbeat error:', error);
+        }
+    }, 2000); // Every 2 seconds
+    
+    // Monitor for heartbeat stoppage (user closed app)
+    const monitorInterval = setInterval(() => {
+        const timeSinceLastHeartbeat = Date.now() - lastHeartbeat;
+        
+        // If no heartbeat for 5 seconds, assume offline
+        if (timeSinceLastHeartbeat > 5000 && currentUser) {
+            console.log('⚠️ No heartbeat detected - marking as offline');
+            rtdb.ref('/status/' + currentUser.uid).update({
+                state: 'offline',
+                last_changed: firebase.database.ServerValue.TIMESTAMP
+            }).catch(console.error);
+            
+            // Clear monitor since we're offline
+            clearInterval(monitorInterval);
+        }
+    }, 3000);
 }
 
 async function syncProfileStatus() {
@@ -1550,6 +1604,7 @@ async function syncProfileStatus() {
         await rtdb.ref('/status/' + currentUser.uid).update({
             state: profileStatus,
             last_changed: firebase.database.ServerValue.TIMESTAMP,
+            last_heartbeat: firebase.database.ServerValue.TIMESTAMP,
             email: currentUser.email,
             displayName: currentUserData?.name || currentUser.email.split('@')[0] || 'User'
         });
@@ -1569,6 +1624,7 @@ function monitorMyStatus() {
     });
 }
 
+// ENHANCED AUTO OFFLINE SETUP
 function setupAutoOffline() {
     if (!currentUser) return;
     
@@ -1584,41 +1640,84 @@ function setupAutoOffline() {
         displayName: currentUserData?.name || currentUser.email.split('@')[0] || 'User'
     };
     
+    // MULTIPLE OFFLINE DETECTION METHODS
+    
+    // Method 1: Before unload (tab/window close)
     beforeUnloadHandler = function() {
         if (currentUser) {
             console.log('🟡 Tab closing - sending OFFLINE signal');
+            userActive = false;
+            
+            // Try sendBeacon first (fastest)
             const data = JSON.stringify({
                 state: 'offline',
                 last_changed: Date.now(),
                 email: currentUser.email
             });
-            navigator.sendBeacon(
-                firebaseConfig.databaseURL + '/status/' + currentUser.uid + '.json',
-                data
-            );
+            
+            // Multiple attempts to ensure offline status is sent
+            try {
+                navigator.sendBeacon(
+                    firebaseConfig.databaseURL + '/status/' + currentUser.uid + '.json',
+                    data
+                );
+            } catch (e) {
+                console.log('SendBeacon error:', e);
+            }
+            
+            // Also try fetch with keepalive
+            try {
+                fetch(firebaseConfig.databaseURL + '/status/' + currentUser.uid + '.json', {
+                    method: 'PUT',
+                    body: data,
+                    keepalive: true,
+                    headers: { 'Content-Type': 'application/json' }
+                }).catch(console.error);
+            } catch (e) {
+                console.log('Fetch error:', e);
+            }
+            
+            // Clear heartbeat
+            if (heartbeatInterval) {
+                clearInterval(heartbeatInterval);
+            }
         }
     };
+    
     window.addEventListener('beforeunload', beforeUnloadHandler);
     window.addEventListener('pagehide', beforeUnloadHandler);
     
+    // Method 2: Firebase onDisconnect (network drop)
     connectedListener = connectedRef.on('value', (snapshot) => {
         if (snapshot.val() === true) {
-            console.log('🟢 Connected to Firebase - setting up onDisconnect');
-            userStatusRef.onDisconnect().cancel();
+            console.log('🟢 Connected to Firebase - setting up instant offline detection');
+            
+            // Start heartbeat system
+            startHeartbeat();
+            
+            // Set onDisconnect as backup
             userStatusRef.onDisconnect().set(offlineData)
                 .then(() => {
-                    console.log('✅ onDisconnect set - will send OFFLINE signal when app closes');
+                    console.log('✅ onDisconnect set - backup offline signal ready');
                 })
                 .catch((error) => {
                     console.error('❌ Error setting up onDisconnect:', error);
                 });
+                
+            // Also set initial online status
+            userStatusRef.update({
+                state: 'online',
+                last_changed: firebase.database.ServerValue.TIMESTAMP,
+                last_heartbeat: firebase.database.ServerValue.TIMESTAMP
+            }).catch(console.error);
+            
         } else {
             console.log('🔴 Disconnected from Firebase');
         }
     });
 }
 
-// ===== FIXED: Listen to real-time status with ALL 5 COLORS and AUTO REFRESH =====
+// ===== FIXED: Listen to real-time status with ALL 5 COLORS =====
 function listenToUserStatus(userId) {
     if (!userId) return;
     const statusRef = rtdb.ref('/status/' + userId);
@@ -1649,14 +1748,17 @@ function listenToUserStatus(userId) {
                     if (newStatus === 'online') {
                         statusDot.classList.add('statusOnline');
                         statusDot.style.background = '';
+                        statusDot.style.boxShadow = '';
                     } 
                     else if (newStatus === 'atSea') {
                         statusDot.classList.add('statusAtSea');
                         statusDot.style.background = '';
+                        statusDot.style.boxShadow = '';
                     }
                     else if (newStatus === 'inPort') {
                         statusDot.classList.add('statusInPort');
                         statusDot.style.background = '';
+                        statusDot.style.boxShadow = '';
                     }
                     else if (newStatus === 'onLeave') {
                         statusDot.classList.add('statusOnLeave');
@@ -1667,6 +1769,7 @@ function listenToUserStatus(userId) {
                     else {
                         statusDot.classList.add('statusOffline');
                         statusDot.style.background = '';
+                        statusDot.style.boxShadow = '';
                     }
                     
                     // Add visual feedback that status updated
@@ -1675,21 +1778,12 @@ function listenToUserStatus(userId) {
                         if (statusDot) statusDot.style.transform = '';
                     }, 200);
                 }
-                
-                // Update preview text to show status change (optional)
-                const previewText = wrapper.querySelector('.previewText');
-                if (previewText && !previewText.textContent.includes('📷')) {
-                    // Don't modify if it's a photo message
-                }
             }
             
             // Update chat header if this is the current chat
             if (userId === currentChatPartnerId) {
                 updateChatHeader(newStatus);
             }
-            
-            // Force refresh the chat list item to ensure all updates show
-            lastStatusUpdate = Date.now();
         }
     });
 }

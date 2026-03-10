@@ -97,30 +97,54 @@ input, textarea {
     100% { transform: rotate(360deg); }
 }
 
-/* Pulsing animation for status dots - ALL 5 COLORS */
+/* Pulsing animation for status dots */
 @keyframes pulse {
-    0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-    70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    0% {
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+    }
 }
 
 @keyframes pulseAtSea {
-    0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7); }
-    70% { box-shadow: 0 0 0 6px rgba(245, 158, 11, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+    0% {
+        box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 6px rgba(245, 158, 11, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(245, 158, 11, 0);
+    }
 }
 
 @keyframes pulseInPort {
-    0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
-    70% { box-shadow: 0 0 0 6px rgba(59, 130, 246, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+    0% {
+        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 6px rgba(59, 130, 246, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+    }
 }
 
-/* FIXED: Purple pulse animation */
+/* FIXED: Stronger purple pulse animation */
 @keyframes pulseOnLeave {
-    0% { box-shadow: 0 0 0 0 #a855f7; }
-    50% { box-shadow: 0 0 20px #a855f7; }
-    100% { box-shadow: 0 0 0 0 #a855f7; }
+    0% {
+        box-shadow: 0 0 0 0 #a855f7;
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(168, 85, 247, 0.5);
+    }
+    100% {
+        box-shadow: 0 0 0 0 #a855f7;
+    }
 }
 
 /* Delete animation */
@@ -318,44 +342,44 @@ body {
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
-/* FIXED: Pulsing Status Dots - 5 Colors with !important */
+/* FIXED: Pulsing Status Dots - 5 Colors with !important for purple */
 .chatStatusDot {
     position: absolute;
     bottom: 2px;
     right: 2px;
-    width: 16px !important;
-    height: 16px !important;
-    border-radius: 50% !important;
-    border: 2px solid var(--bg-primary) !important;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid var(--bg-primary);
     z-index: 10;
     transition: all 0.3s ease;
 }
 
 .statusOnline { 
-    background: #10b981 !important; 
-    animation: pulse 2s infinite !important;
+    background: var(--online-color); 
+    animation: pulse 2s infinite;
 }
 
 .statusAtSea { 
-    background: #f59e0b !important; 
-    animation: pulseAtSea 2s infinite !important;
+    background: var(--atsea-color); 
+    animation: pulseAtSea 2s infinite;
 }
 
 .statusInPort { 
-    background: #3b82f6 !important; 
-    animation: pulseInPort 2s infinite !important;
+    background: var(--inport-color); 
+    animation: pulseInPort 2s infinite;
 }
 
-/* FIXED: Purple status with !important */
+/* FIXED: Purple status with stronger properties */
 .statusOnLeave { 
     background: #a855f7 !important; 
-    background-color: #a855f7 !important; 
+    background-color: #a855f7 !important;
     animation: pulseOnLeave 2s infinite !important;
-    box-shadow: 0 0 20px #a855f7 !important;
+    box-shadow: 0 0 10px #a855f7 !important;
 }
 
 .statusOffline { 
-    background: #94a3b8 !important; 
+    background: var(--offline-color); 
 }
 
 .chatInfo {
@@ -493,37 +517,37 @@ body {
     position: absolute;
     bottom: 0px;
     right: 0px;
-    width: 14px !important;
-    height: 14px !important;
-    border-radius: 50% !important;
-    border: 2px solid var(--bg-primary) !important;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid var(--bg-primary);
 }
 
 .chatHeaderStatusDot.statusOnline { 
-    background: #10b981 !important; 
-    animation: pulse 2s infinite !important;
+    background: var(--online-color); 
+    animation: pulse 2s infinite;
 }
 
 .chatHeaderStatusDot.statusAtSea { 
-    background: #f59e0b !important; 
-    animation: pulseAtSea 2s infinite !important;
+    background: var(--atsea-color); 
+    animation: pulseAtSea 2s infinite;
 }
 
 .chatHeaderStatusDot.statusInPort { 
-    background: #3b82f6 !important; 
-    animation: pulseInPort 2s infinite !important;
+    background: var(--inport-color); 
+    animation: pulseInPort 2s infinite;
 }
 
-/* FIXED: Purple header dot */
+/* FIXED: Purple header dot with !important */
 .chatHeaderStatusDot.statusOnLeave { 
     background: #a855f7 !important; 
     background-color: #a855f7 !important;
     animation: pulseOnLeave 2s infinite !important;
-    box-shadow: 0 0 15px #a855f7 !important;
+    box-shadow: 0 0 8px #a855f7 !important;
 }
 
 .chatHeaderStatusDot.statusOffline { 
-    background: #94a3b8 !important; 
+    background: var(--offline-color); 
 }
 
 .chatHeaderInfo {
@@ -1622,6 +1646,9 @@ function listenToUserStatus(userId) {
                 }
                 else if (data.state === 'onLeave') {
                     statusDot.classList.add('statusOnLeave');
+                    // Force purple with inline style as backup
+                    statusDot.style.background = '#a855f7';
+                    statusDot.style.boxShadow = '0 0 10px #a855f7';
                     console.log(`   → Setting dot to ON LEAVE (purple) 💜`);
                 }
                 else {
@@ -1634,23 +1661,33 @@ function listenToUserStatus(userId) {
             if (userId === currentChatPartnerId) {
                 let statusClass = 'statusOffline';
                 let statusText = 'Offline';
+                let statusColor = '#94a3b8';
                 
                 if (data.state === 'online') {
                     statusClass = 'statusOnline';
                     statusText = 'Online';
+                    statusColor = '#10b981';
                 } else if (data.state === 'atSea') {
                     statusClass = 'statusAtSea';
                     statusText = 'At Sea';
+                    statusColor = '#f59e0b';
                 } else if (data.state === 'inPort') {
                     statusClass = 'statusInPort';
                     statusText = 'In Port';
+                    statusColor = '#3b82f6';
                 } else if (data.state === 'onLeave') {
                     statusClass = 'statusOnLeave';
                     statusText = 'On Leave';
+                    statusColor = '#a855f7';
                 }
                 
                 document.getElementById('chatHeaderStatusDot').className = `chatHeaderStatusDot ${statusClass}`;
-                document.getElementById('chatHeaderStatus').innerHTML = `<span class="${statusClass}" style="width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px;"></span> ${statusText}`;
+                // Force purple with inline style
+                if (data.state === 'onLeave') {
+                    document.getElementById('chatHeaderStatusDot').style.background = '#a855f7';
+                    document.getElementById('chatHeaderStatusDot').style.boxShadow = '0 0 8px #a855f7';
+                }
+                document.getElementById('chatHeaderStatus').innerHTML = `<span style="width:8px;height:8px;border-radius:50%;display:inline-block;background:${statusColor};margin-right:4px; ${data.state === 'onLeave' ? 'box-shadow:0 0 8px #a855f7;' : ''}"></span> ${statusText}`;
             }
         }
     });
@@ -1754,10 +1791,14 @@ function loadChats() {
                 
                 // FIXED: Set status class for 5 colors
                 let statusClass = 'statusOffline';
+                let inlineStyle = '';
                 if (status === 'online') statusClass = 'statusOnline';
                 else if (status === 'atSea') statusClass = 'statusAtSea';
                 else if (status === 'inPort') statusClass = 'statusInPort';
-                else if (status === 'onLeave') statusClass = 'statusOnLeave';
+                else if (status === 'onLeave') {
+                    statusClass = 'statusOnLeave';
+                    inlineStyle = 'style="background: #a855f7 !important; box-shadow: 0 0 10px #a855f7 !important;"';
+                }
                 
                 const chatId = [currentUser.uid, user.id].sort().join('_');
                 const unreadCount = chatData.unread || 0;
@@ -1773,7 +1814,7 @@ function loadChats() {
                              ontouchend="handleSwipeEnd(event)">
                             <div class="chatAvatarWrapper">
                                 <img src="${user.photo}" class="chatAvatar">
-                                <span class="chatStatusDot ${statusClass}"></span>
+                                <span class="chatStatusDot ${statusClass}" ${inlineStyle}></span>
                             </div>
                             <div class="chatInfo">
                                 <div class="chatHeader">
@@ -1903,6 +1944,7 @@ function searchChats() {
     filtered.forEach(chat => {
         const status = userStatusMap.get(chat.userId) || chat.status || 'offline';
         let statusClass = 'statusOffline';
+        let inlineStyle = '';
         
         if (status === 'online') {
             statusClass = 'statusOnline';
@@ -1912,6 +1954,7 @@ function searchChats() {
             statusClass = 'statusInPort';
         } else if (status === 'onLeave') {
             statusClass = 'statusOnLeave';
+            inlineStyle = 'style="background: #a855f7 !important; box-shadow: 0 0 10px #a855f7 !important;"';
         }
         
         html += `
@@ -1923,7 +1966,7 @@ function searchChats() {
                      ontouchend="handleSwipeEnd(event)">
                     <div class="chatAvatarWrapper">
                         <img src="${chat.photo}" class="chatAvatar">
-                        <span class="chatStatusDot ${statusClass}"></span>
+                        <span class="chatStatusDot ${statusClass}" ${inlineStyle}></span>
                     </div>
                     <div class="chatInfo">
                         <div class="chatHeader">
@@ -1971,23 +2014,36 @@ function openChat(userId, email) {
         // FIXED: Set chat header with 5 colors
         let statusClass = 'statusOffline';
         let statusText = 'Offline';
+        let statusColor = '#94a3b8';
         
         if (status === 'online') {
             statusClass = 'statusOnline';
             statusText = 'Online';
+            statusColor = '#10b981';
         } else if (status === 'atSea') {
             statusClass = 'statusAtSea';
             statusText = 'At Sea';
+            statusColor = '#f59e0b';
         } else if (status === 'inPort') {
             statusClass = 'statusInPort';
             statusText = 'In Port';
+            statusColor = '#3b82f6';
         } else if (status === 'onLeave') {
             statusClass = 'statusOnLeave';
             statusText = 'On Leave';
+            statusColor = '#a855f7';
         }
         
-        document.getElementById('chatHeaderStatusDot').className = `chatHeaderStatusDot ${statusClass}`;
-        document.getElementById('chatHeaderStatus').innerHTML = `<span class="${statusClass}" style="width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px;"></span> ${statusText}`;
+        const headerDot = document.getElementById('chatHeaderStatusDot');
+        headerDot.className = `chatHeaderStatusDot ${statusClass}`;
+        
+        // Force purple with inline style
+        if (status === 'onLeave') {
+            headerDot.style.background = '#a855f7';
+            headerDot.style.boxShadow = '0 0 8px #a855f7';
+        }
+        
+        document.getElementById('chatHeaderStatus').innerHTML = `<span style="width:8px;height:8px;border-radius:50%;display:inline-block;background:${statusColor};margin-right:4px; ${status === 'onLeave' ? 'box-shadow:0 0 8px #a855f7;' : ''}"></span> ${statusText}`;
     });
     
     document.getElementById('chatListView').style.display = 'none';

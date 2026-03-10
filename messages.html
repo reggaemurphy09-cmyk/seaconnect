@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-<title>Messages | Sea Connect</title>
+<title>Messages | Sea Connect - PURPLE FIXED</title>
 
 <style>
 /* Theme Variables */
@@ -26,6 +26,7 @@
     --online-color: #10b981;
     --atsea-color: #f59e0b;
     --inport-color: #3b82f6;
+    --onleave-color: #a855f7;
     --offline-color: #94a3b8;
 }
 
@@ -48,7 +49,103 @@
     --online-color: #10b981;
     --atsea-color: #f59e0b;
     --inport-color: #3b82f6;
+    --onleave-color: #c084fc;
     --offline-color: #666666;
+}
+
+/* DEBUG PANEL STYLES */
+.debug-panel {
+    position: fixed;
+    bottom: 100px;
+    left: 10px;
+    right: 10px;
+    background: rgba(0,0,0,0.95);
+    color: #0f0;
+    padding: 12px;
+    border-radius: 16px;
+    font-family: monospace;
+    font-size: 11px;
+    z-index: 10000;
+    max-height: 250px;
+    overflow-y: auto;
+    display: none;
+    border: 3px solid #a855f7;
+    box-shadow: 0 0 30px #a855f7;
+}
+
+.debug-panel.active {
+    display: block;
+}
+
+.debug-title {
+    color: #a855f7;
+    font-weight: bold;
+    margin-bottom: 8px;
+    text-align: center;
+    font-size: 14px;
+    letter-spacing: 1px;
+}
+
+.debug-entry {
+    border-bottom: 1px solid #333;
+    padding: 4px 0;
+    word-break: break-all;
+}
+
+.debug-purple {
+    color: #c084fc;
+    font-weight: bold;
+    background: rgba(168, 85, 247, 0.1);
+    padding: 2px 4px;
+    border-radius: 4px;
+}
+
+.debug-button {
+    position: fixed;
+    bottom: 180px;
+    right: 10px;
+    background: #a855f7;
+    color: white;
+    border: none;
+    border-radius: 40px;
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: bold;
+    z-index: 10001;
+    cursor: pointer;
+    box-shadow: 0 0 30px #a855f7;
+    animation: debugPulse 1.5s infinite;
+    border: 2px solid white;
+}
+
+.purple-force-btn {
+    position: fixed;
+    bottom: 240px;
+    right: 10px;
+    background: linear-gradient(135deg, #a855f7, #6b21a5);
+    color: white;
+    border: none;
+    border-radius: 40px;
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: bold;
+    z-index: 10001;
+    cursor: pointer;
+    box-shadow: 0 0 30px #a855f7;
+    animation: pulsePurple 1s infinite;
+    border: 2px solid white;
+}
+
+@keyframes pulsePurple {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); box-shadow: 0 0 50px #a855f7; }
+    100% { transform: scale(1); }
+}
+
+@keyframes debugPulse {
+    0% { transform: scale(1); box-shadow: 0 0 20px #a855f7; }
+    50% { transform: scale(1.1); box-shadow: 0 0 40px #c084fc; }
+    100% { transform: scale(1); box-shadow: 0 0 20px #a855f7; }
 }
 
 /* Disable system menus */
@@ -95,41 +192,30 @@ input, textarea {
     100% { transform: rotate(360deg); }
 }
 
-/* Pulsing animation for status dots */
+/* Pulsing animation for status dots - ALL 5 COLORS */
 @keyframes pulse {
-    0% {
-        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
-    }
-    70% {
-        box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
-    }
-    100% {
-        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
-    }
+    0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+    70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
 }
 
 @keyframes pulseAtSea {
-    0% {
-        box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7);
-    }
-    70% {
-        box-shadow: 0 0 0 6px rgba(245, 158, 11, 0);
-    }
-    100% {
-        box-shadow: 0 0 0 0 rgba(245, 158, 11, 0);
-    }
+    0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7); }
+    70% { box-shadow: 0 0 0 6px rgba(245, 158, 11, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
 }
 
 @keyframes pulseInPort {
-    0% {
-        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
-    }
-    70% {
-        box-shadow: 0 0 0 6px rgba(59, 130, 246, 0);
-    }
-    100% {
-        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
-    }
+    0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
+    70% { box-shadow: 0 0 0 6px rgba(59, 130, 246, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+}
+
+/* FIXED: Purple pulse animation */
+@keyframes pulseOnLeave {
+    0% { box-shadow: 0 0 0 0 #a855f7; }
+    50% { box-shadow: 0 0 20px #a855f7; }
+    100% { box-shadow: 0 0 0 0 #a855f7; }
 }
 
 /* Delete animation */
@@ -327,35 +413,44 @@ body {
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
-/* Pulsing Status Dots */
+/* FIXED: Pulsing Status Dots - 5 Colors with !important */
 .chatStatusDot {
     position: absolute;
     bottom: 2px;
     right: 2px;
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    border: 2px solid var(--bg-primary);
+    width: 16px !important;
+    height: 16px !important;
+    border-radius: 50% !important;
+    border: 2px solid var(--bg-primary) !important;
     z-index: 10;
+    transition: all 0.3s ease;
 }
 
 .statusOnline { 
-    background: var(--online-color); 
-    animation: pulse 2s infinite;
+    background: #10b981 !important; 
+    animation: pulse 2s infinite !important;
 }
 
 .statusAtSea { 
-    background: var(--atsea-color); 
-    animation: pulseAtSea 2s infinite;
+    background: #f59e0b !important; 
+    animation: pulseAtSea 2s infinite !important;
 }
 
 .statusInPort { 
-    background: var(--inport-color); 
-    animation: pulseInPort 2s infinite;
+    background: #3b82f6 !important; 
+    animation: pulseInPort 2s infinite !important;
+}
+
+/* FIXED: Purple status with !important */
+.statusOnLeave { 
+    background: #a855f7 !important; 
+    background-color: #a855f7 !important; 
+    animation: pulseOnLeave 2s infinite !important;
+    box-shadow: 0 0 20px #a855f7 !important;
 }
 
 .statusOffline { 
-    background: var(--offline-color); 
+    background: #94a3b8 !important; 
 }
 
 .chatInfo {
@@ -488,34 +583,42 @@ body {
     border: 2px solid var(--bg-primary);
 }
 
-/* Pulsing Status Dot in Chat Header */
+/* FIXED: Pulsing Status Dot in Chat Header - 5 Colors */
 .chatHeaderStatusDot {
     position: absolute;
     bottom: 0px;
     right: 0px;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    border: 2px solid var(--bg-primary);
+    width: 14px !important;
+    height: 14px !important;
+    border-radius: 50% !important;
+    border: 2px solid var(--bg-primary) !important;
 }
 
 .chatHeaderStatusDot.statusOnline { 
-    background: var(--online-color); 
-    animation: pulse 2s infinite;
+    background: #10b981 !important; 
+    animation: pulse 2s infinite !important;
 }
 
 .chatHeaderStatusDot.statusAtSea { 
-    background: var(--atsea-color); 
-    animation: pulseAtSea 2s infinite;
+    background: #f59e0b !important; 
+    animation: pulseAtSea 2s infinite !important;
 }
 
 .chatHeaderStatusDot.statusInPort { 
-    background: var(--inport-color); 
-    animation: pulseInPort 2s infinite;
+    background: #3b82f6 !important; 
+    animation: pulseInPort 2s infinite !important;
+}
+
+/* FIXED: Purple header dot */
+.chatHeaderStatusDot.statusOnLeave { 
+    background: #a855f7 !important; 
+    background-color: #a855f7 !important;
+    animation: pulseOnLeave 2s infinite !important;
+    box-shadow: 0 0 15px #a855f7 !important;
 }
 
 .chatHeaderStatusDot.statusOffline { 
-    background: var(--offline-color); 
+    background: #94a3b8 !important; 
 }
 
 .chatHeaderInfo {
@@ -1123,6 +1226,18 @@ body {
 
 <body data-theme="light">
 
+<!-- DEBUG BUTTONS -->
+<button class="debug-button" onclick="toggleDebugPanel()">🔍 DEBUG PURPLE</button>
+<button class="purple-force-btn" onclick="forceAllPurple()">💜 FORCE PURPLE NOW</button>
+
+<!-- DEBUG PANEL -->
+<div class="debug-panel" id="debugPanel">
+    <div class="debug-title">🔮 PURPLE SIGNAL DEBUG</div>
+    <div id="debugContent">
+        <div class="debug-entry">Initializing debug...</div>
+    </div>
+</div>
+
 <div id="pullLoader">
 <div class="loader"></div>
 </div>
@@ -1359,7 +1474,6 @@ const auth = firebase.auth();
 const db = firebase.firestore();
 const rtdb = firebase.database();
 
-// ImgBB API Key
 const IMGBB_API_KEY = '7a6b8c43b67ce45e354763c86371b2e1';
 
 let currentUser = null;
@@ -1380,69 +1494,212 @@ let touchStartX = 0;
 let touchCurrentX = 0;
 let isSwiping = false;
 
-// Store real-time status for users
 const userStatusMap = new Map();
+let connectedListener = null;
+let beforeUnloadHandler = null;
 
-// Disable system menus
+// Debug variables
+let debugLogs = [];
+let purpleSignalDetected = false;
+
+// Debug functions
+function addDebug(message, isPurple = false) {
+    const time = new Date().toLocaleTimeString();
+    const logEntry = `[${time}] ${message}`;
+    debugLogs.unshift(logEntry);
+    
+    console.log(isPurple ? '%c' + logEntry : logEntry, isPurple ? 'color: #a855f7; font-weight: bold;' : '');
+    
+    const debugContent = document.getElementById('debugContent');
+    if (debugContent) {
+        const className = isPurple ? 'debug-purple' : '';
+        debugContent.innerHTML = `<div class="debug-entry ${className}">${logEntry}</div>` + debugContent.innerHTML;
+        
+        // Keep only last 20 entries
+        while (debugContent.children.length > 20) {
+            debugContent.removeChild(debugContent.lastChild);
+        }
+    }
+}
+
+function toggleDebugPanel() {
+    const panel = document.getElementById('debugPanel');
+    panel.classList.toggle('active');
+}
+
+// FORCE ALL DOTS TO PURPLE
+function forceAllPurple() {
+    addDebug('💜💜💜 FORCING ALL DOTS TO PURPLE', true);
+    
+    // Update all status dots to purple
+    document.querySelectorAll('.chatStatusDot').forEach((dot, index) => {
+        dot.className = 'chatStatusDot statusOnLeave';
+        dot.style.setProperty('background', '#a855f7', 'important');
+        dot.style.setProperty('background-color', '#a855f7', 'important');
+        dot.style.setProperty('box-shadow', '0 0 20px #a855f7', 'important');
+        addDebug(`✅ Dot ${index} forced to purple`, true);
+    });
+    
+    // Force header if chat is open
+    const headerDot = document.getElementById('chatHeaderStatusDot');
+    if (headerDot) {
+        headerDot.className = 'chatHeaderStatusDot statusOnLeave';
+        headerDot.style.setProperty('background', '#a855f7', 'important');
+        headerDot.style.setProperty('box-shadow', '0 0 15px #a855f7', 'important');
+        document.getElementById('chatHeaderStatus').innerHTML = 
+            `<span style="width:8px;height:8px;border-radius:50%;display:inline-block;background:#a855f7;margin-right:4px; box-shadow:0 0 10px #a855f7;"></span> On Leave (FORCED PURPLE)`;
+    }
+    
+    showToast('💜 Purple forced!');
+    addDebug('✅ Purple force complete!', true);
+}
+
+// ===== FIXED: Listen to real-time status with ALL 5 COLORS =====
+function listenToUserStatus(userId) {
+    if (!userId) return;
+    
+    addDebug(`🔊 Setting up listener for user: ${userId}`);
+    
+    const statusRef = rtdb.ref('/status/' + userId);
+    
+    // Listen for real-time changes
+    statusRef.on('value', (snapshot) => {
+        const data = snapshot.val();
+        
+        addDebug(`📡 RAW SIGNAL from Firebase: ${JSON.stringify(data)}`);
+        
+        if (!data || !data.state) {
+            addDebug(`⚠️ No status data for ${userId}`);
+            return;
+        }
+        
+        const status = data.state;
+        addDebug(`🎯 EXTRACTED STATUS: "${status}"`, status === 'onLeave');
+        
+        // Check if it's purple/onLeave
+        if (status === 'onLeave') {
+            purpleSignalDetected = true;
+            addDebug(`💜💜💜 PURPLE SIGNAL DETECTED! Status: onLeave`, true);
+        }
+        
+        userStatusMap.set(userId, status);
+        
+        // Update status dot in chat list
+        const wrapper = document.querySelector(`.chat-item-wrapper[data-user-id="${userId}"]`);
+        if (wrapper) {
+            const statusDot = wrapper.querySelector('.chatStatusDot');
+            if (statusDot) {
+                addDebug(`   → Found status dot for ${userId}, updating to ${status}`);
+                
+                // Clear all classes
+                statusDot.className = 'chatStatusDot';
+                
+                if (status === 'online') {
+                    statusDot.classList.add('statusOnline');
+                    addDebug(`   → Applied ONLINE (green)`);
+                } 
+                else if (status === 'atSea') {
+                    statusDot.classList.add('statusAtSea');
+                    addDebug(`   → Applied AT SEA (orange)`);
+                }
+                else if (status === 'inPort') {
+                    statusDot.classList.add('statusInPort');
+                    addDebug(`   → Applied IN PORT (blue)`);
+                }
+                else if (status === 'onLeave') {
+                    statusDot.classList.add('statusOnLeave');
+                    statusDot.style.setProperty('background', '#a855f7', 'important');
+                    statusDot.style.setProperty('box-shadow', '0 0 15px #a855f7', 'important');
+                    addDebug(`   ✅ Applied ON LEAVE (purple) 💜`, true);
+                }
+                else {
+                    statusDot.classList.add('statusOffline');
+                    addDebug(`   → Applied OFFLINE (gray)`);
+                }
+            }
+        }
+        
+        // Update chat header if this is the current chat
+        if (userId === currentChatPartnerId) {
+            addDebug(`🔄 Updating chat header for current chat`);
+            
+            const headerDot = document.getElementById('chatHeaderStatusDot');
+            if (headerDot) {
+                headerDot.className = 'chatHeaderStatusDot';
+                
+                let statusText = 'Offline';
+                let statusColor = '#94a3b8';
+                
+                if (status === 'online') {
+                    headerDot.classList.add('statusOnline');
+                    statusText = 'Online';
+                    statusColor = '#10b981';
+                } else if (status === 'atSea') {
+                    headerDot.classList.add('statusAtSea');
+                    statusText = 'At Sea';
+                    statusColor = '#f59e0b';
+                } else if (status === 'inPort') {
+                    headerDot.classList.add('statusInPort');
+                    statusText = 'In Port';
+                    statusColor = '#3b82f6';
+                } else if (status === 'onLeave') {
+                    headerDot.classList.add('statusOnLeave');
+                    statusText = 'On Leave';
+                    statusColor = '#a855f7';
+                    headerDot.style.setProperty('background', '#a855f7', 'important');
+                    headerDot.style.setProperty('box-shadow', '0 0 12px #a855f7', 'important');
+                    addDebug(`💜 Setting header to PURPLE`, true);
+                } else {
+                    headerDot.classList.add('statusOffline');
+                }
+                
+                document.getElementById('chatHeaderStatus').innerHTML = 
+                    `<span style="width:8px;height:8px;border-radius:50%;display:inline-block;background:${statusColor};margin-right:4px; box-shadow: ${status === 'onLeave' ? '0 0 10px #a855f7' : ''}"></span> ${statusText}`;
+            }
+        }
+    }, (error) => {
+        addDebug(`❌ Firebase listener error: ${error.message}`);
+    });
+}
+
 document.addEventListener('contextmenu', (e) => e.preventDefault());
 
-// Format time helper
 function formatTime(timestamp) {
     if (!timestamp) return 'just now';
-    
     try {
         let date;
-        if (timestamp.toDate) {
-            date = timestamp.toDate();
-        } else if (timestamp.seconds) {
-            date = new Date(timestamp.seconds * 1000);
-        } else {
-            date = new Date(timestamp);
-        }
-        
-        if (isNaN(date.getTime())) {
-            return 'just now';
-        }
-        
+        if (timestamp.toDate) date = timestamp.toDate();
+        else if (timestamp.seconds) date = new Date(timestamp.seconds * 1000);
+        else date = new Date(timestamp);
+        if (isNaN(date.getTime())) return 'just now';
         const now = new Date();
         const diff = Math.floor((now - date) / 1000);
-        
         if (diff < 60) return 'just now';
         if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
         if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
         if (diff < 604800) return Math.floor(diff / 86400) + 'd ago';
-        
         return date.toLocaleDateString();
     } catch (e) {
         return 'just now';
     }
 }
 
-// Mark messages as read when opening chat
 async function markMessagesAsRead(chatPartnerEmail) {
     if (!currentUser || !chatPartnerEmail) return;
-    
     try {
         const snapshot = await db.collection('messages')
             .where('from', '==', chatPartnerEmail)
             .where('to', '==', currentUser.email)
             .where('seen', '==', false)
             .get();
-        
         const batch = db.batch();
-        snapshot.forEach((doc) => {
-            batch.update(doc.ref, { seen: true });
-        });
-        
-        if (snapshot.size > 0) {
-            await batch.commit();
-        }
+        snapshot.forEach((doc) => batch.update(doc.ref, { seen: true }));
+        if (snapshot.size > 0) await batch.commit();
     } catch (error) {
         console.error('Error marking messages as read:', error);
     }
 }
 
-// Load user theme
 function loadUserTheme() {
     if (!currentUser) return;
     db.collection('users').doc(currentUser.uid).get().then((doc) => {
@@ -1462,20 +1719,33 @@ function loadUserTheme() {
     }).catch(err => console.log('Theme error:', err));
 }
 
-// Load current user data
 function loadCurrentUserData() {
-    if (!currentUser) return;
-    db.collection('users').doc(currentUser.uid).get().then((doc) => {
-        if (doc.exists) {
-            currentUserData = doc.data();
-            if (currentUserData.photoURL) {
-                document.getElementById('navAvatar').src = currentUserData.photoURL;
-            }
+    return new Promise((resolve) => {
+        if (!currentUser) { 
+            console.log('No current user for loadCurrentUserData');
+            resolve(); 
+            return; 
         }
-    }).catch(err => console.log('User data error:', err));
+        db.collection('users').doc(currentUser.uid).get().then((doc) => {
+            if (doc.exists) {
+                currentUserData = doc.data();
+                console.log('📊 Loaded user data from Firestore:', currentUserData);
+                if (currentUserData.photoURL) {
+                    document.getElementById('navAvatar').src = currentUserData.photoURL;
+                }
+            } else {
+                console.log('No user document found');
+                currentUserData = { status: 'online' };
+            }
+            resolve();
+        }).catch(err => { 
+            console.log('User data error:', err); 
+            currentUserData = { status: 'online' };
+            resolve();
+        });
+    });
 }
 
-// Toast helper
 function showToast(message) {
     const toast = document.getElementById('toast');
     toast.textContent = message;
@@ -1483,89 +1753,157 @@ function showToast(message) {
     setTimeout(() => toast.classList.remove('show'), 2000);
 }
 
-// Check for URL parameters
 function checkUrlForChat() {
     const urlParams = new URLSearchParams(window.location.search);
     const friendId = urlParams.get('friend');
     const friendEmail = urlParams.get('email');
-    
     if (friendId) {
         if (friendEmail) {
             openChat(friendId, decodeURIComponent(friendEmail));
         } else {
             setTimeout(() => {
                 const user = allUsers.find(u => u.id === friendId);
-                if (user) {
-                    openChat(friendId, user.email);
-                }
+                if (user) openChat(friendId, user.email);
             }, 1000);
         }
     }
 }
 
-// Listen to real-time status from Realtime Database
-function listenToUserStatus(userId) {
-    if (!userId) return;
+function cleanupPresence() {
+    if (connectedListener) {
+        connectedListener.off();
+        connectedListener = null;
+    }
+    if (beforeUnloadHandler) {
+        window.removeEventListener('beforeunload', beforeUnloadHandler);
+        beforeUnloadHandler = null;
+    }
+}
+
+async function syncProfileStatus() {
+    if (!currentUser) {
+        console.log('No current user for syncProfileStatus');
+        return;
+    }
     
-    const statusRef = rtdb.ref('/status/' + userId);
+    const profileStatus = (currentUserData && currentUserData.status) ? currentUserData.status : 'online';
     
-    statusRef.on('value', (snapshot) => {
+    console.log('📤 SENDING status signal to Firebase:', profileStatus);
+    
+    try {
+        await rtdb.ref('/status/' + currentUser.uid).update({
+            state: profileStatus,
+            last_changed: firebase.database.ServerValue.TIMESTAMP,
+            email: currentUser.email,
+            displayName: currentUserData?.name || currentUser.email.split('@')[0] || 'User'
+        });
+        
+        console.log('✅ Status signal sent successfully to:', profileStatus);
+    } catch (error) {
+        console.error('❌ Error sending status signal:', error);
+    }
+}
+
+function monitorMyStatus() {
+    if (!currentUser) return;
+    
+    rtdb.ref('/status/' + currentUser.uid).on('value', (snapshot) => {
         const data = snapshot.val();
-        if (data && data.state) {
-            userStatusMap.set(userId, data.state);
-            
-            // Update status dot in chat list
-            const statusDot = document.querySelector(`.chat-item-wrapper[data-user-id="${userId}"] .chatStatusDot`);
-            if (statusDot) {
-                statusDot.className = 'chatStatusDot';
-                if (data.state === 'online') statusDot.classList.add('statusOnline');
-                else if (data.state === 'atSea') statusDot.classList.add('statusAtSea');
-                else if (data.state === 'inPort') statusDot.classList.add('statusInPort');
-                else statusDot.classList.add('statusOffline');
-            }
-            
-            // Update chat header if this is the current chat
-            if (userId === currentChatPartnerId) {
-                let statusClass = 'statusOffline';
-                let statusText = 'Offline';
-                
-                if (data.state === 'online') {
-                    statusClass = 'statusOnline';
-                    statusText = 'Online';
-                } else if (data.state === 'atSea') {
-                    statusClass = 'statusAtSea';
-                    statusText = 'At Sea';
-                } else if (data.state === 'inPort') {
-                    statusClass = 'statusInPort';
-                    statusText = 'In Port';
-                }
-                
-                document.getElementById('chatHeaderStatusDot').className = `chatHeaderStatusDot ${statusClass}`;
-                document.getElementById('chatHeaderStatus').innerHTML = `<span class="${statusClass}" style="width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px;"></span> ${statusText}`;
-            }
-            
-            console.log(`Status updated for ${userId}: ${data.state}`);
+        console.log('📡 RECEIVED my own status signal:', data);
+    });
+}
+
+function setupAutoOffline() {
+    if (!currentUser) return;
+    
+    cleanupPresence();
+    
+    const userStatusRef = rtdb.ref('/status/' + currentUser.uid);
+    const connectedRef = rtdb.ref('.info/connected');
+    
+    const offlineData = {
+        state: 'offline',
+        last_changed: firebase.database.ServerValue.TIMESTAMP,
+        email: currentUser.email,
+        displayName: currentUserData?.name || currentUser.email.split('@')[0] || 'User'
+    };
+    
+    beforeUnloadHandler = function() {
+        if (currentUser) {
+            console.log('🟡 Tab closing - sending OFFLINE signal');
+            const data = JSON.stringify({
+                state: 'offline',
+                last_changed: Date.now(),
+                email: currentUser.email
+            });
+            navigator.sendBeacon(
+                firebaseConfig.databaseURL + '/status/' + currentUser.uid + '.json',
+                data
+            );
+        }
+    };
+    window.addEventListener('beforeunload', beforeUnloadHandler);
+    window.addEventListener('pagehide', beforeUnloadHandler);
+    
+    connectedListener = connectedRef.on('value', (snapshot) => {
+        if (snapshot.val() === true) {
+            console.log('🟢 Connected to Firebase - setting up onDisconnect');
+            userStatusRef.onDisconnect().cancel();
+            userStatusRef.onDisconnect().set(offlineData)
+                .then(() => {
+                    console.log('✅ onDisconnect set - will send OFFLINE signal when app closes');
+                })
+                .catch((error) => {
+                    console.error('❌ Error setting up onDisconnect:', error);
+                });
+        } else {
+            console.log('🔴 Disconnected from Firebase');
         }
     });
 }
 
-// Check auth state
+// ===== AUTH STATE HANDLER =====
 auth.onAuthStateChanged((user) => {
     console.log('Auth state:', user ? 'logged in' : 'not logged in');
     if (!user) {
         window.location.href = 'login.html';
         return;
     }
+    
+    addDebug(`✅ Logged in as: ${user.uid}`);
+    
+    if (currentUser && currentUser.uid === user.uid) {
+        cleanupPresence();
+    }
+    
     currentUser = user;
-    loadCurrentUserData();
-    loadUserTheme();
-    loadAllUsers().then(() => {
+    
+    loadCurrentUserData().then(() => {
+        loadUserTheme();
+        return loadAllUsers();
+    }).then(async () => {
+        await syncProfileStatus();
+        monitorMyStatus();
+        setupAutoOffline();
         loadChats();
         checkUrlForChat();
+        
+        // After 3 seconds, check all users' status
+        setTimeout(() => {
+            addDebug('🔍 Checking all users status...');
+            allUsers.forEach(u => {
+                rtdb.ref('/status/' + u.id).once('value')
+                    .then(s => {
+                        const data = s.val();
+                        if (data && data.state === 'onLeave') {
+                            addDebug(`💜 User ${u.name} has onLeave status!`, true);
+                        }
+                    });
+            });
+        }, 3000);
     });
 });
 
-// Load all users
 function loadAllUsers() {
     return db.collection('users').get().then((snapshot) => {
         allUsers = [];
@@ -1585,46 +1923,31 @@ function loadAllUsers() {
     });
 }
 
-// Load chats
 function loadChats() {
     const chatList = document.getElementById('chatList');
     const loading = document.getElementById('chatsLoading');
-    
     if (!chatList || !loading) return;
     
     db.collection('messages')
         .orderBy('createdAt', 'desc')
         .onSnapshot(async (snapshot) => {
             loading.style.display = 'none';
-            
             const chatMap = new Map();
             
             snapshot.forEach(doc => {
                 const msg = doc.data();
                 if (msg.deleted) return;
                 if (msg.from !== currentUser.email && msg.to !== currentUser.email) return;
-                
                 const otherEmail = msg.from === currentUser.email ? msg.to : msg.from;
                 
                 if (!chatMap.has(otherEmail)) {
-                    chatMap.set(otherEmail, {
-                        lastMsg: msg,
-                        unread: msg.to === currentUser.email && !msg.seen ? 1 : 0
-                    });
+                    chatMap.set(otherEmail, { lastMsg: msg, unread: msg.to === currentUser.email && !msg.seen ? 1 : 0 });
                 } else {
                     const chat = chatMap.get(otherEmail);
-                    if (msg.to === currentUser.email && !msg.seen) {
-                        chat.unread = (chat.unread || 0) + 1;
-                    }
-                    
-                    const existingTime = chat.lastMsg.createdAt ? 
-                        (chat.lastMsg.createdAt.toDate ? chat.lastMsg.createdAt.toDate() : new Date(chat.lastMsg.createdAt)) : new Date(0);
-                    const newTime = msg.createdAt ? 
-                        (msg.createdAt.toDate ? msg.createdAt.toDate() : new Date(msg.createdAt)) : new Date(0);
-                    
-                    if (newTime > existingTime) {
-                        chat.lastMsg = msg;
-                    }
+                    if (msg.to === currentUser.email && !msg.seen) chat.unread = (chat.unread || 0) + 1;
+                    const existingTime = chat.lastMsg.createdAt ? (chat.lastMsg.createdAt.toDate ? chat.lastMsg.createdAt.toDate() : new Date(chat.lastMsg.createdAt)) : new Date(0);
+                    const newTime = msg.createdAt ? (msg.createdAt.toDate ? msg.createdAt.toDate() : new Date(msg.createdAt)) : new Date(0);
+                    if (newTime > existingTime) chat.lastMsg = msg;
                 }
             });
             
@@ -1640,39 +1963,36 @@ function loadChats() {
                 const user = allUsers.find(u => u.email === email);
                 if (!user) continue;
                 
-                // Get status from Realtime Database
+                // Get initial status
                 let status = 'offline';
                 try {
                     const statusSnapshot = await rtdb.ref('/status/' + user.id).once('value');
                     const statusData = statusSnapshot.val();
                     status = statusData ? statusData.state : 'offline';
                     userStatusMap.set(user.id, status);
-                } catch (e) {
+                    addDebug(`📋 Loaded initial status for ${user.name}: ${status}`, status === 'onLeave');
+                } catch (e) { 
                     console.log('Error getting status for', user.email);
                 }
                 
                 const time = chatData.lastMsg.createdAt ? formatTime(chatData.lastMsg.createdAt) : '';
                 const lastMsg = chatData.lastMsg.text || (chatData.lastMsg.photo ? '📷 Photo' : '');
                 
+                // Set status class for 5 colors
                 let statusClass = 'statusOffline';
                 if (status === 'online') statusClass = 'statusOnline';
                 else if (status === 'atSea') statusClass = 'statusAtSea';
                 else if (status === 'inPort') statusClass = 'statusInPort';
+                else if (status === 'onLeave') statusClass = 'statusOnLeave';
                 
                 const chatId = [currentUser.uid, user.id].sort().join('_');
                 const unreadCount = chatData.unread || 0;
                 
-                allChats.push({
-                    email, userId: user.id, name: user.name, photo: user.photo,
-                    status, verified: user.verified,
-                    unread: unreadCount, lastMsg, time, chatId, rank: user.rank
-                });
+                allChats.push({ email, userId: user.id, name: user.name, photo: user.photo, status, verified: user.verified, unread: unreadCount, lastMsg, time, chatId, rank: user.rank });
                 
                 html += `
                     <div class="chat-item-wrapper" data-chat-id="${chatId}" data-user-id="${user.id}">
-                        <div class="delete-overlay" onclick="deleteChat('${chatId}')">
-                            <span>Delete</span>
-                        </div>
+                        <div class="delete-overlay" onclick="deleteChat('${chatId}')"><span>Delete</span></div>
                         <div class="chatItem" onclick="openChat('${user.id}', '${email}')"
                              ontouchstart="handleSwipeStart(event, '${chatId}')"
                              ontouchmove="handleSwipeMove(event)"
@@ -1695,7 +2015,6 @@ function loadChats() {
                     </div>
                 `;
                 
-                // Start listening to real-time status updates
                 listenToUserStatus(user.id);
             }
             chatList.innerHTML = html;
@@ -1705,53 +2024,38 @@ function loadChats() {
         });
 }
 
-// Swipe handlers for delete
+// Swipe handlers
 function handleSwipeStart(event, chatId) {
     touchStartX = event.touches[0].clientX;
     touchCurrentX = touchStartX;
     isSwiping = true;
-    
     if (swipedItem && swipedItem !== chatId) {
         const prevWrapper = document.querySelector(`.chat-item-wrapper[data-chat-id="${swipedItem}"]`);
         if (prevWrapper) {
             const prevItem = prevWrapper.querySelector('.chatItem');
             const prevOverlay = prevWrapper.querySelector('.delete-overlay');
-            if (prevItem) {
-                prevItem.classList.remove('swiped');
-                prevItem.style.transform = '';
-            }
-            if (prevOverlay) {
-                prevOverlay.classList.remove('active');
-            }
+            if (prevItem) { prevItem.classList.remove('swiped'); prevItem.style.transform = ''; }
+            if (prevOverlay) prevOverlay.classList.remove('active');
         }
     }
 }
-
 function handleSwipeMove(event) {
     if (!isSwiping) return;
-    
     touchCurrentX = event.touches[0].clientX;
     const diff = touchStartX - touchCurrentX;
-    
     if (diff > 10 && diff < 100) {
         const item = event.target.closest('.chatItem');
-        if (item) {
-            item.style.transform = `translateX(-${Math.min(diff, 80)}px)`;
-        }
+        if (item) item.style.transform = `translateX(-${Math.min(diff, 80)}px)`;
     }
 }
-
 function handleSwipeEnd(event) {
     if (!isSwiping) return;
-    
     const diff = touchStartX - touchCurrentX;
     const item = event.target.closest('.chatItem');
     const wrapper = item?.closest('.chat-item-wrapper');
-    
     if (item && wrapper) {
         const chatId = wrapper.dataset.chatId;
         const overlay = wrapper.querySelector('.delete-overlay');
-        
         if (diff > 40) {
             item.classList.add('swiped');
             item.style.transform = '';
@@ -1764,41 +2068,21 @@ function handleSwipeEnd(event) {
             swipedItem = null;
         }
     }
-    
     isSwiping = false;
 }
 
-// Delete entire chat
 async function deleteChat(chatId) {
-    if (!confirm('Delete this entire conversation? This cannot be undone.')) {
-        resetSwipe(chatId);
-        return;
-    }
-    
+    if (!confirm('Delete this entire conversation? This cannot be undone.')) { resetSwipe(chatId); return; }
     showToast('🗑️ Deleting conversation...');
-    
     try {
         const userIds = chatId.split('_');
         const otherUserId = userIds.find(id => id !== currentUser.uid);
-        
-        if (!otherUserId) {
-            showToast('❌ Error: Could not identify chat');
-            resetSwipe(chatId);
-            return;
-        }
-        
+        if (!otherUserId) { showToast('❌ Error: Could not identify chat'); resetSwipe(chatId); return; }
         const otherUser = allUsers.find(u => u.id === otherUserId);
-        if (!otherUser) {
-            showToast('❌ Error: User not found');
-            resetSwipe(chatId);
-            return;
-        }
-        
+        if (!otherUser) { showToast('❌ Error: User not found'); resetSwipe(chatId); return; }
         const messagesSnapshot = await db.collection('messages').get();
-        
         const batch = db.batch();
         let deleteCount = 0;
-        
         messagesSnapshot.forEach((doc) => {
             const msg = doc.data();
             if ((msg.from === currentUser.email && msg.to === otherUser.email) ||
@@ -1807,29 +2091,18 @@ async function deleteChat(chatId) {
                 deleteCount++;
             }
         });
-        
-        if (deleteCount === 0) {
-            showToast('❌ No messages found');
-            resetSwipe(chatId);
-            return;
-        }
-        
+        if (deleteCount === 0) { showToast('❌ No messages found'); resetSwipe(chatId); return; }
         await batch.commit();
-        
         showToast(`✅ Deleted ${deleteCount} messages`);
-        
         const wrapper = document.querySelector(`.chat-item-wrapper[data-chat-id="${chatId}"]`);
         if (wrapper) {
             wrapper.style.animation = 'fadeOut 0.3s ease';
             setTimeout(() => {
                 wrapper.remove();
                 const chatList = document.getElementById('chatList');
-                if (chatList.children.length === 0) {
-                    chatList.innerHTML = '<div class="emptyState"><div class="emoji">💬</div><h3>No messages yet</h3><p>Start chatting!</p></div>';
-                }
+                if (chatList.children.length === 0) chatList.innerHTML = '<div class="emptyState"><div class="emoji">💬</div><h3>No messages yet</h3><p>Start chatting!</p></div>';
             }, 300);
         }
-        
     } catch (error) {
         console.error('Error deleting chat:', error);
         showToast('❌ Error deleting conversation: ' + error.message);
@@ -1842,35 +2115,34 @@ function resetSwipe(chatId) {
     if (wrapper) {
         const item = wrapper.querySelector('.chatItem');
         const overlay = wrapper.querySelector('.delete-overlay');
-        if (item) {
-            item.classList.remove('swiped');
-            item.style.transform = '';
-        }
-        if (overlay) {
-            overlay.classList.remove('active');
-        }
+        if (item) { item.classList.remove('swiped'); item.style.transform = ''; }
+        if (overlay) overlay.classList.remove('active');
     }
     swipedItem = null;
 }
 
-// Search chats
+// Search chats with 5 colors
 function searchChats() {
     const term = document.getElementById('searchInput').value.toLowerCase();
     const filtered = allChats.filter(c => c.name.toLowerCase().includes(term));
-    
     let html = '';
     filtered.forEach(chat => {
-        // Get latest status from map
         const status = userStatusMap.get(chat.userId) || chat.status || 'offline';
-        let statusClass = status === 'online' ? 'statusOnline' : 
-                         (status === 'atSea' ? 'statusAtSea' : 
-                         (status === 'inPort' ? 'statusInPort' : 'statusOffline'));
+        let statusClass = 'statusOffline';
+        
+        if (status === 'online') {
+            statusClass = 'statusOnline';
+        } else if (status === 'atSea') {
+            statusClass = 'statusAtSea';
+        } else if (status === 'inPort') {
+            statusClass = 'statusInPort';
+        } else if (status === 'onLeave') {
+            statusClass = 'statusOnLeave';
+        }
         
         html += `
             <div class="chat-item-wrapper" data-chat-id="${chat.chatId}" data-user-id="${chat.userId}">
-                <div class="delete-overlay" onclick="deleteChat('${chat.chatId}')">
-                    <span>Delete</span>
-                </div>
+                <div class="delete-overlay" onclick="deleteChat('${chat.chatId}')"><span>Delete</span></div>
                 <div class="chatItem" onclick="openChat('${chat.userId}', '${chat.email}')"
                      ontouchstart="handleSwipeStart(event, '${chat.chatId}')"
                      ontouchmove="handleSwipeMove(event)"
@@ -1896,27 +2168,17 @@ function searchChats() {
     document.getElementById('chatList').innerHTML = html || '<div class="emptyState">No results</div>';
 }
 
-// Open chat
 function openChat(userId, email) {
     if (!userId) return;
-    
     if (!email) {
         const user = allUsers.find(u => u.id === userId);
-        if (user) {
-            email = user.email;
-        } else {
-            showToast('❌ Could not identify user');
-            return;
-        }
+        if (user) email = user.email;
+        else { showToast('❌ Could not identify user'); return; }
     }
-    
     currentChatPartnerId = userId;
     currentChatPartnerEmail = email;
-    
-    // Mark messages as read when opening chat
     markMessagesAsRead(email);
     
-    // Get user data from Firestore (name, photo)
     db.collection('users').doc(userId).get().then(doc => {
         if (doc.exists) {
             const data = doc.data();
@@ -1926,40 +2188,49 @@ function openChat(userId, email) {
             document.getElementById('chatHeaderName').textContent = email.split('@')[0] || 'Sailor';
             document.getElementById('chatHeaderAvatar').src = 'https://i.ibb.co/2kRZ7Z6/avatar.png';
         }
-    }).catch(error => {
-        console.error('Error loading user:', error);
-    });
+    }).catch(error => console.error('Error loading user:', error));
     
-    // Get status from Realtime Database
+    // Get initial status with proper class
     rtdb.ref('/status/' + userId).once('value').then((snapshot) => {
         const statusData = snapshot.val();
         const status = statusData ? statusData.state : 'offline';
         
-        let statusClass = 'statusOffline';
+        // Set chat header with 5 colors
+        const headerDot = document.getElementById('chatHeaderStatusDot');
+        headerDot.className = 'chatHeaderStatusDot';
+        
         let statusText = 'Offline';
+        let statusColor = '#94a3b8';
         
         if (status === 'online') {
-            statusClass = 'statusOnline';
+            headerDot.classList.add('statusOnline');
             statusText = 'Online';
+            statusColor = '#10b981';
         } else if (status === 'atSea') {
-            statusClass = 'statusAtSea';
+            headerDot.classList.add('statusAtSea');
             statusText = 'At Sea';
+            statusColor = '#f59e0b';
         } else if (status === 'inPort') {
-            statusClass = 'statusInPort';
+            headerDot.classList.add('statusInPort');
             statusText = 'In Port';
+            statusColor = '#3b82f6';
+        } else if (status === 'onLeave') {
+            headerDot.classList.add('statusOnLeave');
+            statusText = 'On Leave';
+            statusColor = '#a855f7';
+            headerDot.style.setProperty('background', '#a855f7', 'important');
+            headerDot.style.setProperty('box-shadow', '0 0 12px #a855f7', 'important');
         }
         
-        document.getElementById('chatHeaderStatusDot').className = `chatHeaderStatusDot ${statusClass}`;
-        document.getElementById('chatHeaderStatus').innerHTML = `<span class="${statusClass}" style="width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px;"></span> ${statusText}`;
+        document.getElementById('chatHeaderStatus').innerHTML = 
+            `<span style="width:8px;height:8px;border-radius:50%;display:inline-block;background:${statusColor};margin-right:4px; box-shadow: ${status === 'onLeave' ? '0 0 10px #a855f7' : ''}"></span> ${statusText}`;
     });
     
     document.getElementById('chatListView').style.display = 'none';
     document.getElementById('chatView').classList.add('active');
-    
     loadMessages();
 }
 
-// Close chat
 function closeChat() {
     document.getElementById('chatListView').style.display = 'block';
     document.getElementById('chatView').classList.remove('active');
@@ -1969,12 +2240,9 @@ function closeChat() {
     removeSelectedImage();
 }
 
-// Load messages with reactions
 function loadMessages() {
     const container = document.getElementById('messagesContainer');
-    
     if (!currentChatPartnerEmail || !currentUser) return;
-    
     if (messagesListener) messagesListener();
     
     messagesListener = db.collection('messages')
@@ -1984,60 +2252,37 @@ function loadMessages() {
             const oldScrollHeight = container.scrollHeight;
             const clientHeight = container.clientHeight;
             const wasAtBottom = oldScrollHeight - oldScrollTop <= clientHeight + 50;
-            
             let html = '';
             let count = 0;
             
             snapshot.forEach(doc => {
                 const msg = doc.data();
                 const msgId = doc.id;
-                
                 if ((msg.from === currentUser.email && msg.to === currentChatPartnerEmail) ||
                     (msg.from === currentChatPartnerEmail && msg.to === currentUser.email)) {
-                    
                     if (msg.deleted) return;
-                    
                     count++;
                     const isSent = msg.from === currentUser.email;
                     const timeStr = formatTime(msg.createdAt);
-                    
                     let seenIndicator = '';
-                    if (isSent) {
-                        seenIndicator = msg.seen ? ' ✓✓' : ' ✓';
-                    }
+                    if (isSent) seenIndicator = msg.seen ? ' ✓✓' : ' ✓';
                     
                     let reactionsHtml = '';
                     if (msg.reactions && msg.reactions.length > 0) {
                         const reactionMap = new Map();
                         msg.reactions.forEach(r => {
-                            if (!reactionMap.has(r.emoji)) {
-                                reactionMap.set(r.emoji, {
-                                    count: 1,
-                                    users: [r.userId]
-                                });
-                            } else {
-                                const existing = reactionMap.get(r.emoji);
-                                existing.count++;
-                                existing.users.push(r.userId);
-                            }
+                            if (!reactionMap.has(r.emoji)) reactionMap.set(r.emoji, { count: 1, users: [r.userId] });
+                            else { const existing = reactionMap.get(r.emoji); existing.count++; existing.users.push(r.userId); }
                         });
-                        
                         reactionsHtml = '<div class="emojiReactions">';
                         for (const [emoji, data] of reactionMap.entries()) {
                             const hasUserReacted = data.users.includes(currentUser.uid);
-                            reactionsHtml += `
-                                <div class="emojiReaction ${isSent ? 'sent' : ''} ${hasUserReacted ? 'active' : ''}" 
-                                     onclick="event.stopPropagation(); toggleReaction('${msgId}', '${emoji}')">
-                                    <span>${emoji}</span>
-                                    ${data.count > 1 ? `<span class="count">${data.count}</span>` : ''}
-                                </div>
-                            `;
+                            reactionsHtml += `<div class="emojiReaction ${isSent ? 'sent' : ''} ${hasUserReacted ? 'active' : ''}" onclick="event.stopPropagation(); toggleReaction('${msgId}', '${emoji}')"><span>${emoji}</span>${data.count > 1 ? `<span class="count">${data.count}</span>` : ''}</div>`;
                         }
                         reactionsHtml += '</div>';
                     }
                     
                     const safeText = (msg.text || '').replace(/'/g, "\\'");
-                    
                     html += `
                         <div class="messageWrapper ${isSent ? 'sent' : 'received'}" data-id="${msgId}">
                             <div class="messageBubble ${isSent ? 'sent' : 'received'}"
@@ -2057,20 +2302,13 @@ function loadMessages() {
                 }
             });
             
-            if (count === 0) {
-                container.innerHTML = '<div class="emptyState"><div class="emoji">💬</div><h3>No messages yet</h3><p>Say hello!</p></div>';
-            } else {
+            if (count === 0) container.innerHTML = '<div class="emptyState"><div class="emoji">💬</div><h3>No messages yet</h3><p>Say hello!</p></div>';
+            else {
                 container.innerHTML = html;
-                
                 requestAnimationFrame(() => {
                     const newScrollHeight = container.scrollHeight;
-                    
-                    if (wasAtBottom) {
-                        container.scrollTop = container.scrollHeight;
-                    } else {
-                        const heightDiff = newScrollHeight - oldScrollHeight;
-                        container.scrollTop = oldScrollTop + heightDiff;
-                    }
+                    if (wasAtBottom) container.scrollTop = container.scrollHeight;
+                    else container.scrollTop = oldScrollTop + (newScrollHeight - oldScrollHeight);
                 });
             }
         }, error => {
@@ -2093,14 +2331,8 @@ function handleTouchStart(id, text, isSent) {
         document.getElementById('messageOptionsModal').classList.add('active');
     }, 500);
 }
-
-function handleTouchMove() {
-    clearTimeout(longPressTimer);
-}
-
-function handleTouchEnd() {
-    clearTimeout(longPressTimer);
-}
+function handleTouchMove() { clearTimeout(longPressTimer); }
+function handleTouchEnd() { clearTimeout(longPressTimer); }
 
 function handleImageTouchStart(id, url) {
     longPressTimer = setTimeout(() => {
@@ -2111,43 +2343,23 @@ function handleImageTouchStart(id, url) {
 }
 
 function reactToMessage(emoji) {
-    if (selectedMessageId) {
-        toggleReaction(selectedMessageId, emoji);
-        closeMessageOptions();
-    }
+    if (selectedMessageId) { toggleReaction(selectedMessageId, emoji); closeMessageOptions(); }
 }
-
 function reactToImage(emoji) {
-    if (currentImageMessageId) {
-        toggleReaction(currentImageMessageId, emoji);
-        closeImageOptions();
-    }
+    if (currentImageMessageId) { toggleReaction(currentImageMessageId, emoji); closeImageOptions(); }
 }
 
 async function toggleReaction(messageId, emoji) {
     if (!currentUser) return;
-    
     try {
         const msgRef = db.collection('messages').doc(messageId);
         const msg = await msgRef.get();
-        
         if (!msg.exists) return;
-        
         const reactions = msg.data().reactions || [];
         const existingIndex = reactions.findIndex(r => r.userId === currentUser.uid && r.emoji === emoji);
-        
-        if (existingIndex >= 0) {
-            reactions.splice(existingIndex, 1);
-        } else {
-            reactions.push({ 
-                userId: currentUser.uid, 
-                emoji, 
-                timestamp: Date.now() 
-            });
-        }
-        
+        if (existingIndex >= 0) reactions.splice(existingIndex, 1);
+        else reactions.push({ userId: currentUser.uid, emoji, timestamp: Date.now() });
         await msgRef.update({ reactions });
-        
     } catch (error) {
         console.error('Error toggling reaction:', error);
         showToast('❌ Failed to add reaction');
@@ -2155,58 +2367,37 @@ async function toggleReaction(messageId, emoji) {
 }
 
 function copyMessage() {
-    if (selectedMessageText) {
-        navigator.clipboard.writeText(selectedMessageText);
-        showToast('Copied!');
-    }
+    if (selectedMessageText) { navigator.clipboard.writeText(selectedMessageText); showToast('Copied!'); }
     closeMessageOptions();
 }
-
 async function deleteMessage() {
     if (!selectedMessageId) return;
     await db.collection('messages').doc(selectedMessageId).update({ deleted: true });
     showToast('Deleted');
     closeMessageOptions();
 }
-
 function closeMessageOptions() {
     document.getElementById('messageOptionsModal').classList.remove('active');
     selectedMessageId = null;
 }
-
 function shareImage() {
-    if (navigator.share && currentImageUrl) {
-        navigator.share({ url: currentImageUrl });
-    }
+    if (navigator.share && currentImageUrl) { navigator.share({ url: currentImageUrl }); }
     closeImageOptions();
 }
-
 function saveImage() {
-    if (currentImageUrl) {
-        const a = document.createElement('a');
-        a.href = currentImageUrl;
-        a.download = 'image.jpg';
-        a.click();
-        showToast('Saved');
-    }
+    if (currentImageUrl) { const a = document.createElement('a'); a.href = currentImageUrl; a.download = 'image.jpg'; a.click(); showToast('Saved'); }
     closeImageOptions();
 }
-
 function copyImageUrl() {
-    if (currentImageUrl) {
-        navigator.clipboard.writeText(currentImageUrl);
-        showToast('URL copied');
-    }
+    if (currentImageUrl) { navigator.clipboard.writeText(currentImageUrl); showToast('URL copied'); }
     closeImageOptions();
 }
-
 function closeImageOptions() {
     document.getElementById('imageOptionsModal').classList.remove('active');
     currentImageMessageId = null;
     currentImageUrl = null;
 }
 
-// Image preview functions
 function showImagePreview(file) {
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -2216,7 +2407,6 @@ function showImagePreview(file) {
     };
     reader.readAsDataURL(file);
 }
-
 function removeSelectedImage() {
     selectedImageFile = null;
     document.getElementById('imagePreviewBar').classList.remove('active');
@@ -2224,7 +2414,6 @@ function removeSelectedImage() {
     document.getElementById('previewFilename').textContent = '';
     document.getElementById('messageInput').placeholder = 'Type a message...';
 }
-
 function attachFile() {
     const input = document.createElement('input');
     input.type = 'file';
@@ -2232,10 +2421,7 @@ function attachFile() {
     input.onchange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            if (file.size > 10 * 1024 * 1024) {
-                showToast('❌ Image too large (max 10MB)');
-                return;
-            }
+            if (file.size > 10 * 1024 * 1024) { showToast('❌ Image too large (max 10MB)'); return; }
             selectedImageFile = file;
             showImagePreview(file);
         }
@@ -2246,114 +2432,58 @@ function attachFile() {
 async function sendMessage() {
     const input = document.getElementById('messageInput');
     const text = input.value.trim();
-    
-    if (!text && !selectedImageFile) {
-        return;
-    }
-    
-    if (!currentChatPartnerEmail) {
-        showToast('❌ No chat partner selected');
-        return;
-    }
-    
+    if (!text && !selectedImageFile) return;
+    if (!currentChatPartnerEmail) { showToast('❌ No chat partner selected'); return; }
     const sendBtn = document.getElementById('sendBtn');
     sendBtn.disabled = true;
-    
     const messageText = text;
     const fileToUpload = selectedImageFile;
-    
     input.value = '';
     removeSelectedImage();
-    
     const tempId = 'temp_' + Date.now();
-    
     const container = document.getElementById('messagesContainer');
-    const tempMessageHtml = `
-        <div class="messageWrapper sent" data-id="${tempId}">
-            <div class="messageBubble sent">
-                ${messageText || '📷 Sending image...'}
-            </div>
-            <div class="messageTime">
-                just now
-                <span class="seenIndicator"> ✓</span>
-            </div>
-        </div>
-    `;
+    const tempMessageHtml = `<div class="messageWrapper sent" data-id="${tempId}"><div class="messageBubble sent">${messageText || '📷 Sending image...'}</div><div class="messageTime">just now<span class="seenIndicator"> ✓</span></div></div>`;
     container.insertAdjacentHTML('beforeend', tempMessageHtml);
     container.scrollTop = container.scrollHeight;
-    
     try {
         let photoUrl = '';
-        
         if (fileToUpload) {
-            const formData = new FormData();
-            formData.append('image', fileToUpload);
-            
-            const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
-                method: 'POST',
-                body: formData
-            });
-            
+            const formData = new FormData(); formData.append('image', fileToUpload);
+            const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: 'POST', body: formData });
             const data = await response.json();
-            if (data.success) {
-                photoUrl = data.data.url;
-            } else {
-                throw new Error('Image upload failed');
-            }
+            if (data.success) photoUrl = data.data.url;
+            else throw new Error('Image upload failed');
         }
-        
         await db.collection('messages').add({
-            from: currentUser.email,
-            to: currentChatPartnerEmail,
-            text: messageText || '',
-            photo: photoUrl,
-            seen: false,
-            deleted: false,
-            reactions: [],
+            from: currentUser.email, to: currentChatPartnerEmail, text: messageText || '',
+            photo: photoUrl, seen: false, deleted: false, reactions: [],
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
-        
     } catch (error) {
         console.error('Send error:', error);
         showToast('❌ Failed to send');
-        
         const tempMsg = document.querySelector(`[data-id="${tempId}"]`);
         if (tempMsg) tempMsg.remove();
-    } finally {
-        sendBtn.disabled = false;
-    }
+    } finally { sendBtn.disabled = false; }
 }
 
-// Close modals on outside tap
 document.addEventListener('touchstart', (e) => {
     const msgModal = document.getElementById('messageOptionsModal');
-    if (msgModal.classList.contains('active') && !e.target.closest('.messageOptionsContent')) {
-        closeMessageOptions();
-    }
-    
+    if (msgModal.classList.contains('active') && !e.target.closest('.messageOptionsContent')) closeMessageOptions();
     const imgModal = document.getElementById('imageOptionsModal');
-    if (imgModal.classList.contains('active') && !e.target.closest('.imageOptionsContent')) {
-        closeImageOptions();
-    }
-    
+    if (imgModal.classList.contains('active') && !e.target.closest('.imageOptionsContent')) closeImageOptions();
     if (!e.target.closest('.chatItem') && swipedItem) {
         const wrapper = document.querySelector(`.chat-item-wrapper[data-chat-id="${swipedItem}"]`);
         if (wrapper) {
             const item = wrapper.querySelector('.chatItem');
             const overlay = wrapper.querySelector('.delete-overlay');
-            if (item) {
-                item.classList.remove('swiped');
-                item.style.transform = '';
-            }
-            if (overlay) {
-                overlay.classList.remove('active');
-            }
+            if (item) { item.classList.remove('swiped'); item.style.transform = ''; }
+            if (overlay) overlay.classList.remove('active');
         }
         swipedItem = null;
     }
 });
 
-// Navigation
 function openFiles() { location.href = 'files.html'; }
 function openSettings() { location.href = 'settings.html'; }
 
@@ -2365,28 +2495,15 @@ let ticking = false;
 
 window.addEventListener("scroll", function() {
     if (document.getElementById('chatView').classList.contains('active')) return;
-    
     if (!ticking) {
         window.requestAnimationFrame(function() {
             const currentScroll = window.pageYOffset;
-            
-            if (currentScroll < 50) {
-                header.style.transform = "translateY(0)";
-                nav.style.transform = "translateY(0)";
-            } 
-            else if (currentScroll > lastScroll && currentScroll > 100) {
-                header.style.transform = "translateY(-100%)";
-                nav.style.transform = "translateY(120%)";
-            } 
-            else if (currentScroll < lastScroll) {
-                header.style.transform = "translateY(0)";
-                nav.style.transform = "translateY(0)";
-            }
-            
+            if (currentScroll < 50) { header.style.transform = "translateY(0)"; nav.style.transform = "translateY(0)"; }
+            else if (currentScroll > lastScroll && currentScroll > 100) { header.style.transform = "translateY(-100%)"; nav.style.transform = "translateY(120%)"; }
+            else if (currentScroll < lastScroll) { header.style.transform = "translateY(0)"; nav.style.transform = "translateY(0)"; }
             lastScroll = currentScroll;
             ticking = false;
         });
-        
         ticking = true;
     }
 });
@@ -2398,33 +2515,28 @@ const loader = document.getElementById("pullLoader");
 
 window.addEventListener("touchstart", (e) => {
     if (window.scrollY === 0 && !document.getElementById('chatView').classList.contains('active')) {
-        pulling = true;
-        startY = e.touches[0].clientY;
+        pulling = true; startY = e.touches[0].clientY;
     }
 });
-
 window.addEventListener("touchmove", (e) => {
     if (!pulling) return;
     const distance = e.touches[0].clientY - startY;
-    if (distance > 0) {
-        loader.style.top = Math.min(distance - 60, 20) + "px";
-    }
+    if (distance > 0) loader.style.top = Math.min(distance - 60, 20) + "px";
 });
-
 window.addEventListener("touchend", () => {
     if (!pulling) return;
     const top = parseInt(loader.style.top);
-    if (top > 10) {
-        loader.style.top = "10px";
-        setTimeout(() => { location.reload(); }, 400);
-    } else {
-        loader.style.top = "-60px";
-    }
+    if (top > 10) { loader.style.top = "10px"; setTimeout(() => { location.reload(); }, 400); }
+    else loader.style.top = "-60px";
     pulling = false;
 });
 
-// Set active nav
 document.getElementById('navMessages').classList.add('active');
+
+// Console commands
+console.log('%c🔮 DEBUG COMMANDS:', 'color: #a855f7; font-size: 16px; font-weight: bold;');
+console.log('%c   forceAllPurple() - Force all dots to purple', 'color: #a855f7;');
+console.log('%c   toggleDebugPanel() - Show/hide debug panel', 'color: #a855f7;');
 </script>
 
 </body>

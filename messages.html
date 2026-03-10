@@ -1420,6 +1420,9 @@ let heartbeatInterval = null;
 let lastHeartbeat = Date.now();
 let userActive = true;
 
+// ===== NEW: 3-SECOND BACKGROUND REFRESH =====
+let refreshInterval = null;
+
 document.addEventListener('contextmenu', (e) => e.preventDefault());
 
 function formatTime(timestamp) {
@@ -1540,6 +1543,76 @@ function cleanupPresence() {
         clearInterval(heartbeatInterval);
         heartbeatInterval = null;
     }
+    // Clean up refresh interval
+    if (refreshInterval) {
+        clearInterval(refreshInterval);
+        refreshInterval = null;
+    }
+}
+
+// ===== NEW: Background refresh every 3 seconds =====
+function startBackgroundRefresh() {
+    if (refreshInterval) {
+        clearInterval(refreshInterval);
+    }
+    
+    console.log('🔄 Starting 3-second background refresh');
+    
+    refreshInterval = setInterval(() => {
+        if (!currentUser) return;
+        
+        // Silently refresh status for all users in the chat list
+        if (allChats && allChats.length > 0) {
+            allChats.forEach(chat => {
+                if (chat && chat.userId) {
+                    // Re-fetch status from Firebase
+                    rtdb.ref('/status/' + chat.userId).once('value')
+                        .then((snapshot) => {
+                            const data = snapshot.val();
+                            if (data && data.state) {
+                                const currentStatus = userStatusMap.get(chat.userId);
+                                const newStatus = data.state;
+                                
+                                // Only update if status changed
+                                if (currentStatus !== newStatus) {
+                                    console.log(`🔄 Background refresh: ${chat.name} changed from ${currentStatus} to ${newStatus}`);
+                                    userStatusMap.set(chat.userId, newStatus);
+                                    
+                                    // Update the dot immediately
+                                    const wrapper = document.querySelector(`.chat-item-wrapper[data-user-id="${chat.userId}"]`);
+                                    if (wrapper) {
+                                        const statusDot = wrapper.querySelector('.chatStatusDot');
+                                        if (statusDot) {
+                                            statusDot.className = 'chatStatusDot';
+                                            
+                                            if (newStatus === 'online') {
+                                                statusDot.classList.add('statusOnline');
+                                            } else if (newStatus === 'atSea') {
+                                                statusDot.classList.add('statusAtSea');
+                                            } else if (newStatus === 'inPort') {
+                                                statusDot.classList.add('statusInPort');
+                                            } else if (newStatus === 'onLeave') {
+                                                statusDot.classList.add('statusOnLeave');
+                                                statusDot.style.background = '#a855f7';
+                                                statusDot.style.boxShadow = '0 0 10px #a855f7';
+                                            } else {
+                                                statusDot.classList.add('statusOffline');
+                                            }
+                                        }
+                                    }
+                                    
+                                    // Update header if this is current chat
+                                    if (chat.userId === currentChatPartnerId) {
+                                        updateChatHeader(newStatus);
+                                    }
+                                }
+                            }
+                        })
+                        .catch(err => console.log('Background refresh error:', err));
+                }
+            });
+        }
+    }, 3000); // Every 3 seconds
 }
 
 // HEARTBEAT FUNCTION - sends signal every 2 seconds that user is active
@@ -1681,6 +1754,10 @@ function setupAutoOffline() {
             if (heartbeatInterval) {
                 clearInterval(heartbeatInterval);
             }
+            // Clear refresh interval
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
         }
     };
     
@@ -1694,6 +1771,9 @@ function setupAutoOffline() {
             
             // Start heartbeat system
             startHeartbeat();
+            
+            // Start 3-second background refresh
+            startBackgroundRefresh();
             
             // Set onDisconnect as backup
             userStatusRef.onDisconnect().set(offlineData)

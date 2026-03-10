@@ -356,18 +356,18 @@ body {
 }
 
 .statusOnline { 
-    background: var(--online-color); 
-    animation: pulse 2s infinite;
+    background: var(--online-color) !important; 
+    animation: pulse 2s infinite !important;
 }
 
 .statusAtSea { 
-    background: var(--atsea-color); 
-    animation: pulseAtSea 2s infinite;
+    background: var(--atsea-color) !important; 
+    animation: pulseAtSea 2s infinite !important;
 }
 
 .statusInPort { 
-    background: var(--inport-color); 
-    animation: pulseInPort 2s infinite;
+    background: var(--inport-color) !important; 
+    animation: pulseInPort 2s infinite !important;
 }
 
 /* FIXED: Purple status with stronger properties */
@@ -379,7 +379,7 @@ body {
 }
 
 .statusOffline { 
-    background: var(--offline-color); 
+    background: var(--offline-color) !important; 
 }
 
 .chatInfo {
@@ -524,18 +524,18 @@ body {
 }
 
 .chatHeaderStatusDot.statusOnline { 
-    background: var(--online-color); 
-    animation: pulse 2s infinite;
+    background: var(--online-color) !important; 
+    animation: pulse 2s infinite !important;
 }
 
 .chatHeaderStatusDot.statusAtSea { 
-    background: var(--atsea-color); 
-    animation: pulseAtSea 2s infinite;
+    background: var(--atsea-color) !important; 
+    animation: pulseAtSea 2s infinite !important;
 }
 
 .chatHeaderStatusDot.statusInPort { 
-    background: var(--inport-color); 
-    animation: pulseInPort 2s infinite;
+    background: var(--inport-color) !important; 
+    animation: pulseInPort 2s infinite !important;
 }
 
 /* FIXED: Purple header dot with !important */
@@ -547,7 +547,7 @@ body {
 }
 
 .chatHeaderStatusDot.statusOffline { 
-    background: var(--offline-color); 
+    background: var(--offline-color) !important; 
 }
 
 .chatHeaderInfo {
@@ -1415,6 +1415,9 @@ const userStatusMap = new Map();
 let connectedListener = null;
 let beforeUnloadHandler = null;
 
+// Track last status for real-time updates
+let lastStatusUpdate = Date.now();
+
 document.addEventListener('contextmenu', (e) => e.preventDefault());
 
 function formatTime(timestamp) {
@@ -1615,82 +1618,127 @@ function setupAutoOffline() {
     });
 }
 
-// ===== FIXED: Listen to real-time status with ALL 5 COLORS =====
+// ===== FIXED: Listen to real-time status with ALL 5 COLORS and AUTO REFRESH =====
 function listenToUserStatus(userId) {
     if (!userId) return;
     const statusRef = rtdb.ref('/status/' + userId);
     
+    // Remove any existing listener
+    statusRef.off();
+    
+    // Add new listener for real-time updates
     statusRef.on('value', (snapshot) => {
         const data = snapshot.val();
         if (data && data.state) {
-            userStatusMap.set(userId, data.state);
+            const oldStatus = userStatusMap.get(userId);
+            const newStatus = data.state;
             
-            console.log(`📡 RECEIVED signal: User ${userId} is now ${data.state}`);
+            userStatusMap.set(userId, newStatus);
             
-            // Update status dot in chat list - 5 COLORS
-            const statusDot = document.querySelector(`.chat-item-wrapper[data-user-id="${userId}"] .chatStatusDot`);
-            if (statusDot) {
-                statusDot.className = 'chatStatusDot';
+            console.log(`📡 REALTIME UPDATE: User ${userId} changed from ${oldStatus} to ${newStatus}`);
+            
+            // Update status dot in chat list immediately
+            const wrapper = document.querySelector(`.chat-item-wrapper[data-user-id="${userId}"]`);
+            if (wrapper) {
+                const statusDot = wrapper.querySelector('.chatStatusDot');
+                if (statusDot) {
+                    // Clear all classes
+                    statusDot.className = 'chatStatusDot';
+                    
+                    // Apply new status with inline style backup
+                    if (newStatus === 'online') {
+                        statusDot.classList.add('statusOnline');
+                        statusDot.style.background = '';
+                    } 
+                    else if (newStatus === 'atSea') {
+                        statusDot.classList.add('statusAtSea');
+                        statusDot.style.background = '';
+                    }
+                    else if (newStatus === 'inPort') {
+                        statusDot.classList.add('statusInPort');
+                        statusDot.style.background = '';
+                    }
+                    else if (newStatus === 'onLeave') {
+                        statusDot.classList.add('statusOnLeave');
+                        // Force purple with inline style
+                        statusDot.style.background = '#a855f7';
+                        statusDot.style.boxShadow = '0 0 10px #a855f7';
+                    }
+                    else {
+                        statusDot.classList.add('statusOffline');
+                        statusDot.style.background = '';
+                    }
+                    
+                    // Add visual feedback that status updated
+                    statusDot.style.transform = 'scale(1.2)';
+                    setTimeout(() => {
+                        if (statusDot) statusDot.style.transform = '';
+                    }, 200);
+                }
                 
-                if (data.state === 'online') {
-                    statusDot.classList.add('statusOnline');
-                    console.log(`   → Setting dot to ONLINE (green)`);
-                } 
-                else if (data.state === 'atSea') {
-                    statusDot.classList.add('statusAtSea');
-                    console.log(`   → Setting dot to AT SEA (orange)`);
-                }
-                else if (data.state === 'inPort') {
-                    statusDot.classList.add('statusInPort');
-                    console.log(`   → Setting dot to IN PORT (blue)`);
-                }
-                else if (data.state === 'onLeave') {
-                    statusDot.classList.add('statusOnLeave');
-                    // Force purple with inline style as backup
-                    statusDot.style.background = '#a855f7';
-                    statusDot.style.boxShadow = '0 0 10px #a855f7';
-                    console.log(`   → Setting dot to ON LEAVE (purple) 💜`);
-                }
-                else {
-                    statusDot.classList.add('statusOffline');
-                    console.log(`   → Setting dot to OFFLINE (gray)`);
+                // Update preview text to show status change (optional)
+                const previewText = wrapper.querySelector('.previewText');
+                if (previewText && !previewText.textContent.includes('📷')) {
+                    // Don't modify if it's a photo message
                 }
             }
             
-            // Update chat header if this is the current chat - 5 COLORS
+            // Update chat header if this is the current chat
             if (userId === currentChatPartnerId) {
-                let statusClass = 'statusOffline';
-                let statusText = 'Offline';
-                let statusColor = '#94a3b8';
-                
-                if (data.state === 'online') {
-                    statusClass = 'statusOnline';
-                    statusText = 'Online';
-                    statusColor = '#10b981';
-                } else if (data.state === 'atSea') {
-                    statusClass = 'statusAtSea';
-                    statusText = 'At Sea';
-                    statusColor = '#f59e0b';
-                } else if (data.state === 'inPort') {
-                    statusClass = 'statusInPort';
-                    statusText = 'In Port';
-                    statusColor = '#3b82f6';
-                } else if (data.state === 'onLeave') {
-                    statusClass = 'statusOnLeave';
-                    statusText = 'On Leave';
-                    statusColor = '#a855f7';
-                }
-                
-                document.getElementById('chatHeaderStatusDot').className = `chatHeaderStatusDot ${statusClass}`;
-                // Force purple with inline style
-                if (data.state === 'onLeave') {
-                    document.getElementById('chatHeaderStatusDot').style.background = '#a855f7';
-                    document.getElementById('chatHeaderStatusDot').style.boxShadow = '0 0 8px #a855f7';
-                }
-                document.getElementById('chatHeaderStatus').innerHTML = `<span style="width:8px;height:8px;border-radius:50%;display:inline-block;background:${statusColor};margin-right:4px; ${data.state === 'onLeave' ? 'box-shadow:0 0 8px #a855f7;' : ''}"></span> ${statusText}`;
+                updateChatHeader(newStatus);
             }
+            
+            // Force refresh the chat list item to ensure all updates show
+            lastStatusUpdate = Date.now();
         }
     });
+}
+
+// Helper function to update chat header
+function updateChatHeader(status) {
+    const headerDot = document.getElementById('chatHeaderStatusDot');
+    if (!headerDot) return;
+    
+    let statusClass = 'statusOffline';
+    let statusText = 'Offline';
+    let statusColor = '#94a3b8';
+    
+    if (status === 'online') {
+        statusClass = 'statusOnline';
+        statusText = 'Online';
+        statusColor = '#10b981';
+    } else if (status === 'atSea') {
+        statusClass = 'statusAtSea';
+        statusText = 'At Sea';
+        statusColor = '#f59e0b';
+    } else if (status === 'inPort') {
+        statusClass = 'statusInPort';
+        statusText = 'In Port';
+        statusColor = '#3b82f6';
+    } else if (status === 'onLeave') {
+        statusClass = 'statusOnLeave';
+        statusText = 'On Leave';
+        statusColor = '#a855f7';
+    }
+    
+    headerDot.className = `chatHeaderStatusDot ${statusClass}`;
+    
+    // Force purple with inline style
+    if (status === 'onLeave') {
+        headerDot.style.background = '#a855f7';
+        headerDot.style.boxShadow = '0 0 8px #a855f7';
+    } else {
+        headerDot.style.background = '';
+        headerDot.style.boxShadow = '';
+    }
+    
+    // Add animation to show update
+    headerDot.style.transform = 'scale(1.3)';
+    setTimeout(() => {
+        headerDot.style.transform = '';
+    }, 200);
+    
+    document.getElementById('chatHeaderStatus').innerHTML = `<span style="width:8px;height:8px;border-radius:50%;display:inline-block;background:${statusColor};margin-right:4px; ${status === 'onLeave' ? 'box-shadow:0 0 8px #a855f7;' : ''}"></span> ${statusText}`;
 }
 
 // ===== AUTH STATE HANDLER =====
@@ -1789,7 +1837,7 @@ function loadChats() {
                 const time = chatData.lastMsg.createdAt ? formatTime(chatData.lastMsg.createdAt) : '';
                 const lastMsg = chatData.lastMsg.text || (chatData.lastMsg.photo ? '📷 Photo' : '');
                 
-                // FIXED: Set status class for 5 colors
+                // Set status class for 5 colors
                 let statusClass = 'statusOffline';
                 let inlineStyle = '';
                 if (status === 'online') statusClass = 'statusOnline';
@@ -1830,6 +1878,7 @@ function loadChats() {
                     </div>
                 `;
                 
+                // Set up real-time listener for this user
                 listenToUserStatus(user.id);
             }
             chatList.innerHTML = html;
@@ -1936,7 +1985,7 @@ function resetSwipe(chatId) {
     swipedItem = null;
 }
 
-// FIXED: Search chats with 5 colors
+// Search chats with 5 colors
 function searchChats() {
     const term = document.getElementById('searchInput').value.toLowerCase();
     const filtered = allChats.filter(c => c.name.toLowerCase().includes(term));
@@ -2010,40 +2059,7 @@ function openChat(userId, email) {
     rtdb.ref('/status/' + userId).once('value').then((snapshot) => {
         const statusData = snapshot.val();
         const status = statusData ? statusData.state : 'offline';
-        
-        // FIXED: Set chat header with 5 colors
-        let statusClass = 'statusOffline';
-        let statusText = 'Offline';
-        let statusColor = '#94a3b8';
-        
-        if (status === 'online') {
-            statusClass = 'statusOnline';
-            statusText = 'Online';
-            statusColor = '#10b981';
-        } else if (status === 'atSea') {
-            statusClass = 'statusAtSea';
-            statusText = 'At Sea';
-            statusColor = '#f59e0b';
-        } else if (status === 'inPort') {
-            statusClass = 'statusInPort';
-            statusText = 'In Port';
-            statusColor = '#3b82f6';
-        } else if (status === 'onLeave') {
-            statusClass = 'statusOnLeave';
-            statusText = 'On Leave';
-            statusColor = '#a855f7';
-        }
-        
-        const headerDot = document.getElementById('chatHeaderStatusDot');
-        headerDot.className = `chatHeaderStatusDot ${statusClass}`;
-        
-        // Force purple with inline style
-        if (status === 'onLeave') {
-            headerDot.style.background = '#a855f7';
-            headerDot.style.boxShadow = '0 0 8px #a855f7';
-        }
-        
-        document.getElementById('chatHeaderStatus').innerHTML = `<span style="width:8px;height:8px;border-radius:50%;display:inline-block;background:${statusColor};margin-right:4px; ${status === 'onLeave' ? 'box-shadow:0 0 8px #a855f7;' : ''}"></span> ${statusText}`;
+        updateChatHeader(status);
     });
     
     document.getElementById('chatListView').style.display = 'none';

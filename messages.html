@@ -1419,6 +1419,7 @@ let beforeUnloadHandler = null;
 let heartbeatInterval = null;
 let lastHeartbeat = Date.now();
 let userActive = true;
+let currentUserStatus = 'online'; // Track actual user status
 
 // ===== NEW: 3-SECOND BACKGROUND REFRESH =====
 let refreshInterval = null;
@@ -1494,6 +1495,10 @@ function loadCurrentUserData() {
                 if (currentUserData.photoURL) {
                     document.getElementById('navAvatar').src = currentUserData.photoURL;
                 }
+                // Store user's status
+                if (currentUserData.status) {
+                    currentUserStatus = currentUserData.status;
+                }
             } else {
                 console.log('No user document found');
                 currentUserData = { status: 'online' };
@@ -1550,7 +1555,7 @@ function cleanupPresence() {
     }
 }
 
-// ===== NEW: Background refresh every 3 seconds =====
+// ===== FIXED: Background refresh every 3 seconds =====
 function startBackgroundRefresh() {
     if (refreshInterval) {
         clearInterval(refreshInterval);
@@ -1615,7 +1620,7 @@ function startBackgroundRefresh() {
     }, 3000); // Every 3 seconds
 }
 
-// HEARTBEAT FUNCTION - sends signal every 2 seconds that user is active
+// ===== FIXED: HEARTBEAT FUNCTION - preserves user's actual status =====
 function startHeartbeat() {
     if (!currentUser) return;
     
@@ -1627,23 +1632,30 @@ function startHeartbeat() {
     userActive = true;
     lastHeartbeat = Date.now();
     
-    // Send heartbeat every 2 seconds
-    heartbeatInterval = setInterval(async () => {
-        if (!currentUser || !userActive) return;
-        
-        try {
-            // Update heartbeat timestamp and ensure status is online
-            await rtdb.ref('/status/' + currentUser.uid).update({
-                last_heartbeat: firebase.database.ServerValue.TIMESTAMP,
-                state: 'online', // Keep status as online
-                last_changed: firebase.database.ServerValue.TIMESTAMP
-            });
-            lastHeartbeat = Date.now();
-            console.log('❤️ Heartbeat sent');
-        } catch (error) {
-            console.log('Heartbeat error:', error);
+    // Get current status from Firestore or use stored value
+    db.collection('users').doc(currentUser.uid).get().then((doc) => {
+        if (doc.exists && doc.data().status) {
+            currentUserStatus = doc.data().status;
         }
-    }, 2000); // Every 2 seconds
+        
+        // Send heartbeat every 2 seconds
+        heartbeatInterval = setInterval(async () => {
+            if (!currentUser || !userActive) return;
+            
+            try {
+                // Update heartbeat timestamp but PRESERVE the actual status
+                await rtdb.ref('/status/' + currentUser.uid).update({
+                    last_heartbeat: firebase.database.ServerValue.TIMESTAMP,
+                    state: currentUserStatus, // Use actual status, not forced online
+                    last_changed: firebase.database.ServerValue.TIMESTAMP
+                });
+                lastHeartbeat = Date.now();
+                console.log(`❤️ Heartbeat sent - status: ${currentUserStatus}`);
+            } catch (error) {
+                console.log('Heartbeat error:', error);
+            }
+        }, 2000); // Every 2 seconds
+    });
     
     // Monitor for heartbeat stoppage (user closed app)
     const monitorInterval = setInterval(() => {
@@ -1670,6 +1682,9 @@ async function syncProfileStatus() {
     }
     
     const profileStatus = (currentUserData && currentUserData.status) ? currentUserData.status : 'online';
+    
+    // Update current user status tracker
+    currentUserStatus = profileStatus;
     
     console.log('📤 SENDING status signal to Firebase:', profileStatus);
     
@@ -1784,9 +1799,9 @@ function setupAutoOffline() {
                     console.error('❌ Error setting up onDisconnect:', error);
                 });
                 
-            // Also set initial online status
+            // Also set initial status
             userStatusRef.update({
-                state: 'online',
+                state: currentUserStatus,
                 last_changed: firebase.database.ServerValue.TIMESTAMP,
                 last_heartbeat: firebase.database.ServerValue.TIMESTAMP
             }).catch(console.error);

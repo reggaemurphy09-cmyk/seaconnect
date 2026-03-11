@@ -23,6 +23,11 @@
     --blue-primary: #0a4b7a;
     --blue-secondary: #1e6b9e;
     --delete-color: #ef4444;
+    --online-color: #10b981;
+    --atsea-color: #f59e0b;
+    --inport-color: #3b82f6;
+    --onleave-color: #a855f7;
+    --offline-color: #94a3b8;
 }
 
 [data-theme="dark"] {
@@ -41,6 +46,36 @@
     --blue-primary: #3b82f6;
     --blue-secondary: #1e3a8a;
     --delete-color: #ef4444;
+    --online-color: #10b981;
+    --atsea-color: #f59e0b;
+    --inport-color: #3b82f6;
+    --onleave-color: #c084fc;
+    --offline-color: #666666;
+}
+
+/* PULSING ANIMATIONS - ALL 5 COLORS */
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+    70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+@keyframes pulseAtSea {
+    0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7); }
+    70% { box-shadow: 0 0 0 6px rgba(245, 158, 11, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+}
+
+@keyframes pulseInPort {
+    0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
+    70% { box-shadow: 0 0 0 6px rgba(59, 130, 246, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+}
+
+@keyframes pulseOnLeave {
+    0% { box-shadow: 0 0 0 0 #a855f7; }
+    50% { box-shadow: 0 0 0 10px rgba(168, 85, 247, 0.5); }
+    100% { box-shadow: 0 0 0 0 #a855f7; }
 }
 
 /* PULL REFRESH */
@@ -256,18 +291,23 @@ color: var(--text-primary);
 color: var(--text-secondary);
 }
 
-/* FRIEND ITEM */
+/* FRIEND ITEM - Fixed for menu positioning */
+.friendItemWrapper {
+    position: relative;
+    width: 100%;
+}
+
 .friendItem{
 display:flex;
 align-items:center;
-padding:12px 0;
+padding:12px;
 border-bottom:1px solid var(--border-subtle);
 cursor:pointer;
 transition:all 0.3s ease;
 border-radius:12px;
-padding:12px;
-margin:0 -12px;
+margin:0;
 animation:fadeInRight 0.5s ease;
+position: relative;
 }
 
 @keyframes fadeInRight{
@@ -306,29 +346,44 @@ transition:transform 0.3s ease;
 transform:scale(1.05);
 }
 
-/* Status dot - positioned outside */
+/* Status dot - ALL 5 COLORS with !important */
 .friendStatusDot{
 position:absolute;
 top:-2px;
 right:-2px;
-width:14px;
-height:14px;
+width:16px;
+height:16px;
 border-radius:50%;
 border:2px solid var(--bg-primary);
 z-index:10;
-animation:pulse 2s infinite;
+transition: all 0.3s ease;
 }
 
-@keyframes pulse{
-0%{ box-shadow:0 0 0 0 rgba(16,185,129,0.4); }
-70%{ box-shadow:0 0 0 6px rgba(16,185,129,0); }
-100%{ box-shadow:0 0 0 0 rgba(16,185,129,0); }
+.statusOnline{ 
+    background: #10b981 !important; 
+    animation: pulse 2s infinite !important;
 }
 
-.statusOnline{ background:#10b981; }
-.statusAtSea{ background:#f59e0b; }
-.statusInPort{ background:#3b82f6; }
-.statusOffline{ background:#94a3b8; }
+.statusAtSea{ 
+    background: #f59e0b !important; 
+    animation: pulseAtSea 2s infinite !important;
+}
+
+.statusInPort{ 
+    background: #3b82f6 !important; 
+    animation: pulseInPort 2s infinite !important;
+}
+
+.statusOnLeave{ 
+    background: #a855f7 !important; 
+    background-color: #a855f7 !important;
+    animation: pulseOnLeave 2s infinite !important;
+    box-shadow: 0 0 10px #a855f7 !important;
+}
+
+.statusOffline{ 
+    background: #94a3b8 !important; 
+}
 
 .friendInfo{
 flex:1;
@@ -387,6 +442,91 @@ font-size:12px;
 color: var(--text-secondary);
 }
 
+/* 3-dot Menu Button */
+.friendMenuBtn {
+    background: var(--icon-bg);
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-size: 18px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+    margin-left: 8px;
+}
+
+.friendMenuBtn:hover {
+    background: var(--blue-primary);
+    color: white;
+    transform: scale(1.1);
+}
+
+.friendMenuBtn:active {
+    transform: scale(0.95);
+}
+
+/* Dropdown Menu */
+.friendMenuDropdown {
+    position: absolute;
+    right: 10px;
+    top: 50px;
+    background: var(--modal-bg);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    border: 1px solid var(--border-subtle);
+    z-index: 100;
+    display: none;
+    min-width: 160px;
+    overflow: hidden;
+}
+
+.friendMenuDropdown.show {
+    display: block;
+    animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dropdownItem {
+    padding: 14px 16px;
+    font-size: 14px;
+    color: var(--text-primary);
+    cursor: pointer;
+    border-bottom: 1px solid var(--border-subtle);
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dropdownItem:last-child {
+    border-bottom: none;
+}
+
+.dropdownItem.delete {
+    color: var(--delete-color);
+}
+
+.dropdownItem:hover {
+    background: var(--icon-bg);
+    padding-left: 20px;
+}
+
+/* Message Action Button */
 .friendAction{
 background: var(--icon-bg);
 border:none;
@@ -398,6 +538,7 @@ color: var(--text-primary);
 cursor:pointer;
 transition:all 0.2s ease;
 flex-shrink:0;
+margin-right: 4px;
 }
 
 .friendAction:hover{
@@ -561,6 +702,77 @@ box-shadow:0 4px 8px rgba(0,0,0,0.1);
 
 .emptyBtn:active{
 transform:scale(0.95);
+}
+
+/* DELETE CONFIRM MODAL */
+.deleteModal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.8);
+    z-index: 3500;
+    align-items: center;
+    justify-content: center;
+}
+
+.deleteModal.active {
+    display: flex;
+}
+
+.deleteModalContent {
+    background: var(--modal-bg);
+    border-radius: 30px;
+    width: 300px;
+    padding: 30px;
+    text-align: center;
+}
+
+.deleteModalIcon {
+    font-size: 50px;
+    margin-bottom: 20px;
+}
+
+.deleteModalTitle {
+    font-weight: 700;
+    font-size: 20px;
+    color: var(--delete-color);
+    margin-bottom: 10px;
+}
+
+.deleteModalText {
+    color: var(--text-secondary);
+    margin-bottom: 25px;
+    font-size: 14px;
+}
+
+.deleteModalButtons {
+    display: flex;
+    gap: 10px;
+}
+
+.deleteConfirm {
+    flex: 1;
+    background: var(--delete-color);
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 40px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.deleteCancel {
+    flex: 1;
+    background: var(--icon-bg);
+    color: var(--text-primary);
+    border: none;
+    padding: 14px;
+    border-radius: 40px;
+    font-weight: 600;
+    cursor: pointer;
 }
 
 /* TOAST */
@@ -770,6 +982,19 @@ Settings
 
 </div>
 
+<!-- DELETE CONFIRM MODAL -->
+<div class="deleteModal" id="deleteModal">
+    <div class="deleteModalContent">
+        <div class="deleteModalIcon">👥</div>
+        <div class="deleteModalTitle">Remove Friend?</div>
+        <div class="deleteModalText" id="deleteFriendName">Are you sure you want to remove this friend?</div>
+        <div class="deleteModalButtons">
+            <button class="deleteCancel" onclick="closeDeleteModal()">Cancel</button>
+            <button class="deleteConfirm" id="confirmDeleteBtn">Remove</button>
+        </div>
+    </div>
+</div>
+
 <div class="bottomnav">
 
 <button onclick="location.href='feeds.html'" id="navFeeds">
@@ -809,15 +1034,18 @@ Profile
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
+<!-- Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
 <script>
 // Firebase config
 const firebaseConfig = {
     apiKey: "AIzaSyCNlodsmEHrSXxgH0gTOcx4cAXwG8qmG9w",
     authDomain: "seaconnect-d2baa.firebaseapp.com",
+    databaseURL: "https://seaconnect-d2baa-default-rtdb.asia-southeast1.firebasedatabase.app",
     projectId: "seaconnect-d2baa",
     storageBucket: "seaconnect-d2baa.appspot.com",
     messagingSenderId: "402383997556",
@@ -828,6 +1056,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
+const rtdb = firebase.database();
 
 let currentUser = null;
 let currentUserData = null;
@@ -836,6 +1065,186 @@ let friendsList = [];
 let requestsList = [];
 let suggestionsList = [];
 let sentRequestsList = [];
+
+// HEARTBEAT SYSTEM
+let heartbeatInterval = null;
+let lastHeartbeat = Date.now();
+let userActive = true;
+let currentUserStatus = 'online';
+
+// Store status listeners
+const statusListeners = {};
+let friendToDelete = null;
+
+// ===== REAL-TIME STATUS LISTENER - ALL 5 COLORS =====
+function listenToUserStatus(userId) {
+    if (!userId) return;
+    
+    // Remove existing listener if any
+    if (statusListeners[userId]) {
+        rtdb.ref('/status/' + userId).off('value', statusListeners[userId]);
+    }
+    
+    const statusRef = rtdb.ref('/status/' + userId);
+    
+    statusListeners[userId] = statusRef.on('value', (snapshot) => {
+        const data = snapshot.val();
+        if (!data || !data.state) return;
+        
+        console.log(`🔄 Status update: User ${userId} is now ${data.state}`);
+        
+        // Find ALL status dots for this user
+        const statusDots = document.querySelectorAll(`.status-dot-${userId}`);
+        
+        statusDots.forEach(dot => {
+            // Remove all status classes
+            dot.classList.remove('statusOnline', 'statusAtSea', 'statusInPort', 'statusOnLeave', 'statusOffline');
+            
+            // Add the new status class with inline style backup
+            if (data.state === 'online') {
+                dot.classList.add('statusOnline');
+                dot.style.background = '#10b981';
+                dot.style.boxShadow = '';
+            } else if (data.state === 'atSea') {
+                dot.classList.add('statusAtSea');
+                dot.style.background = '#f59e0b';
+                dot.style.boxShadow = '';
+            } else if (data.state === 'inPort') {
+                dot.classList.add('statusInPort');
+                dot.style.background = '#3b82f6';
+                dot.style.boxShadow = '';
+            } else if (data.state === 'onLeave') {
+                dot.classList.add('statusOnLeave');
+                dot.style.background = '#a855f7';
+                dot.style.boxShadow = '0 0 10px #a855f7';
+            } else {
+                dot.classList.add('statusOffline');
+                dot.style.background = '#94a3b8';
+                dot.style.boxShadow = '';
+            }
+        });
+        
+        // Also update the friend status text if it exists
+        const statusTexts = document.querySelectorAll(`.friend-status-text-${userId}`);
+        statusTexts.forEach(el => {
+            if (data.state === 'online') el.innerText = 'Online';
+            else if (data.state === 'atSea') el.innerText = 'At Sea';
+            else if (data.state === 'inPort') el.innerText = 'In Port';
+            else if (data.state === 'onLeave') el.innerText = 'On Leave';
+            else el.innerText = 'Offline';
+        });
+    });
+}
+
+// ===== HEARTBEAT FUNCTION - preserves user's actual status =====
+function startHeartbeat() {
+    if (!currentUser) return;
+    
+    if (heartbeatInterval) clearInterval(heartbeatInterval);
+    
+    userActive = true;
+    lastHeartbeat = Date.now();
+    
+    // Get current status from Firestore
+    db.collection('users').doc(currentUser.uid).get().then((doc) => {
+        if (doc.exists && doc.data().status) {
+            currentUserStatus = doc.data().status;
+        }
+        
+        heartbeatInterval = setInterval(async () => {
+            if (!currentUser || !userActive) return;
+            
+            try {
+                await rtdb.ref('/status/' + currentUser.uid).update({
+                    last_heartbeat: firebase.database.ServerValue.TIMESTAMP,
+                    state: currentUserStatus,
+                    last_changed: firebase.database.ServerValue.TIMESTAMP
+                });
+                lastHeartbeat = Date.now();
+            } catch (error) {
+                console.log('Heartbeat error:', error);
+            }
+        }, 2000);
+    });
+    
+    // Monitor for heartbeat stoppage
+    const monitorInterval = setInterval(() => {
+        const timeSinceLastHeartbeat = Date.now() - lastHeartbeat;
+        
+        if (timeSinceLastHeartbeat > 5000 && currentUser) {
+            rtdb.ref('/status/' + currentUser.uid).update({
+                state: 'offline',
+                last_changed: firebase.database.ServerValue.TIMESTAMP
+            }).catch(console.error);
+            
+            clearInterval(monitorInterval);
+        }
+    }, 3000);
+}
+
+// ===== SETUP AUTO OFFLINE =====
+function setupAutoOffline() {
+    if (!currentUser) return;
+    
+    const userStatusRef = rtdb.ref('/status/' + currentUser.uid);
+    const connectedRef = rtdb.ref('.info/connected');
+    
+    const offlineData = {
+        state: 'offline',
+        last_changed: firebase.database.ServerValue.TIMESTAMP,
+        email: currentUser.email,
+        displayName: currentUserData?.name || 'User'
+    };
+    
+    connectedRef.on('value', (snapshot) => {
+        if (snapshot.val() === true) {
+            startHeartbeat();
+            
+            userStatusRef.onDisconnect().set(offlineData)
+                .then(() => console.log('✅ onDisconnect set'))
+                .catch(console.error);
+        }
+    });
+}
+
+// ===== HANDLE TAB/WINDOW CLOSE =====
+window.addEventListener('beforeunload', function() {
+    if (!currentUser) return;
+    
+    userActive = false;
+    
+    const data = JSON.stringify({
+        state: 'offline',
+        last_changed: Date.now(),
+        email: currentUser.email
+    });
+    
+    navigator.sendBeacon(
+        firebaseConfig.databaseURL + '/status/' + currentUser.uid + '.json',
+        data
+    );
+    
+    if (heartbeatInterval) clearInterval(heartbeatInterval);
+});
+
+window.addEventListener('pagehide', function() {
+    if (!currentUser) return;
+    
+    userActive = false;
+    
+    const data = JSON.stringify({
+        state: 'offline',
+        last_changed: Date.now(),
+        email: currentUser.email
+    });
+    
+    navigator.sendBeacon(
+        firebaseConfig.databaseURL + '/status/' + currentUser.uid + '.json',
+        data
+    );
+    
+    if (heartbeatInterval) clearInterval(heartbeatInterval);
+});
 
 // Load user theme from settings
 function loadUserTheme() {
@@ -865,6 +1274,7 @@ auth.onAuthStateChanged((user) => {
     loadUserTheme();
     loadUserData();
     loadAllData();
+    setupAutoOffline();
 });
 
 // Load current user data
@@ -872,11 +1282,14 @@ function loadUserData() {
     db.collection('users').doc(currentUser.uid).get().then((doc) => {
         if (doc.exists) {
             currentUserData = doc.data();
+            currentUserStatus = currentUserData.status || 'online';
             
-            // Update bottom nav avatar
             const navAvatar = document.getElementById('navAvatar');
             if (currentUserData.photoURL) {
                 navAvatar.src = currentUserData.photoURL;
+            } else {
+                const initials = (currentUserData.name || 'U').charAt(0).toUpperCase();
+                navAvatar.src = `https://ui-avatars.com/api/?name=${initials}&background=0a4b7a&color=fff&size=50`;
             }
         }
     });
@@ -987,6 +1400,95 @@ function loadSuggestions() {
     displaySuggestions();
 }
 
+// Get status from Firestore or RTDB
+async function getUserStatus(userId) {
+    try {
+        const statusSnapshot = await rtdb.ref('/status/' + userId).once('value');
+        const statusData = statusSnapshot.val();
+        return statusData ? statusData.state : 'offline';
+    } catch {
+        return 'offline';
+    }
+}
+
+// Toggle menu
+function toggleMenu(friendId, event) {
+    event.stopPropagation();
+    
+    // Close all other menus
+    document.querySelectorAll('.friendMenuDropdown').forEach(menu => {
+        if (menu.id !== `menu-${friendId}`) {
+            menu.classList.remove('show');
+        }
+    });
+    
+    const menu = document.getElementById(`menu-${friendId}`);
+    menu.classList.toggle('show');
+}
+
+// Close menus when clicking outside
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.friendMenuBtn')) {
+        document.querySelectorAll('.friendMenuDropdown').forEach(m => m.classList.remove('show'));
+    }
+});
+
+// Show delete confirmation modal
+function showDeleteModal(friendId, friendName, event) {
+    event.stopPropagation();
+    friendToDelete = friendId;
+    document.getElementById('deleteFriendName').innerText = `Remove "${friendName}" from your friends?`;
+    document.getElementById('deleteModal').classList.add('active');
+    // Close the menu
+    document.getElementById(`menu-${friendId}`).classList.remove('show');
+}
+
+// Close delete modal
+function closeDeleteModal() {
+    document.getElementById('deleteModal').classList.remove('active');
+    friendToDelete = null;
+}
+
+// Remove friend
+async function removeFriend() {
+    if (!friendToDelete) return;
+    
+    try {
+        // Delete both directions of friendship
+        const batch = db.batch();
+        
+        // Find and delete where current user is userId and friend is friendId
+        const query1 = await db.collection('friends')
+            .where('userId', '==', currentUser.uid)
+            .where('friendId', '==', friendToDelete)
+            .where('status', '==', 'accepted')
+            .get();
+        
+        query1.forEach(doc => batch.delete(doc.ref));
+        
+        // Find and delete where current user is friendId and friend is userId
+        const query2 = await db.collection('friends')
+            .where('userId', '==', friendToDelete)
+            .where('friendId', '==', currentUser.uid)
+            .where('status', '==', 'accepted')
+            .get();
+        
+        query2.forEach(doc => batch.delete(doc.ref));
+        
+        await batch.commit();
+        
+        showToast('✅ Friend removed');
+        closeDeleteModal();
+        
+    } catch (error) {
+        console.error('Error removing friend:', error);
+        showToast('❌ Error removing friend');
+    }
+}
+
+// Set up delete button
+document.getElementById('confirmDeleteBtn').onclick = removeFriend;
+
 // Display friends
 async function displayFriends() {
     const container = document.getElementById('friendsList');
@@ -1005,30 +1507,39 @@ async function displayFriends() {
         return;
     }
     
-    // Get friend user data
+    // Get friend user data with real-time status
     const friendUsers = [];
     for (const friendId of friendsList) {
         const user = allUsers.find(u => u.id === friendId);
         if (user) {
-            friendUsers.push(user);
+            // Get current status
+            const status = await getUserStatus(friendId);
+            friendUsers.push({...user, currentStatus: status});
         }
     }
     
-    // Sort by status: Online > At Sea > In Port > Offline
+    // Sort by status priority: Online > At Sea > In Port > On Leave > Offline
     friendUsers.sort((a, b) => {
-        const statusOrder = { 'online': 1, 'Online': 1, 'atSea': 2, 'At Sea': 2, 'inPort': 3, 'In Port': 3, 'offline': 4, 'Offline': 4 };
-        const aStatus = a.status || 'offline';
-        const bStatus = b.status || 'offline';
-        return (statusOrder[aStatus] || 4) - (statusOrder[bStatus] || 4);
+        const statusOrder = { 
+            'online': 1, 
+            'atSea': 2, 
+            'inPort': 3, 
+            'onLeave': 4, 
+            'offline': 5 
+        };
+        const aStatus = a.currentStatus || 'offline';
+        const bStatus = b.currentStatus || 'offline';
+        return (statusOrder[aStatus] || 5) - (statusOrder[bStatus] || 5);
     });
     
     let html = '';
     
-    // Group by status
-    const online = friendUsers.filter(u => u.status === 'online' || u.status === 'Online');
-    const atSea = friendUsers.filter(u => u.status === 'atSea' || u.status === 'At Sea');
-    const inPort = friendUsers.filter(u => u.status === 'inPort' || u.status === 'In Port');
-    const offline = friendUsers.filter(u => !u.status || u.status === 'offline' || u.status === 'Offline');
+    // Group by status - ALL 5 COLORS
+    const online = friendUsers.filter(u => u.currentStatus === 'online');
+    const atSea = friendUsers.filter(u => u.currentStatus === 'atSea');
+    const inPort = friendUsers.filter(u => u.currentStatus === 'inPort');
+    const onLeave = friendUsers.filter(u => u.currentStatus === 'onLeave');
+    const offline = friendUsers.filter(u => !u.currentStatus || u.currentStatus === 'offline');
     
     if (online.length > 0) {
         html += '<div class="sectionCard"><div class="sectionTitle"><span>🟢</span> ONLINE</div>';
@@ -1054,6 +1565,14 @@ async function displayFriends() {
         html += '</div>';
     }
     
+    if (onLeave.length > 0) {
+        html += '<div class="sectionCard"><div class="sectionTitle"><span>🏝️</span> ON LEAVE</div>';
+        for (const user of onLeave) {
+            html += await createFriendItem(user);
+        }
+        html += '</div>';
+    }
+    
     if (offline.length > 0) {
         html += '<div class="sectionCard"><div class="sectionTitle"><span>⚪</span> OFFLINE</div>';
         for (const user of offline) {
@@ -1064,43 +1583,62 @@ async function displayFriends() {
     
     loading.style.display = 'none';
     container.innerHTML = html;
+    
+    // Set up status listeners for all friends
+    friendsList.forEach(friendId => listenToUserStatus(friendId));
 }
 
 // Create friend item HTML
 async function createFriendItem(user) {
     let statusClass = 'statusOffline';
     let statusText = 'Offline';
+    let inlineStyle = '';
     
-    if (user.status === 'online' || user.status === 'Online') {
+    if (user.currentStatus === 'online') {
         statusClass = 'statusOnline';
         statusText = 'Online';
-    } else if (user.status === 'atSea' || user.status === 'At Sea') {
+    } else if (user.currentStatus === 'atSea') {
         statusClass = 'statusAtSea';
         statusText = 'At Sea';
-    } else if (user.status === 'inPort' || user.status === 'In Port') {
+    } else if (user.currentStatus === 'inPort') {
         statusClass = 'statusInPort';
         statusText = 'In Port';
+    } else if (user.currentStatus === 'onLeave') {
+        statusClass = 'statusOnLeave';
+        statusText = 'On Leave';
+        inlineStyle = 'style="background: #a855f7 !important; box-shadow: 0 0 10px #a855f7 !important;"';
     }
     
     return `
-        <div class="friendItem" onclick="openChat('${user.id}', '${user.email}')">
-            <div class="friendAvatarWrapper">
-                <img src="${user.photoURL || 'https://i.ibb.co/2kRZ7Z6/avatar.png'}" class="friendAvatar" onerror="this.src='https://i.ibb.co/2kRZ7Z6/avatar.png'">
-                <div class="friendStatusDot ${statusClass}"></div>
-            </div>
-            <div class="friendInfo">
-                <div class="friendName">
-                    ${user.name || 'Sailor'}
-                    ${user.verified ? '<span class="verifiedBadge">Verified</span>' : ''}
+        <div class="friendItemWrapper">
+            <div class="friendItem" onclick="openChat('${user.id}', '${user.email}')">
+                <div class="friendAvatarWrapper">
+                    <img src="${user.photoURL || 'https://i.ibb.co/2kRZ7Z6/avatar.png'}" class="friendAvatar" onerror="this.src='https://i.ibb.co/2kRZ7Z6/avatar.png'">
+                    <div class="friendStatusDot ${statusClass} status-dot-${user.id}" ${inlineStyle}></div>
                 </div>
-                <div class="friendMeta">
-                    <span class="friendRank">${user.rank || 'Seafarer'}</span>
-                    <span class="friendStatus">
-                        <span>${statusText}</span>
-                    </span>
+                <div class="friendInfo">
+                    <div class="friendName">
+                        ${user.name || 'Sailor'}
+                        ${user.verified ? '<span class="verifiedBadge">Verified</span>' : ''}
+                    </div>
+                    <div class="friendMeta">
+                        <span class="friendRank">${user.rank || 'Seafarer'}</span>
+                        <span class="friendStatus">
+                            <span class="friend-status-text-${user.id}">${statusText}</span>
+                        </span>
+                    </div>
+                </div>
+                <button class="friendAction" onclick="event.stopPropagation(); messageFriend('${user.id}', '${user.email}')">💬</button>
+                <button class="friendMenuBtn" onclick="toggleMenu('${user.id}', event)">⋯</button>
+            </div>
+            <div class="friendMenuDropdown" id="menu-${user.id}">
+                <div class="dropdownItem" onclick="event.stopPropagation(); viewProfile('${user.id}')">
+                    <span>👤</span> View Profile
+                </div>
+                <div class="dropdownItem delete" onclick="showDeleteModal('${user.id}', '${user.name || 'this user'}', event)">
+                    <span>🗑️</span> Remove Friend
                 </div>
             </div>
-            <button class="friendAction" onclick="event.stopPropagation(); messageFriend('${user.id}', '${user.email}')">💬</button>
         </div>
     `;
 }
@@ -1194,7 +1732,7 @@ async function displaySuggestions() {
 }
 
 // Search friends
-function searchFriends() {
+async function searchFriends() {
     const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
     
     if (!searchTerm) {
@@ -1202,12 +1740,13 @@ function searchFriends() {
         return;
     }
     
-    // Get friend user data
+    // Get friend user data with status
     const friendUsers = [];
     for (const friendId of friendsList) {
         const user = allUsers.find(u => u.id === friendId);
         if (user) {
-            friendUsers.push(user);
+            const status = await getUserStatus(friendId);
+            friendUsers.push({...user, currentStatus: status});
         }
     }
     
@@ -1325,7 +1864,7 @@ function switchTab(tab) {
     document.getElementById('suggestionsSection').style.display = tab === 'suggestions' ? 'block' : 'none';
 }
 
-// Navigation functions - FIXED: Pass both ID and email
+// Navigation functions
 function openChat(friendId, friendEmail) {
     window.location.href = `messages.html?friend=${friendId}&email=${encodeURIComponent(friendEmail)}`;
 }
